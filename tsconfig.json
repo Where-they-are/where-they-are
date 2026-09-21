@@ -1,0 +1,6 @@
+{
+  "extends": "@where-they-are/config/tsconfig.base.json",
+  "compilerOptions": {
+    "strictNullChecks": true
+  }
+}
