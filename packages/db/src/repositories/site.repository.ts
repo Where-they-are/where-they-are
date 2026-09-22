@@ -58,7 +58,7 @@ export const createSiteRelease = async (input: {
   artifactPath?: string;
   artifactChecksum?: string;
 }) =>
-  db.$transaction(async (transaction) => {
+  db.$transaction(async (transaction: Prisma.TransactionClient) => {
     const site = await transaction.site.findFirst({
       where: { id: input.siteId, businessId: input.businessId },
       select: { id: true },

@@ -25,8 +25,11 @@ type TenantRequest = Request & { principal?: TenantPrincipal };
 export class TenantAuthGuard implements CanActivate {
   public async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<TenantRequest>();
-    const userId = request.header("x-user-id");
-    const businessId = request.params.businessId ?? request.header("x-business-id");
+    const userHeader = request.header("x-user-id");
+    const businessHeader = request.header("x-business-id");
+    const userId = typeof userHeader === "string" ? userHeader : undefined;
+    const businessValue = request.params.businessId ?? businessHeader;
+    const businessId = typeof businessValue === "string" ? businessValue : undefined;
 
     if (!userId || !businessId) {
       throw new UnauthorizedException("x-user-id and a businessId are required");

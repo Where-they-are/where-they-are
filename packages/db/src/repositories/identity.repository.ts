@@ -1,3 +1,5 @@
+import type { Prisma } from "../generated/prisma/client.js";
+
 import { db } from "../client.js";
 
 export type CreateBusinessInput = {
@@ -12,7 +14,7 @@ export type CreateBusinessInput = {
 };
 
 export const createBusinessWithOwner = async (input: CreateBusinessInput) =>
-  db.$transaction(async (transaction) => {
+  db.$transaction(async (transaction: Prisma.TransactionClient) => {
     const owner = await transaction.user.upsert({
       where: { email: input.ownerEmail },
       update: { displayName: input.ownerDisplayName, phone: input.phone },
