@@ -115,6 +115,28 @@ The monorepo contains the portal, Astro marketing application, WhatsApp worker, 
 - `GET /api/businesses/:businessId/sites`
 - `GET /api/businesses/:businessId/sites/:siteId`
 - `POST /api/businesses/:businessId/sites/:siteId/generate`
+- `GET|POST /api/businesses/:businessId/payments`
+- `GET /api/businesses/:businessId/payments/:paymentId`
+- `POST /api/businesses/:businessId/payments/:paymentId/status`
+- `GET|POST /api/businesses/:businessId/domains`
+- `GET /api/businesses/:businessId/domains/:domainId`
+- `POST /api/businesses/:businessId/domains/:domainId/status`
+- `GET|POST /api/businesses/:businessId/billing/subscriptions`
+- `POST /api/businesses/:businessId/billing/subscriptions/:subscriptionId/status`
+- `GET|POST /api/businesses/:businessId/billing/invoices`
+- `POST /api/businesses/:businessId/billing/invoices/:invoiceId/status`
+- `POST /api/public/sites/:siteId/contact-submissions`
+- `GET /api/businesses/:businessId/contact-submissions`
+- `GET /api/businesses/:businessId/contact-submissions/:submissionId`
+- `POST /api/businesses/:businessId/contact-submissions/:submissionId/read`
+- `POST /api/businesses/:businessId/contact-submissions/:submissionId/star`
+- `POST /api/businesses/:businessId/contact-submissions/:submissionId/status`
+- `GET|POST /api/businesses/:businessId/sites/:siteId/feedback`
+- `GET /api/businesses/:businessId/sites/:siteId/approvals/:releaseId`
+- `POST /api/businesses/:businessId/sites/:siteId/approve`
+- `GET /api/businesses/:businessId/sites/:siteId/publication/status`
+- `POST /api/businesses/:businessId/sites/:siteId/publication/deployments`
+- `POST /api/businesses/:businessId/sites/:siteId/publication/deployments/:deploymentId/status`
 
 The server includes:
 
@@ -128,6 +150,12 @@ The server includes:
 - Tenant authentication guard using active business membership and role checks.
 - Business management endpoints for membership and site creation.
 - Tenant-aware site listing, detail, and generation endpoints.
+- Tenant-scoped payments with provider/status/purpose records; Paynow remains a provider boundary and payment truth is server-owned.
+- Manual `.co.zw`/custom domain requests with registration, verification, expiry, and customer-facing lifecycle status.
+- Hosting subscriptions and invoices with server-generated invoice numbers and lifecycle status.
+- Public contact enquiries with consent validation, idempotency keys, one-month retention, starring, read, and archive state.
+- Classified site feedback and explicit owner/admin release approval with stale-release protection.
+- Publication status aggregation across approval, payment, domain, deployment, and live-site state.
 
 ### Shared contracts and client
 
@@ -161,8 +189,16 @@ Implemented models include:
 - `Conversation`
 - `Message`
 - `Intake`
+- `Payment`
+- `Domain`
+- `Subscription`
+- `Invoice`
+- `ContactSubmission`
+- `SiteFeedback`
+- `SiteApproval`
+- `Deployment`
 
-Implemented enums cover user roles, membership states, site states, generation states, conversation channels/statuses, message directions, and message kinds.
+Implemented enums cover user roles, membership states, site states, generation states, conversation channels/statuses, message directions, message kinds, payment states, domain states, subscription/invoice states, contact retention states, feedback/approval states, and deployment states.
 
 Implemented repository functions cover:
 
@@ -176,6 +212,11 @@ Implemented repository functions cover:
 - Upserting conversations without cross-tenant reassignment.
 - Appending messages.
 - Creating intakes.
+- Creating and updating tenant-scoped payments and domains.
+- Creating and updating subscriptions and invoices.
+- Creating deduplicated contact enquiries and applying retention/star behavior.
+- Creating classified site feedback and release approvals.
+- Creating deployment records and aggregating publication prerequisites.
 
 ### Release metadata storage
 
@@ -204,27 +245,33 @@ See [`TESTING.md`](./TESTING.md) for setup and commands.
 
 The Prisma client has been generated successfully and the Prisma schema has been validated successfully after approving the Prisma build scripts. The initial PostgreSQL migration is applied and `prisma migrate status` reports the database is up to date. The configured PostgreSQL database has been seeded successfully. The user has provided a valid OpenRouter key and database URL through the local environment.
 
-The database and first tenant backend implementation phase is complete. The current verification status is:
+The database, first tenant backend, and lean features 13–18 implementation phase is complete. The current verification status is:
 
 1. Prisma generation, schema validation, migration status, and seed pass.
 2. Five live PostgreSQL repository integration tests pass.
 3. The NestJS server type check and test-kit type check pass.
 4. The database-backed API E2E passes for bootstrap, membership, business lookup, authorization, site creation/list/detail, generation, release persistence, preview retrieval, and cross-tenant rejection.
-5. The next backend phase is production session/auth integration, WhatsApp persistence mapping, queue processing, and lifecycle modules.
+5. Features 13–18 now cover payments, domains, billing, contact enquiries, site feedback/approval, and publication-state aggregation. Their Prisma migrations have been created and applied locally, and the server/database type checks pass after regeneration.
+6. `packages/test-kit/src/integration/lean-features.test.ts` and the database API E2E flow cover the lean feature set; after the latest file-only edits, the user must rerun the commands below to confirm the final tree.
+7. The next backend phase is production session/auth integration, Paynow callback integration, WhatsApp persistence mapping, and queue processing.
 
 The frontend is intentionally not the current priority. Design and frontend product work will be handled separately with a designer.
+
+The available product-planning document in `plans/` is `USER-STORIES.md`; it references `USER-FLOWS.md`, but that file is not currently present. The available stories and end-to-end slices were reviewed. The implementation intentionally keeps only the core customer journey and leaves teams, support queues, audits, advanced analytics, and future operations-console capabilities out of scope.
 
 ## Known limitations and next backend work
 
 - Authentication currently uses a bootstrap endpoint plus `x-user-id`/business membership headers as a development boundary; a production session/auth provider is still required.
 - Better Auth/session integration has not yet been wired to the NestJS server.
-- Business-management HTTP endpoints now exist for membership and site creation, but billing, invitations, and full management workflows are still pending.
+- Business-management HTTP endpoints now exist for membership and site creation; teams, invitations, and advanced account management remain intentionally out of scope.
 - The WhatsApp worker does not yet map a WhatsApp chat to a persisted business/site.
 - PostgreSQL release metadata has been implemented behind `DATABASE_ENABLED=true`; migration, seed, repository integration tests, and database-backed release E2E all pass.
 - Generation jobs are modeled but are not yet fully queued through BullMQ.
 - File artifacts are still local filesystem artifacts rather than object-storage artifacts.
-- Coolify deployment is currently a typed adapter around deployment triggering; full publication state reconciliation is still pending.
-- Payments, domains, billing, support tickets, contact submissions, and analytics are not yet implemented.
+- Coolify deployment is currently a typed adapter around deployment triggering; the new deployment record provides a server-owned lifecycle state, while external reconciliation remains pending.
+- Paynow hosted-payment creation/callback verification is not yet wired; payment records and status transitions are ready for that provider adapter.
+- Advanced analytics, support queues, operator consoles, audit systems, teams, invitations, and permission-management UX are intentionally out of scope for this phase.
+- Public contact submissions currently have validation, idempotency, retention, starring, reading, and archiving primitives; rate limiting and scheduled expiry execution still need to be connected to the runtime.
 
 ## Development rules
 
@@ -239,7 +286,7 @@ The frontend is intentionally not the current priority. Design and frontend prod
 9. Do not install packages automatically when the user has asked to run installation commands themselves.
 10. Run the appropriate type checks, unit tests, smoke tests, and end-to-end tests before marking a feature complete.
 
-The current database verification commands are `pnpm --filter @where-they-are/db db:validate`, `pnpm --filter @where-they-are/db db:seed`, `pnpm run test:db`, and `pnpm run test:e2e:db`.
+The current database verification commands are `pnpm --filter @where-they-are/db db:generate`, `pnpm --filter @where-they-are/db db:validate`, `pnpm --filter @where-they-are/db db:seed`, `pnpm run test:db`, and `pnpm run test:e2e:db`. The new local migrations are named `add_payments`, `add_domains`, `add_billing`, `add_contact_submissions`, `add_feedback_approvals`, and `add_publication_state`.
 
 ## Context maintenance rule
 
