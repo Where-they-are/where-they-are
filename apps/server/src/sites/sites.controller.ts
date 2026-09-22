@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Headers, Param, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Headers, Inject, Param, Post, UseGuards } from "@nestjs/common";
 
 import { TenantAuthGuard } from "../auth/tenant-auth.guard.js";
 import { SitesService } from "./sites.service.js";
@@ -6,7 +6,7 @@ import { SitesService } from "./sites.service.js";
 @Controller("businesses/:businessId/sites")
 @UseGuards(TenantAuthGuard)
 export class SitesController {
-  public constructor(private readonly sitesService: SitesService) {}
+  public constructor(@Inject(SitesService) private readonly sitesService: SitesService) {}
 
   @Get()
   public list(
