@@ -13,8 +13,19 @@ export const createSubscription = async (input: {
   currentPeriodStart?: Date;
   currentPeriodEnd: Date;
   externalReference?: string;
-}) =>
-  db.subscription.create({
+}) => {
+  if (input.siteId) {
+    const site = await db.site.findFirst({
+      where: { id: input.siteId, businessId: input.businessId },
+      select: { id: true },
+    });
+
+    if (!site) {
+      throw new Error("Site does not belong to business");
+    }
+  }
+
+  return db.subscription.create({
     data: {
       businessId: input.businessId,
       siteId: input.siteId,
@@ -27,6 +38,7 @@ export const createSubscription = async (input: {
       externalReference: input.externalReference,
     },
   });
+};
 
 export const listSubscriptionsForBusiness = async (businessId: string) =>
   db.subscription.findMany({

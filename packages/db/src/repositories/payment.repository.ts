@@ -16,8 +16,19 @@ export type CreatePaymentInput = {
   metadata?: unknown;
 };
 
-export const createPayment = async (input: CreatePaymentInput) =>
-  db.payment.create({
+export const createPayment = async (input: CreatePaymentInput) => {
+  if (input.siteId) {
+    const site = await db.site.findFirst({
+      where: { id: input.siteId, businessId: input.businessId },
+      select: { id: true },
+    });
+
+    if (!site) {
+      throw new Error("Site does not belong to business");
+    }
+  }
+
+  return db.payment.create({
     data: {
       businessId: input.businessId,
       siteId: input.siteId,
@@ -30,6 +41,7 @@ export const createPayment = async (input: CreatePaymentInput) =>
       metadata: input.metadata as object | undefined,
     },
   });
+};
 
 export const listPaymentsForBusiness = async (businessId: string) =>
   db.payment.findMany({

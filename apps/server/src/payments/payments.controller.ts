@@ -7,6 +7,7 @@ import { PaymentsService } from "./payments.service.js";
 const amountSchema = z.string().regex(/^\d+(\.\d{1,2})?$/);
 
 const createPaymentSchema = z.object({
+  siteId: z.string().min(1).optional(),
   provider: z.enum(["PAYNOW", "MANUAL"]).default("MANUAL"),
   providerReference: z.string().min(1).optional(),
   amount: amountSchema,

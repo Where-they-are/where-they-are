@@ -16,6 +16,7 @@ export class PaymentsService {
   public async create(input: {
     businessId: string;
     actorUserId: string;
+    siteId?: string;
     provider: "PAYNOW" | "MANUAL";
     providerReference?: string;
     amount: string;

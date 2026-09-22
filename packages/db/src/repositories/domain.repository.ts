@@ -14,8 +14,19 @@ export const createDomain = async (input: {
   siteId?: string;
   hostname: string;
   kind: DomainKind;
-}) =>
-  db.domain.create({
+}) => {
+  if (input.siteId) {
+    const site = await db.site.findFirst({
+      where: { id: input.siteId, businessId: input.businessId },
+      select: { id: true },
+    });
+
+    if (!site) {
+      throw new Error("Site does not belong to business");
+    }
+  }
+
+  return db.domain.create({
     data: {
       businessId: input.businessId,
       siteId: input.siteId,
@@ -23,6 +34,7 @@ export const createDomain = async (input: {
       kind: input.kind,
     },
   });
+};
 
 export const listDomainsForBusiness = async (businessId: string) =>
   db.domain.findMany({
