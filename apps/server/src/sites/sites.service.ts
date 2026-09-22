@@ -1,0 +1,52 @@
+import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+  findSiteForBusiness,
+  listSitesForBusiness,
+  requireBusinessMember,
+} from "@where-they-are/db";
+import { generateSiteRequestSchema } from "@where-they-are/contracts";
+
+import { GeneratorService } from "../generator/generator.service.js";
+
+@Injectable()
+export class SitesService {
+  public constructor(private readonly generatorService: GeneratorService) {}
+
+  public async list(businessId: string, userId: string) {
+    await requireBusinessMember(businessId, userId);
+    return listSitesForBusiness(businessId);
+  }
+
+  public async get(businessId: string, siteId: string, userId: string) {
+    await requireBusinessMember(businessId, userId);
+    const site = await findSiteForBusiness(businessId, siteId);
+
+    if (!site) {
+      throw new NotFoundException("Site was not found for this business");
+    }
+
+    return site;
+  }
+
+  public async generate(
+    businessId: string,
+    siteId: string,
+    userId: string,
+    body: unknown,
+  ) {
+    await requireBusinessMember(businessId, userId);
+    const site = await findSiteForBusiness(businessId, siteId);
+
+    if (!site) {
+      throw new NotFoundException("Site was not found for this business");
+    }
+
+    const request = generateSiteRequestSchema.parse({
+      ...body as Record<string, unknown>,
+      businessId,
+      siteId,
+    });
+
+    return this.generatorService.generate(request);
+  }
+}

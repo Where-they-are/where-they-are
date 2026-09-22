@@ -25,6 +25,13 @@ export const findSiteForBusiness = async (businessId: string, siteId: string) =>
     include: { releases: { orderBy: { version: "desc" } } },
   });
 
+export const listSitesForBusiness = async (businessId: string) =>
+  db.site.findMany({
+    where: { businessId },
+    include: { releases: { orderBy: { version: "desc" }, take: 5 } },
+    orderBy: { updatedAt: "desc" },
+  });
+
 export const createGenerationJob = async (input: {
   businessId: string;
   siteId?: string;

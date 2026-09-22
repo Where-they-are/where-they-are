@@ -7,5 +7,6 @@ import { PreviewController } from "./preview.controller.js";
 @Module({
   controllers: [GeneratorController, PreviewController],
   providers: [GeneratorService],
+  exports: [GeneratorService],
 })
 export class GeneratorModule {}
