@@ -12,6 +12,7 @@
   "dependencies": {
     "@swc/helpers": "^0.5.23",
     "@varlock/nextjs-integration": "1.2.2",
+    "@where-they-are/server-client": "workspace:*",
     "@where-they-are/ui": "workspace:*",
     "babel-plugin-react-compiler": "^1.0.0",
     "lucide-react": "catalog:",

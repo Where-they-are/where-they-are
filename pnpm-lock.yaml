@@ -170,6 +170,9 @@ importers:
       '@varlock/nextjs-integration':
         specifier: 1.2.2
         version: 1.2.2(next@16.3.5(@types/node@26.6.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(varlock@1.18.0))(varlock@1.18.0)
+      '@where-they-are/server-client':
+        specifier: workspace:*
+        version: link:../../packages/server-client
       '@where-they-are/ui':
         specifier: workspace:*
         version: link:../../packages/ui
