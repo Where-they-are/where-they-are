@@ -268,7 +268,7 @@ The available product-planning document in `plans/` is `USER-STORIES.md`; it ref
 - PostgreSQL release metadata has been implemented behind `DATABASE_ENABLED=true`; migration, seed, repository integration tests, and database-backed release E2E all pass.
 - Generation jobs are modeled but are not yet fully queued through BullMQ.
 - File artifacts are still local filesystem artifacts rather than object-storage artifacts.
-- Coolify deployment is currently a typed adapter around deployment triggering; the new deployment record provides a server-owned lifecycle state, while external reconciliation remains pending.
+- Coolify deployment is currently a typed adapter around deployment triggering; the new deployment record provides a server-owned lifecycle state, while external reconciliation remains pending. Coolify credentials are optional and the Coolify smoke test is skipped unless `COOLIFY_CHECKS_ENABLED=true`; calling deployment without configured Coolify still returns an unavailable-provider error rather than preventing server startup.
 - Paynow hosted-payment creation/callback verification is not yet wired; payment records and status transitions are ready for that provider adapter.
 - Advanced analytics, support queues, operator consoles, audit systems, teams, invitations, and permission-management UX are intentionally out of scope for this phase.
 - Public contact submissions currently have validation, idempotency, retention, starring, reading, and archiving primitives; rate limiting and scheduled expiry execution still need to be connected to the runtime.
