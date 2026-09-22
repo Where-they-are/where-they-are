@@ -152,6 +152,9 @@ importers:
       '@where-they-are/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@where-they-are/server-client':
+        specifier: workspace:*
+        version: link:../../packages/server-client
       tsx:
         specifier: ^4.20.6
         version: 4.23.15

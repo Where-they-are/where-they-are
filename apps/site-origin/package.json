@@ -12,6 +12,7 @@
   "devDependencies": {
     "@types/node": "catalog:",
     "@where-they-are/config": "workspace:*",
+    "@where-they-are/server-client": "workspace:*",
     "tsx": "^4.20.6",
     "typescript": "catalog:"
   }
