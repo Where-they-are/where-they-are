@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Headers, Param, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Headers, Inject, Param, Post, UseGuards } from "@nestjs/common";
 import { z } from "zod";
 
 import { TenantAuthGuard } from "../auth/tenant-auth.guard.js";
@@ -19,7 +19,7 @@ const siteSchema = z.object({
 @Controller("businesses/:businessId")
 @UseGuards(TenantAuthGuard)
 export class BusinessesController {
-  public constructor(private readonly businessesService: BusinessesService) {}
+  public constructor(@Inject(BusinessesService) private readonly businessesService: BusinessesService) {}
 
   @Get()
   public getBusiness(

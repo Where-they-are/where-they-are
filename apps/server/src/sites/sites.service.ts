@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import {
   findSiteForBusiness,
   listSitesForBusiness,
@@ -10,7 +10,7 @@ import { GeneratorService } from "../generator/generator.service.js";
 
 @Injectable()
 export class SitesService {
-  public constructor(private readonly generatorService: GeneratorService) {}
+  public constructor(@Inject(GeneratorService) private readonly generatorService: GeneratorService) {}
 
   public async list(businessId: string, userId: string) {
     await requireBusinessMember(businessId, userId);
