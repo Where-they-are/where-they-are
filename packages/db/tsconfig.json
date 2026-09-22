@@ -1,0 +1,10 @@
+{
+  "extends": "@where-they-are/config/tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ESNext"],
+    "types": ["node"],
+    "noEmit": true
+  },
+  "include": ["src/**/*.ts", "prisma.config.ts", "prisma/seed.ts"],
+  "exclude": ["src/generated", "node_modules"]
+}

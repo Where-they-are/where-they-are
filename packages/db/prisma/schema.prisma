@@ -1,0 +1,241 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  OWNER
+  STAFF
+  SUPPORT
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum BusinessMemberStatus {
+  INVITED
+  ACTIVE
+  SUSPENDED
+  REMOVED
+}
+
+enum SitePlan {
+  STARTER
+  GROWTH
+  PREMIUM
+}
+
+enum SiteTemplate {
+  SERVICE_PRO
+  HOSPITALITY
+  EVENTS_COMMUNITY
+}
+
+enum SiteStatus {
+  DRAFT
+  PREVIEW
+  PUBLISHED
+  SUSPENDED
+  ARCHIVED
+}
+
+enum GenerationJobStatus {
+  QUEUED
+  RUNNING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+}
+
+enum ConversationChannel {
+  WHATSAPP
+  PORTAL
+  INTERNAL
+}
+
+enum ConversationStatus {
+  OPEN
+  WAITING_FOR_CUSTOMER
+  WAITING_FOR_TEAM
+  CLOSED
+}
+
+enum MessageDirection {
+  INBOUND
+  OUTBOUND
+}
+
+enum MessageKind {
+  TEXT
+  IMAGE
+  AUDIO
+  DOCUMENT
+  SYSTEM
+}
+
+model User {
+  id          String           @id @default(cuid())
+  email       String           @unique
+  displayName String?
+  phone       String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  memberships BusinessMember[]
+  messages    Message[]        @relation("MessageAuthor")
+
+  @@index([phone])
+}
+
+model Business {
+  id             String           @id @default(cuid())
+  name           String
+  slug           String           @unique
+  category       String?
+  phone          String?
+  whatsapp       String?
+  location       String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  memberships    BusinessMember[]
+  sites          Site[]
+  conversations  Conversation[]
+  intakes        Intake[]
+  generationJobs GenerationJob[]
+
+  @@index([name])
+}
+
+model BusinessMember {
+  id         String               @id @default(cuid())
+  businessId String
+  userId     String
+  role       UserRole             @default(STAFF)
+  status     BusinessMemberStatus @default(INVITED)
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
+  business   Business             @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  user       User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, userId])
+  @@index([userId, status])
+  @@index([businessId, status])
+}
+
+model Site {
+  id                String        @id @default(cuid())
+  businessId        String
+  name              String
+  slug              String
+  plan              SitePlan      @default(STARTER)
+  template          SiteTemplate  @default(SERVICE_PRO)
+  status            SiteStatus    @default(DRAFT)
+  previewSlug       String?       @unique
+  publishedReleaseId String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  business          Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  releases          SiteRelease[]
+  generationJobs    GenerationJob[]
+  publishedRelease  SiteRelease?  @relation("PublishedRelease", fields: [publishedReleaseId], references: [id], onDelete: SetNull)
+
+  @@unique([businessId, slug])
+  @@index([businessId, status])
+}
+
+model SiteRelease {
+  id                String        @id @default(cuid())
+  siteId            String
+  version           Int
+  previewSlug       String        @unique
+  specification     Json
+  artifactPath      String?
+  artifactChecksum  String?
+  status            SiteStatus    @default(PREVIEW)
+  createdAt         DateTime      @default(now())
+  site              Site          @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  publishedBySites  Site[]        @relation("PublishedRelease")
+  generationJobs    GenerationJob[]
+
+  @@unique([siteId, version])
+  @@index([siteId, status])
+  @@index([createdAt])
+}
+
+model GenerationJob {
+  id             String             @id @default(cuid())
+  businessId     String
+  siteId         String?
+  releaseId      String?
+  status         GenerationJobStatus @default(QUEUED)
+  plan           SitePlan            @default(STARTER)
+  intakeMessageIds String[]
+  request        Json
+  result         Json?
+  errorMessage   String?
+  attempts       Int                @default(0)
+  queuedAt       DateTime           @default(now())
+  startedAt      DateTime?
+  finishedAt     DateTime?
+  business       Business           @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  site           Site?              @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  release        SiteRelease?       @relation(fields: [releaseId], references: [id], onDelete: SetNull)
+
+  @@index([businessId, status])
+  @@index([status, queuedAt])
+}
+
+model Conversation {
+  id             String             @id @default(cuid())
+  businessId     String
+  channel        ConversationChannel
+  externalChatId String
+  status         ConversationStatus @default(OPEN)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  business       Business           @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  messages       Message[]
+  intakes        Intake[]
+
+  @@unique([channel, externalChatId])
+  @@index([businessId, status])
+}
+
+model Message {
+  id             String           @id @default(cuid())
+  conversationId String
+  authorId       String?
+  externalId     String?
+  direction      MessageDirection
+  kind           MessageKind
+  body           String?
+  mediaUrl       String?
+  mediaMimeType  String?
+  metadata       Json?
+  createdAt      DateTime         @default(now())
+  conversation   Conversation    @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  author         User?           @relation("MessageAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  intake         Intake?
+
+  @@unique([conversationId, externalId])
+  @@index([conversationId, createdAt])
+}
+
+model Intake {
+  id             String        @id @default(cuid())
+  businessId     String
+  conversationId String
+  sourceMessageId String?      @unique
+  data           Json
+  missingFields  String[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  business       Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  conversation   Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sourceMessage  Message?      @relation(fields: [sourceMessageId], references: [id], onDelete: SetNull)
+
+  @@index([businessId, createdAt])
+  @@index([conversationId, createdAt])
+}
