@@ -202,15 +202,15 @@ See [`TESTING.md`](./TESTING.md) for setup and commands.
 
 ## Current progress at last update
 
-The Prisma client has been generated successfully and the Prisma schema has been validated successfully after approving the Prisma build scripts. The initial PostgreSQL migration has been created and applied using the configured database URL. Prisma seed execution is pending installation of the declared `@prisma/adapter-pg` and `pg` runtime dependencies. The user has provided a valid OpenRouter key and database URL through the local environment.
+The Prisma client has been generated successfully and the Prisma schema has been validated successfully after approving the Prisma build scripts. The initial PostgreSQL migration is applied and `prisma migrate status` reports the database is up to date. The configured PostgreSQL database has been seeded successfully. The user has provided a valid OpenRouter key and database URL through the local environment.
 
-The current database work is transitioning from foundational schema/repositories into live database validation. The next backend implementation phase is:
+The database and first tenant backend implementation phase is complete. The current verification status is:
 
-1. Install the Prisma PostgreSQL adapter dependencies and run the seed.
-2. Run the database repository integration tests.
-3. Run the API-to-PostgreSQL release metadata E2E test.
-4. Replace the temporary header-based tenant identity with the chosen production session/auth provider.
-5. Connect WhatsApp conversations to persisted business/site mappings.
+1. Prisma generation, schema validation, migration status, and seed pass.
+2. Five live PostgreSQL repository integration tests pass.
+3. The NestJS server type check and test-kit type check pass.
+4. The database-backed API E2E passes for bootstrap, membership, business lookup, authorization, site creation/list/detail, generation, release persistence, preview retrieval, and cross-tenant rejection.
+5. The next backend phase is production session/auth integration, WhatsApp persistence mapping, queue processing, and lifecycle modules.
 
 The frontend is intentionally not the current priority. Design and frontend product work will be handled separately with a designer.
 
@@ -220,7 +220,7 @@ The frontend is intentionally not the current priority. Design and frontend prod
 - Better Auth/session integration has not yet been wired to the NestJS server.
 - Business-management HTTP endpoints now exist for membership and site creation, but billing, invitations, and full management workflows are still pending.
 - The WhatsApp worker does not yet map a WhatsApp chat to a persisted business/site.
-- PostgreSQL release metadata has been implemented behind `DATABASE_ENABLED=true`; migration is applied, while seed and live integration/E2E tests await adapter installation.
+- PostgreSQL release metadata has been implemented behind `DATABASE_ENABLED=true`; migration, seed, repository integration tests, and database-backed release E2E all pass.
 - Generation jobs are modeled but are not yet fully queued through BullMQ.
 - File artifacts are still local filesystem artifacts rather than object-storage artifacts.
 - Coolify deployment is currently a typed adapter around deployment triggering; full publication state reconciliation is still pending.
@@ -238,6 +238,8 @@ The frontend is intentionally not the current priority. Design and frontend prod
 8. Create a separate Git commit for each modular todo.
 9. Do not install packages automatically when the user has asked to run installation commands themselves.
 10. Run the appropriate type checks, unit tests, smoke tests, and end-to-end tests before marking a feature complete.
+
+The current database verification commands are `pnpm --filter @where-they-are/db db:validate`, `pnpm --filter @where-they-are/db db:seed`, `pnpm run test:db`, and `pnpm run test:e2e:db`.
 
 ## Context maintenance rule
 
