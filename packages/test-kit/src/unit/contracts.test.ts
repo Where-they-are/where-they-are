@@ -43,4 +43,22 @@ describe("shared contracts", () => {
     expect(parsed.intake.location).toBeNull();
     expect(parsed.intake.phone).toBeNull();
   });
+
+  it("accepts explicit business and site ownership references", () => {
+    const parsed = generateSiteRequestSchema.parse({
+      ...validGenerateRequest,
+      businessId: "business_demo",
+      siteId: "site_demo",
+    });
+
+    expect(parsed.businessId).toBe("business_demo");
+    expect(parsed.siteId).toBe("site_demo");
+  });
+
+  it("rejects empty ownership references", () => {
+    expect(() => generateSiteRequestSchema.parse({
+      ...validGenerateRequest,
+      businessId: "",
+    })).toThrow();
+  });
 });
