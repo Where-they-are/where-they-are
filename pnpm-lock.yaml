@@ -226,6 +226,19 @@ importers:
 
   packages/config: {}
 
+  packages/contracts:
+    dependencies:
+      zod:
+        specifier: 'catalog:'
+        version: 4.6.5
+    devDependencies:
+      '@where-they-are/config':
+        specifier: workspace:*
+        version: link:../config
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
+
   packages/ui:
     dependencies:
       '@base-ui/react':
