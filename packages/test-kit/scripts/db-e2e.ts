@@ -157,6 +157,126 @@ const run = async (): Promise<void> => {
       throw new Error("Persisted release preview was not retrievable through the API");
     }
 
+    const payment = await requestJson(`/api/businesses/${firstBusinessId}/payments`, {
+      method: "POST",
+      headers: { "x-user-id": firstOwnerId },
+      body: JSON.stringify({
+        siteId: site.id,
+        provider: "MANUAL",
+        amount: "50.00",
+        purpose: "WEBSITE",
+        description: "E2E website payment",
+      }),
+    });
+    await requestJson(`/api/businesses/${firstBusinessId}/payments/${payment.id}/status`, {
+      method: "POST",
+      headers: { "x-user-id": firstOwnerId },
+      body: JSON.stringify({ status: "PAID", paidAt: new Date().toISOString() }),
+    });
+
+    const domain = await requestJson(`/api/businesses/${firstBusinessId}/domains`, {
+      method: "POST",
+      headers: { "x-user-id": firstOwnerId },
+      body: JSON.stringify({ siteId: site.id, hostname: `e2e-${suffix}.co.zw`, kind: "CO_ZW" }),
+    });
+    await requestJson(`/api/businesses/${firstBusinessId}/domains/${domain.id}/status`, {
+      method: "POST",
+      headers: { "x-user-id": firstOwnerId },
+      body: JSON.stringify({ status: "ACTIVE", verifiedAt: new Date().toISOString() }),
+    });
+
+    const subscription = await requestJson(`/api/businesses/${firstBusinessId}/billing/subscriptions`, {
+      method: "POST",
+      headers: { "x-user-id": firstOwnerId },
+      body: JSON.stringify({
+        siteId: site.id,
+        plan: "STARTER",
+        amount: "5.00",
+        currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      }),
+    });
+    const invoice = await requestJson(`/api/businesses/${firstBusinessId}/billing/invoices`, {
+      method: "POST",
+      headers: { "x-user-id": firstOwnerId },
+      body: JSON.stringify({ subscriptionId: subscription.id, amount: "5.00", description: "E2E hosting renewal" }),
+    });
+    await requestJson(`/api/businesses/${firstBusinessId}/billing/invoices/${invoice.id}/status`, {
+      method: "POST",
+      headers: { "x-user-id": firstOwnerId },
+      body: JSON.stringify({ status: "PAID", paidAt: new Date().toISOString() }),
+    });
+
+    const feedback = await requestJson(`/api/businesses/${firstBusinessId}/sites/${site.id}/feedback`, {
+      method: "POST",
+      headers: { "x-user-id": firstOwnerId },
+      body: JSON.stringify({
+        releaseId: generated.releaseId,
+        type: "FACTUAL_CORRECTION",
+        description: "Correct the E2E opening-hours wording.",
+        dedupeKey: `e2e-feedback-${suffix}`,
+      }),
+    });
+    assertCondition(feedback.status === "SUBMITTED", "Feedback was not submitted");
+
+    const approval = await requestJson(`/api/businesses/${firstBusinessId}/sites/${site.id}/approve`, {
+      method: "POST",
+      headers: { "x-user-id": firstOwnerId },
+      body: JSON.stringify({ releaseId: generated.releaseId }),
+    });
+    assertCondition(approval.status === "APPROVED", "Release approval was not recorded");
+
+    const deployment = await requestJson(`/api/businesses/${firstBusinessId}/sites/${site.id}/publication/deployments`, {
+      method: "POST",
+      headers: { "x-user-id": firstOwnerId },
+      body: JSON.stringify({ releaseId: generated.releaseId }),
+    });
+    await requestJson(
+      `/api/businesses/${firstBusinessId}/sites/${site.id}/publication/deployments/${deployment.id}/status`,
+      {
+        method: "POST",
+        headers: { "x-user-id": firstOwnerId },
+        body: JSON.stringify({ status: "SUCCEEDED", finishedAt: new Date().toISOString() }),
+      },
+    );
+    await db.site.update({
+      where: { id: site.id },
+      data: { status: "PUBLISHED", publishedReleaseId: generated.releaseId },
+    });
+
+    const publication = await requestJson(
+      `/api/businesses/${firstBusinessId}/sites/${site.id}/publication/status`,
+      { headers: { "x-user-id": firstOwnerId } },
+    );
+    assertCondition(publication.live === true, "Publication status did not become live");
+    assertCondition(publication.liveUrl === `https://e2e-${suffix}.co.zw`, "Publication status returned the wrong live URL");
+
+    const contact = await requestJson(`/api/public/sites/${site.id}/contact-submissions`, {
+      method: "POST",
+      headers: { "x-idempotency-key": `e2e-contact-${suffix}` },
+      body: JSON.stringify({
+        senderName: "E2E Visitor",
+        senderEmail: "visitor@example.test",
+        message: "Please contact me about your services.",
+        consent: true,
+      }),
+    });
+    const duplicateContact = await requestJson(`/api/public/sites/${site.id}/contact-submissions`, {
+      method: "POST",
+      headers: { "x-idempotency-key": `e2e-contact-${suffix}` },
+      body: JSON.stringify({
+        senderName: "E2E Visitor",
+        senderEmail: "visitor@example.test",
+        message: "Please contact me about your services.",
+        consent: true,
+      }),
+    });
+    assertCondition(contact.id === duplicateContact.id, "Duplicate contact submission was not deduplicated");
+
+    const contactList = await requestJson(`/api/businesses/${firstBusinessId}/contact-submissions`, {
+      headers: { "x-user-id": firstOwnerId },
+    });
+    assertCondition(contactList.some((item: { id: string }) => item.id === contact.id), "Contact enquiry was not tenant-visible");
+
     const second = await requestJson("/api/auth/bootstrap", {
       method: "POST",
       body: JSON.stringify({
@@ -182,6 +302,8 @@ const run = async (): Promise<void> => {
       siteId: site.id,
       releaseId: generated.releaseId,
       previewSlug: generated.previewSlug,
+      publicationLive: publication.live,
+      contactSubmissionId: contact.id,
       crossTenantStatus: crossTenant.status,
     }, null, 2));
   } finally {
