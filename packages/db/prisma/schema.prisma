@@ -76,6 +76,28 @@ enum MessageKind {
   SYSTEM
 }
 
+enum PaymentProvider {
+  PAYNOW
+  MANUAL
+}
+
+enum PaymentStatus {
+  PENDING
+  AUTHORIZED
+  PAID
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+enum PaymentPurpose {
+  WEBSITE
+  HOSTING
+  DOMAIN
+  EDIT
+  OTHER
+}
+
 model User {
   id          String           @id @default(cuid())
   email       String           @unique
@@ -104,6 +126,7 @@ model Business {
   conversations  Conversation[]
   intakes        Intake[]
   generationJobs GenerationJob[]
+  payments       Payment[]
 
   @@index([name])
 }
@@ -238,4 +261,25 @@ model Intake {
 
   @@index([businessId, createdAt])
   @@index([conversationId, createdAt])
+}
+
+model Payment {
+  id                String          @id @default(cuid())
+  businessId        String
+  provider          PaymentProvider
+  providerReference String?
+  amount            Decimal         @db.Decimal(12, 2)
+  currency          String          @default("USD")
+  purpose           PaymentPurpose
+  status            PaymentStatus   @default(PENDING)
+  description       String?
+  metadata          Json?
+  paidAt            DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  business          Business        @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerReference])
+  @@index([businessId, status])
+  @@index([businessId, createdAt])
 }
