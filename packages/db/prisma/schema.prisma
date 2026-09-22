@@ -112,6 +112,22 @@ enum DomainStatus {
   CANCELLED
 }
 
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  PAUSED
+  CANCELLED
+  EXPIRED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  OPEN
+  PAID
+  VOID
+  UNCOLLECTIBLE
+}
+
 model User {
   id          String           @id @default(cuid())
   email       String           @unique
@@ -142,6 +158,8 @@ model Business {
   generationJobs GenerationJob[]
   payments       Payment[]
   domains        Domain[]
+  subscriptions  Subscription[]
+  invoices       Invoice[]
 
   @@index([name])
 }
@@ -179,6 +197,7 @@ model Site {
   generationJobs    GenerationJob[]
   publishedRelease  SiteRelease?  @relation("PublishedRelease", fields: [publishedReleaseId], references: [id], onDelete: SetNull)
   domains           Domain[]
+  subscriptions     Subscription[]
 
   @@unique([businessId, slug])
   @@index([businessId, status])
@@ -319,4 +338,49 @@ model Domain {
   @@unique([businessId, hostname])
   @@index([businessId, status])
   @@index([expiresAt])
+}
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  businessId           String
+  siteId               String?
+  plan                 SitePlan
+  amount               Decimal            @db.Decimal(12, 2)
+  currency             String             @default("USD")
+  interval             String             @default("month")
+  status               SubscriptionStatus @default(ACTIVE)
+  externalReference    String?
+  startedAt            DateTime           @default(now())
+  currentPeriodStart   DateTime           @default(now())
+  currentPeriodEnd     DateTime
+  cancelledAt          DateTime?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  business             Business           @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  site                 Site?              @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  invoices             Invoice[]
+
+  @@index([businessId, status])
+  @@index([currentPeriodEnd, status])
+}
+
+model Invoice {
+  id             String         @id @default(cuid())
+  businessId     String
+  subscriptionId String?
+  number         String         @unique
+  amount         Decimal        @db.Decimal(12, 2)
+  currency       String         @default("USD")
+  status         InvoiceStatus  @default(DRAFT)
+  description    String?
+  metadata       Json?
+  dueAt          DateTime?
+  paidAt         DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  business       Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+
+  @@index([businessId, status])
+  @@index([businessId, createdAt])
 }
