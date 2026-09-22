@@ -12,6 +12,14 @@ pnpm --filter @where-they-are/db db:generate
 pnpm --dir packages/test-kit exec playwright install chromium
 ```
 
+The PostgreSQL runtime adapter is required by Prisma 7. Install the newly declared database/testing dependencies with:
+
+```bash
+pnpm install
+pnpm approve-builds
+pnpm --filter @where-they-are/db db:generate
+```
+
 If the development machine is Linux and Playwright reports missing system libraries, use this instead:
 
 ```bash
@@ -59,6 +67,7 @@ Run the fast checks first:
 
 ```bash
 pnpm run test:unit
+pnpm run test:db
 pnpm run check-types
 pnpm --filter server run build
 pnpm --filter @where-they-are/worker-whatsapp run test
@@ -76,6 +85,9 @@ Then run the service smoke test. It verifies the NestJS health endpoint, site ge
 
 ```bash
 pnpm run test:smoke
+
+# Run the database-to-API release test with DATABASE_URL loaded.
+pnpm run test:e2e:db
 ```
 
 Run the browser tests against the portal and central API:

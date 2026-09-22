@@ -6,6 +6,7 @@
   "scripts": {
     "check-types": "tsc --noEmit",
     "test": "vitest run",
+    "test:unit": "vitest run src/unit",
     "test:watch": "vitest",
     "test:db": "vitest run src/integration",
     "test:smoke": "tsx scripts/smoke.ts",
