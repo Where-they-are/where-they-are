@@ -198,6 +198,9 @@ importers:
       '@mastra/core':
         specifier: ^1.67.0
         version: 1.67.0(express@5.2.1)(zod@4.6.5)
+      varlock:
+        specifier: 'catalog:'
+        version: 1.18.0
       whatsapp-web.js:
         specifier: ^1.34.7
         version: 1.34.7(typescript@6.0.3)
