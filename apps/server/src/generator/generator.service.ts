@@ -40,6 +40,8 @@ export class GeneratorService {
 
     await this.releaseStore.save({
       releaseId,
+      businessId: request.businessId,
+      siteId: request.siteId,
       previewSlug,
       specification,
       html,

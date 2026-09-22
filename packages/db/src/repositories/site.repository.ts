@@ -45,6 +45,7 @@ export const createGenerationJob = async (input: {
 export const createSiteRelease = async (input: {
   businessId: string;
   siteId: string;
+  releaseId?: string;
   previewSlug: string;
   specification: Prisma.InputJsonValue;
   artifactPath?: string;
@@ -68,6 +69,7 @@ export const createSiteRelease = async (input: {
 
     const release = await transaction.siteRelease.create({
       data: {
+        id: input.releaseId,
         siteId: input.siteId,
         version: (latest?.version ?? 0) + 1,
         previewSlug: input.previewSlug,

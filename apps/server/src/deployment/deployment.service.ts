@@ -16,7 +16,7 @@ export class DeploymentService {
 
   public async deploy(input: unknown): Promise<DeploySiteResponse> {
     const request = deploySiteRequestSchema.parse(input);
-    if (!(await this.releaseStore.exists(request.releaseId))) {
+    if (!(await this.releaseStore.exists(request.releaseId, request.businessId))) {
       throw new NotFoundException(`Release ${request.releaseId} was not found`);
     }
 

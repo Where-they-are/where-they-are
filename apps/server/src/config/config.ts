@@ -3,6 +3,7 @@ import { z } from "zod";
 const configSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   SERVER_PORT: z.coerce.number().int().positive().default(3100),
+  DATABASE_ENABLED: z.string().transform((value) => value === "true").default("false"),
   PORTAL_ORIGIN: z.string().url().default("http://localhost:3001"),
   PUBLIC_SITE_ORIGIN: z.string().url().default("http://localhost:3103"),
   PREVIEW_SITE_ORIGIN: z.string().url().default("http://localhost:3103"),
