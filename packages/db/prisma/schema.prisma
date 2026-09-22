@@ -135,6 +135,24 @@ enum ContactSubmissionStatus {
   EXPIRED
 }
 
+enum FeedbackType {
+  FACTUAL_CORRECTION
+  CONTENT_ADDITION
+  DESIGN_PREFERENCE
+}
+
+enum FeedbackStatus {
+  SUBMITTED
+  IN_REVIEW
+  RESOLVED
+  CANCELLED
+}
+
+enum ApprovalStatus {
+  APPROVED
+  REVOKED
+}
+
 model User {
   id          String           @id @default(cuid())
   email       String           @unique
@@ -168,6 +186,8 @@ model Business {
   subscriptions  Subscription[]
   invoices       Invoice[]
   contactSubmissions ContactSubmission[]
+  feedback       SiteFeedback[]
+  approvals      SiteApproval[]
 
   @@index([name])
 }
@@ -207,6 +227,8 @@ model Site {
   domains           Domain[]
   subscriptions     Subscription[]
   contactSubmissions ContactSubmission[]
+  feedback           SiteFeedback[]
+  approvals          SiteApproval[]
 
   @@unique([businessId, slug])
   @@index([businessId, status])
@@ -225,6 +247,8 @@ model SiteRelease {
   site              Site          @relation(fields: [siteId], references: [id], onDelete: Cascade)
   publishedBySites  Site[]        @relation("PublishedRelease")
   generationJobs    GenerationJob[]
+  feedback          SiteFeedback[]
+  approvals         SiteApproval[]
 
   @@unique([siteId, version])
   @@index([siteId, status])
@@ -417,4 +441,41 @@ model ContactSubmission {
   @@index([businessId, status, createdAt])
   @@index([businessId, starred])
   @@index([retentionUntil])
+}
+
+model SiteFeedback {
+  id          String         @id @default(cuid())
+  businessId  String
+  siteId      String
+  releaseId   String
+  type        FeedbackType
+  description String
+  status      FeedbackStatus @default(SUBMITTED)
+  dedupeKey   String?
+  createdAt   DateTime       @default(now())
+  resolvedAt  DateTime?
+  business    Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  site        Site           @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  release     SiteRelease    @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, dedupeKey])
+  @@index([businessId, siteId, createdAt])
+  @@index([releaseId, status])
+}
+
+model SiteApproval {
+  id          String         @id @default(cuid())
+  businessId  String
+  siteId      String
+  releaseId   String
+  approvedBy  String
+  status      ApprovalStatus @default(APPROVED)
+  createdAt   DateTime       @default(now())
+  revokedAt   DateTime?
+  business    Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  site        Site           @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  release     SiteRelease    @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, releaseId])
+  @@index([businessId, siteId, createdAt])
 }
