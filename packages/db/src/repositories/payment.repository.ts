@@ -6,6 +6,7 @@ export type PaymentStatus = "PENDING" | "AUTHORIZED" | "PAID" | "FAILED" | "REFU
 
 export type CreatePaymentInput = {
   businessId: string;
+  siteId?: string;
   provider: PaymentProvider;
   providerReference?: string;
   amount: string;
@@ -19,6 +20,7 @@ export const createPayment = async (input: CreatePaymentInput) =>
   db.payment.create({
     data: {
       businessId: input.businessId,
+      siteId: input.siteId,
       provider: input.provider,
       providerReference: input.providerReference,
       amount: input.amount,

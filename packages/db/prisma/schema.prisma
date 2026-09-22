@@ -153,6 +153,15 @@ enum ApprovalStatus {
   REVOKED
 }
 
+enum DeploymentStatus {
+  NOT_STARTED
+  QUEUED
+  IN_PROGRESS
+  SUCCEEDED
+  FAILED
+  BLOCKED
+}
+
 model User {
   id          String           @id @default(cuid())
   email       String           @unique
@@ -188,6 +197,7 @@ model Business {
   contactSubmissions ContactSubmission[]
   feedback       SiteFeedback[]
   approvals      SiteApproval[]
+  deployments    Deployment[]
 
   @@index([name])
 }
@@ -226,9 +236,11 @@ model Site {
   publishedRelease  SiteRelease?  @relation("PublishedRelease", fields: [publishedReleaseId], references: [id], onDelete: SetNull)
   domains           Domain[]
   subscriptions     Subscription[]
+  payments           Payment[]
   contactSubmissions ContactSubmission[]
   feedback           SiteFeedback[]
   approvals          SiteApproval[]
+  deployments        Deployment[]
 
   @@unique([businessId, slug])
   @@index([businessId, status])
@@ -249,10 +261,32 @@ model SiteRelease {
   generationJobs    GenerationJob[]
   feedback          SiteFeedback[]
   approvals         SiteApproval[]
+  deployments       Deployment[]
 
   @@unique([siteId, version])
   @@index([siteId, status])
   @@index([createdAt])
+}
+
+model Deployment {
+  id                   String           @id @default(cuid())
+  businessId           String
+  siteId               String
+  releaseId            String
+  resourceUuid         String?
+  externalDeploymentId String?
+  status               DeploymentStatus @default(NOT_STARTED)
+  message              String?
+  createdAt            DateTime         @default(now())
+  startedAt            DateTime?
+  finishedAt           DateTime?
+  updatedAt            DateTime         @updatedAt
+  business             Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  site                 Site             @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  release              SiteRelease      @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+
+  @@index([businessId, siteId, createdAt])
+  @@index([releaseId, status])
 }
 
 model GenerationJob {
@@ -334,6 +368,7 @@ model Intake {
 model Payment {
   id                String          @id @default(cuid())
   businessId        String
+  siteId            String?
   provider          PaymentProvider
   providerReference String?
   amount            Decimal         @db.Decimal(12, 2)
@@ -346,10 +381,12 @@ model Payment {
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   business          Business        @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  site              Site?           @relation(fields: [siteId], references: [id], onDelete: SetNull)
 
   @@unique([provider, providerReference])
   @@index([businessId, status])
   @@index([businessId, createdAt])
+  @@index([siteId, status])
 }
 
 model Domain {

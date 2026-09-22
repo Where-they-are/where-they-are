@@ -7,3 +7,4 @@ export * from "./domain.repository.js";
 export * from "./billing.repository.js";
 export * from "./contact.repository.js";
 export * from "./feedback.repository.js";
+export * from "./publication.repository.js";
