@@ -2,8 +2,17 @@ const coolifyBaseUrl = process.env.COOLIFY_API_URL;
 const coolifyToken = process.env.COOLIFY_API_TOKEN;
 const resourceUuid = process.env.COOLIFY_SITE_RESOURCE_UUID;
 const writeMode = process.argv.includes("--write");
+const coolifyChecksEnabled = process.env.COOLIFY_CHECKS_ENABLED === "true";
 
 const run = async (): Promise<void> => {
+  if (!coolifyChecksEnabled) {
+    console.info(JSON.stringify({
+      status: "skipped",
+      reason: "Coolify checks are disabled. Set COOLIFY_CHECKS_ENABLED=true to opt in.",
+    }, null, 2));
+    return;
+  }
+
   if (!coolifyBaseUrl || !coolifyToken) {
     throw new Error("COOLIFY_API_URL and COOLIFY_API_TOKEN are required");
   }

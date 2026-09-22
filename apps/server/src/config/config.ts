@@ -9,7 +9,7 @@ const configSchema = z.object({
   PREVIEW_SITE_ORIGIN: z.string().url().default("http://localhost:3103"),
   OPENROUTER_API_KEY: z.string().optional(),
   OPENROUTER_MODEL: z.string().default("google/gemini-3-flash-preview"),
-  COOLIFY_API_URL: z.string().url().optional(),
+  COOLIFY_API_URL: z.preprocess((value) => value === "" ? undefined : value, z.string().url().optional()),
   COOLIFY_API_TOKEN: z.string().optional(),
   COOLIFY_SITE_RESOURCE_UUID: z.string().optional(),
 });

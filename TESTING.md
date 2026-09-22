@@ -59,7 +59,7 @@ pnpm --filter @where-they-are/db db:seed
 
 When `DATABASE_ENABLED=true`, generation requests must include both `businessId` and `siteId`. The server still writes the generated HTML artifact to the release directory, but release metadata, preview ownership, versioning, and deployment lookup are read from PostgreSQL.
 
-For the WhatsApp worker, add `OPENROUTER_API_KEY`, `SERVER_BASE_URL`, and the persistent WhatsApp session settings defined in `apps/worker-whatsapp/.env.schema`. For Coolify checks, add `COOLIFY_API_URL`, `COOLIFY_API_TOKEN`, and, for a write deployment check, `COOLIFY_SITE_RESOURCE_UUID`.
+For the WhatsApp worker, add `OPENROUTER_API_KEY`, `SERVER_BASE_URL`, and the persistent WhatsApp session settings defined in `apps/worker-whatsapp/.env.schema`. Coolify is disabled by default while the deployment server is being evaluated; the NestJS server starts without Coolify credentials. To opt into Coolify checks later, add `COOLIFY_CHECKS_ENABLED=true`, `COOLIFY_API_URL`, `COOLIFY_API_TOKEN`, and, for a write deployment check, `COOLIFY_SITE_RESOURCE_UUID`.
 
 ## Commands
 
@@ -98,15 +98,23 @@ pnpm run test:e2e
 
 The Playwright report is written to `packages/test-kit/playwright-report`. Traces and screenshots are retained for failed tests.
 
-Run the read-only Coolify check:
+The Coolify check is currently a no-op skip unless explicitly enabled:
 
 ```bash
+pnpm run test:coolify
+```
+
+When Coolify is available again, enable the read-only check explicitly:
+
+```bash
+$env:COOLIFY_CHECKS_ENABLED="true"
 pnpm run test:coolify
 ```
 
 The optional write mode triggers a deployment for the configured Coolify resource. Use it only against a safe staging resource:
 
 ```bash
+$env:COOLIFY_CHECKS_ENABLED="true"
 pnpm run test:coolify -- --write
 ```
 
@@ -131,6 +139,6 @@ A production pipeline should run in this order:
 5. Start the server and site origin with deterministic fallback generation.
 6. Run `pnpm run test:smoke`.
 7. Start the portal and run `pnpm run test:e2e`.
-8. Run the read-only Coolify check only when Coolify credentials are present.
+8. Run the read-only Coolify check only when `COOLIFY_CHECKS_ENABLED=true` and Coolify credentials are present.
 
 The WhatsApp worker should be tested separately from the browser suite because it requires a persistent WhatsApp session and must never be connected to a production number by an automated CI job.
