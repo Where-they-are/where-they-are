@@ -107,6 +107,14 @@ The monorepo contains the portal, Astro marketing application, WhatsApp worker, 
 - `POST /api/sites/generate`
 - `GET /api/previews/:previewSlug`
 - `POST /api/deployments`
+- `POST /api/auth/bootstrap`
+- `GET /api/auth/businesses/:businessId/membership`
+- `GET /api/businesses/:businessId`
+- `POST /api/businesses/:businessId/members`
+- `POST /api/businesses/:businessId/sites`
+- `GET /api/businesses/:businessId/sites`
+- `GET /api/businesses/:businessId/sites/:siteId`
+- `POST /api/businesses/:businessId/sites/:siteId/generate`
 
 The server includes:
 
@@ -117,6 +125,9 @@ The server includes:
 - Deterministic fallback generation when no OpenRouter key is configured.
 - Coolify deployment triggering by resource UUID.
 - No-index preview headers.
+- Tenant authentication guard using active business membership and role checks.
+- Business management endpoints for membership and site creation.
+- Tenant-aware site listing, detail, and generation endpoints.
 
 ### Shared contracts and client
 
@@ -191,26 +202,25 @@ See [`TESTING.md`](./TESTING.md) for setup and commands.
 
 ## Current progress at last update
 
-The Prisma client has been generated successfully and the Prisma schema has been validated successfully after approving the Prisma build scripts. The user has provided a valid OpenRouter key and database URL through the local environment.
+The Prisma client has been generated successfully and the Prisma schema has been validated successfully after approving the Prisma build scripts. The initial PostgreSQL migration has been created and applied using the configured database URL. Prisma seed execution is pending installation of the declared `@prisma/adapter-pg` and `pg` runtime dependencies. The user has provided a valid OpenRouter key and database URL through the local environment.
 
 The current database work is transitioning from foundational schema/repositories into live database validation. The next backend implementation phase is:
 
-1. Run Prisma migration and seed against the configured PostgreSQL database.
-2. Add database integration tests for all repositories.
-3. Add NestJS tenant authentication and membership modules.
-4. Add NestJS business-management module.
-5. Add NestJS site-generation/release module.
-6. Add comprehensive database/release end-to-end tests.
+1. Install the Prisma PostgreSQL adapter dependencies and run the seed.
+2. Run the database repository integration tests.
+3. Run the API-to-PostgreSQL release metadata E2E test.
+4. Replace the temporary header-based tenant identity with the chosen production session/auth provider.
+5. Connect WhatsApp conversations to persisted business/site mappings.
 
 The frontend is intentionally not the current priority. Design and frontend product work will be handled separately with a designer.
 
 ## Known limitations and next backend work
 
-- Authentication is not yet implemented as a complete NestJS module.
+- Authentication currently uses a bootstrap endpoint plus `x-user-id`/business membership headers as a development boundary; a production session/auth provider is still required.
 - Better Auth/session integration has not yet been wired to the NestJS server.
-- Business-management HTTP endpoints are not yet implemented.
+- Business-management HTTP endpoints now exist for membership and site creation, but billing, invitations, and full management workflows are still pending.
 - The WhatsApp worker does not yet map a WhatsApp chat to a persisted business/site.
-- PostgreSQL release metadata has been implemented behind `DATABASE_ENABLED=true`, but the full migration/seed/integration test cycle still needs to be run.
+- PostgreSQL release metadata has been implemented behind `DATABASE_ENABLED=true`; migration is applied, while seed and live integration/E2E tests await adapter installation.
 - Generation jobs are modeled but are not yet fully queued through BullMQ.
 - File artifacts are still local filesystem artifacts rather than object-storage artifacts.
 - Coolify deployment is currently a typed adapter around deployment triggering; full publication state reconciliation is still pending.
