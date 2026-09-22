@@ -31,6 +31,22 @@ export class ServerClient {
     return `${this.baseUrl}/api/previews/${encodeURIComponent(previewSlug)}`;
   }
 
+  public async getHealth(): Promise<{ status: string; service: string; timestamp: string }> {
+    return this.get<{ status: string; service: string; timestamp: string }>("/api/health");
+  }
+
+  public async getPreviewHtml(previewSlug: string): Promise<string> {
+    const response = await this.fetcher(this.previewUrl(previewSlug), {
+      headers: { accept: "text/html" },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Preview request failed with status ${response.status}`);
+    }
+
+    return response.text();
+  }
+
   private async post<T>(path: string, body: unknown): Promise<T> {
     const response = await this.fetcher(`${this.baseUrl}${path}`, {
       method: "POST",
@@ -39,6 +55,18 @@ export class ServerClient {
         accept: "application/json",
       },
       body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Server request failed with status ${response.status}`);
+    }
+
+    return (await response.json()) as T;
+  }
+
+  private async get<T>(path: string): Promise<T> {
+    const response = await this.fetcher(`${this.baseUrl}${path}`, {
+      headers: { accept: "application/json" },
     });
 
     if (!response.ok) {

@@ -8,6 +8,7 @@ const configSchema = z.object({
   WHATSAPP_CLIENT_ID: z.string().min(1).default("wheretheyare"),
   CHROME_EXECUTABLE_PATH: z.string().optional(),
   WHATSAPP_WORKER_PORT: z.coerce.number().int().positive().default(3101),
+  SERVER_BASE_URL: z.string().url().default("http://localhost:3100"),
 });
 
 export type WorkerConfig = z.infer<typeof configSchema>;
