@@ -3,6 +3,8 @@ packages:
   - packages/*
 allowBuilds:
   esbuild: true
+  msgpackr-extract: true
+  puppeteer: true
   sharp: true
 overrides:
   "@next/env": npm:@varlock/nextjs-integration@1.2.2
