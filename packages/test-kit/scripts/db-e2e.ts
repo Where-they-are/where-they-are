@@ -23,13 +23,21 @@ const requestJson = async (path: string, init: RequestInit = {}): Promise<JsonRe
   return body ? (JSON.parse(body) as JsonResponse) : {};
 };
 
+const assertCondition = (condition: boolean, message: string): void => {
+  if (!condition) {
+    throw new Error(message);
+  }
+};
+
 const run = async (): Promise<void> => {
   if (!process.env.DATABASE_URL) {
     throw new Error("DATABASE_URL must be loaded before running test:e2e:db");
   }
 
   let firstBusinessId = "";
+  let firstOwnerId = "";
   let secondBusinessId = "";
+  let secondOwnerId = "";
 
   try {
     const first = await requestJson("/api/auth/bootstrap", {
@@ -44,7 +52,31 @@ const run = async (): Promise<void> => {
       }),
     });
     firstBusinessId = first.business.id as string;
-    const firstOwnerId = first.owner.id as string;
+    firstOwnerId = first.owner.id as string;
+
+    const membership = await requestJson(
+      `/api/auth/businesses/${firstBusinessId}/membership`,
+      { headers: { "x-user-id": firstOwnerId } },
+    );
+    assertCondition(membership.id === firstBusinessId, "Owner membership lookup returned the wrong business");
+    assertCondition(
+      membership.memberships?.some(
+        (member: { userId: string; role: string; status: string }) =>
+          member.userId === firstOwnerId && member.role === "OWNER" && member.status === "ACTIVE",
+      ) === true,
+      "Owner membership was not active with OWNER role",
+    );
+
+    const business = await requestJson(`/api/businesses/${firstBusinessId}`, {
+      headers: { "x-user-id": firstOwnerId },
+    });
+    assertCondition(business.id === firstBusinessId, "Business lookup returned the wrong tenant");
+
+    const unauthorized = await fetch(`${serverBaseUrl}/api/businesses/${firstBusinessId}`);
+    assertCondition(
+      unauthorized.status === 401,
+      `Expected missing tenant identity to return 401, got ${unauthorized.status}`,
+    );
 
     const site = await requestJson(`/api/businesses/${firstBusinessId}/sites`, {
       method: "POST",
@@ -56,6 +88,22 @@ const run = async (): Promise<void> => {
         template: "SERVICE_PRO",
       }),
     });
+
+    assertCondition(site.businessId === firstBusinessId, "Created site is not owned by the first business");
+    assertCondition(site.status === "DRAFT", `New site should be DRAFT, got ${site.status}`);
+
+    const sites = await requestJson(`/api/businesses/${firstBusinessId}/sites`, {
+      headers: { "x-user-id": firstOwnerId },
+    });
+    assertCondition(
+      Array.isArray(sites) && sites.some((candidate: { id: string }) => candidate.id === site.id),
+      "Created site was not returned by the tenant site list",
+    );
+
+    const siteDetail = await requestJson(`/api/businesses/${firstBusinessId}/sites/${site.id}`, {
+      headers: { "x-user-id": firstOwnerId },
+    });
+    assertCondition(siteDetail.id === site.id, "Site detail lookup returned the wrong site");
 
     const generated = await requestJson(
       `/api/businesses/${firstBusinessId}/sites/${site.id}/generate`,
@@ -84,6 +132,17 @@ const run = async (): Promise<void> => {
       },
     );
 
+    assertCondition(typeof generated.releaseId === "string", "Generation response is missing releaseId");
+    assertCondition(typeof generated.previewSlug === "string", "Generation response is missing previewSlug");
+    assertCondition(typeof generated.previewUrl === "string", "Generation response is missing previewUrl");
+    assertCondition(generated.specification?.businessName === `E2E Business ${suffix}`, "Generated specification has the wrong business name");
+
+    const updatedSite = await requestJson(`/api/businesses/${firstBusinessId}/sites/${site.id}`, {
+      headers: { "x-user-id": firstOwnerId },
+    });
+    assertCondition(updatedSite.status === "PREVIEW", `Generated site should be PREVIEW, got ${updatedSite.status}`);
+    assertCondition(updatedSite.previewSlug === generated.previewSlug, "Site preview slug was not persisted");
+
     const release = await findReleaseForBusiness(firstBusinessId, generated.releaseId as string);
     if (!release) {
       throw new Error("Generated release metadata was not persisted for the owning business");
@@ -108,7 +167,7 @@ const run = async (): Promise<void> => {
       }),
     });
     secondBusinessId = second.business.id as string;
-    const secondOwnerId = second.owner.id as string;
+    secondOwnerId = second.owner.id as string;
 
     const crossTenant = await fetch(`${serverBaseUrl}/api/businesses/${firstBusinessId}/sites`, {
       headers: { "x-user-id": secondOwnerId },
@@ -131,6 +190,12 @@ const run = async (): Promise<void> => {
     }
     if (firstBusinessId) {
       await db.business.delete({ where: { id: firstBusinessId } });
+    }
+    if (firstOwnerId) {
+      await db.user.delete({ where: { id: firstOwnerId } }).catch(() => undefined);
+    }
+    if (secondOwnerId) {
+      await db.user.delete({ where: { id: secondOwnerId } }).catch(() => undefined);
     }
     await db.$disconnect();
   }
