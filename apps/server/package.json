@@ -2,15 +2,17 @@
   "name": "server",
   "version": "0.0.0",
   "private": true,
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "dev": "tsx watch src/main.ts",
     "build": "tsc -p tsconfig.build.json",
     "check-types": "tsc -p tsconfig.json --noEmit",
     "env:generate": "varlock codegen",
-    "start": "node --import varlock/auto-load dist/main.js"
+    "start": "node --import varlock/auto-load dist/main.js",
+    "test": "vitest run"
   },
   "dependencies": {
+    "@mastra/core": "^1.67.0",
     "@nestjs/common": "^11.1.6",
     "@nestjs/core": "^11.1.6",
     "@nestjs/platform-express": "^11.1.6",
@@ -25,6 +27,7 @@
     "@types/node": "catalog:",
     "@where-they-are/config": "workspace:*",
     "tsx": "^4.20.6",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "^5.0.1"
   }
 }
