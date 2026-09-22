@@ -128,6 +128,13 @@ enum InvoiceStatus {
   UNCOLLECTIBLE
 }
 
+enum ContactSubmissionStatus {
+  NEW
+  READ
+  ARCHIVED
+  EXPIRED
+}
+
 model User {
   id          String           @id @default(cuid())
   email       String           @unique
@@ -160,6 +167,7 @@ model Business {
   domains        Domain[]
   subscriptions  Subscription[]
   invoices       Invoice[]
+  contactSubmissions ContactSubmission[]
 
   @@index([name])
 }
@@ -198,6 +206,7 @@ model Site {
   publishedRelease  SiteRelease?  @relation("PublishedRelease", fields: [publishedReleaseId], references: [id], onDelete: SetNull)
   domains           Domain[]
   subscriptions     Subscription[]
+  contactSubmissions ContactSubmission[]
 
   @@unique([businessId, slug])
   @@index([businessId, status])
@@ -383,4 +392,29 @@ model Invoice {
 
   @@index([businessId, status])
   @@index([businessId, createdAt])
+}
+
+model ContactSubmission {
+  id             String                  @id @default(cuid())
+  businessId     String
+  siteId         String?
+  dedupeKey      String?
+  senderName     String
+  senderEmail    String?
+  senderPhone    String?
+  message        String
+  status         ContactSubmissionStatus @default(NEW)
+  starred        Boolean                 @default(false)
+  createdAt      DateTime                @default(now())
+  retentionUntil DateTime
+  readAt         DateTime?
+  starredAt      DateTime?
+  archivedAt     DateTime?
+  business       Business                @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  site           Site?                   @relation(fields: [siteId], references: [id], onDelete: SetNull)
+
+  @@unique([businessId, dedupeKey])
+  @@index([businessId, status, createdAt])
+  @@index([businessId, starred])
+  @@index([retentionUntil])
 }

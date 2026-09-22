@@ -5,3 +5,4 @@ export * from "./tenant.repository.js";
 export * from "./payment.repository.js";
 export * from "./domain.repository.js";
 export * from "./billing.repository.js";
+export * from "./contact.repository.js";
