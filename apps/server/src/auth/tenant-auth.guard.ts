@@ -1,12 +1,17 @@
 import {
   CanActivate,
   ExecutionContext,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from "@nestjs/common";
 import type { Request } from "express";
 
-import { requireBusinessMember, type TenantRole } from "@where-they-are/db";
+import {
+  requireBusinessMember,
+  TenantAccessError,
+  type TenantRole,
+} from "@where-they-are/db";
 
 export type TenantPrincipal = {
   userId: string;
@@ -27,7 +32,17 @@ export class TenantAuthGuard implements CanActivate {
       throw new UnauthorizedException("x-user-id and a businessId are required");
     }
 
-    const membership = await requireBusinessMember(businessId, userId);
+    let membership;
+
+    try {
+      membership = await requireBusinessMember(businessId, userId);
+    } catch (error) {
+      if (error instanceof TenantAccessError) {
+        throw new ForbiddenException(error.message);
+      }
+
+      throw error;
+    }
     request.principal = {
       userId,
       businessId,
