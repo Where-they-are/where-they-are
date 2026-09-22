@@ -1,6 +1,6 @@
 import { ServerClient } from "@where-they-are/server-client";
 
-import { assertJson, assertOk } from "../src/assertions.js";
+import { assertOk } from "../src/assertions.js";
 import { smokeGenerateRequest } from "../src/smoke/fixtures.js";
 
 type SmokeOptions = {
