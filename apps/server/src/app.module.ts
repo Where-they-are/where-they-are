@@ -10,10 +10,11 @@ import { FeedbackModule } from "./feedback/feedback.module.js";
 import { GeneratorModule } from "./generator/generator.module.js";
 import { HealthController } from "./health/health.controller.js";
 import { PaymentsModule } from "./payments/payments.module.js";
+import { PublicationModule } from "./publication/publication.module.js";
 import { SitesModule } from "./sites/sites.module.js";
 
 @Module({
   controllers: [HealthController],
-  imports: [AuthModule, BillingModule, BusinessesModule, ContactModule, DeploymentModule, DomainsModule, FeedbackModule, GeneratorModule, PaymentsModule, SitesModule],
+  imports: [AuthModule, BillingModule, BusinessesModule, ContactModule, DeploymentModule, DomainsModule, FeedbackModule, GeneratorModule, PaymentsModule, PublicationModule, SitesModule],
 })
 export class AppModule {}
