@@ -47,7 +47,6 @@ Write code that is **accessible, performant, type-safe, and maintainable**. Focu
 - Specify all dependencies in hook dependency arrays correctly
 - Use the `key` prop for elements in iterables (prefer unique IDs over array indices)
 - Nest children between opening and closing tags instead of passing as props
-- Don't define components inside other components
 - Use semantic HTML and ARIA attributes for accessibility:
   - Provide meaningful alt text for images
   - Use proper heading hierarchy
@@ -69,6 +68,7 @@ Write code that is **accessible, performant, type-safe, and maintainable**. Focu
 - Use early returns to reduce nesting
 - Prefer simple conditionals over nested ternary operators
 - Group related code together and separate concerns
+- Keep application boundaries explicit; use shared packages for contracts and reusable code
 
 ### Security
 
@@ -76,6 +76,7 @@ Write code that is **accessible, performant, type-safe, and maintainable**. Focu
 - Avoid `dangerouslySetInnerHTML` unless absolutely necessary
 - Don't use `eval()` or assign directly to `document.cookie`
 - Validate and sanitize user input
+- Keep credentials and provider sessions out of source control
 
 ### Performance
 
@@ -120,6 +121,24 @@ Biome's linter will catch most issues automatically. Focus your attention on:
 4. **Edge cases** - Handle boundary conditions and error states
 5. **User experience** - Accessibility, performance, and usability considerations
 6. **Documentation** - Add comments for complex logic, but prefer self-documenting code
+
+---
+
+## Required implementation workflow
+
+Every feature or group of related features must be decomposed into **small, modular todos before implementation begins**. Each todo must describe one independently reviewable change with a clear completion condition. Avoid a single broad todo such as “build the portal” when it can be split into smaller units such as “add the customer route,” “add the invoice query,” and “add the invoice table.”
+
+Implement and verify one modular todo at a time. After each todo is complete, run the narrowest relevant checks and create a separate Git commit for that todo. Do not combine multiple completed todos into one commit. A todo that touches several files may still use one commit when all of those files are required for that one atomic change.
+
+Use descriptive conventional commit messages, for example:
+
+```text
+feat(portal): add customer site status route
+fix(payments): handle failed Paynow callbacks
+chore(workspaces): register jobs worker
+```
+
+Keep the todo list and commit history aligned. If a todo is split further, update the todo list before continuing. Do not mark a todo complete until its checks pass and its commit has been created.
 
 ---
 
