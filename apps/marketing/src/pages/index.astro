@@ -1,0 +1,40 @@
+---
+const plans = [
+  { name: "Starter", price: "$50", detail: "Modern essentials for getting online fast." },
+  { name: "Growth", price: "$150", detail: "More pages, SEO, and contact forms for growing businesses." },
+  { name: "Premium", price: "$450", detail: "Our most refined design system and highest-touch support." },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content="Modern, affordable websites for Zimbabwean businesses." />
+    <title>Where They Are | Modern websites for Zimbabwean businesses</title>
+  </head>
+  <body>
+    <main>
+      <section>
+        <p>WhereTheyAre.co.zw</p>
+        <h1>Meet your customers where they are.</h1>
+        <p>Modern websites for Zimbabwean businesses, created quickly and built to help customers reach you.</p>
+        <a href="https://wa.me/263000000000">Start on WhatsApp</a>
+      </section>
+
+      <section aria-labelledby="plans-heading">
+        <h2 id="plans-heading">Choose the right starting point</h2>
+        <div>
+          {plans.map((plan) => (
+            <article>
+              <h3>{plan.name}</h3>
+              <p>{plan.price} setup</p>
+              <p>{plan.detail}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
