@@ -98,6 +98,20 @@ enum PaymentPurpose {
   OTHER
 }
 
+enum DomainKind {
+  CO_ZW
+  CUSTOM
+}
+
+enum DomainStatus {
+  REQUESTED
+  PENDING_REGISTRATION
+  ACTIVE
+  SUSPENDED
+  EXPIRED
+  CANCELLED
+}
+
 model User {
   id          String           @id @default(cuid())
   email       String           @unique
@@ -127,6 +141,7 @@ model Business {
   intakes        Intake[]
   generationJobs GenerationJob[]
   payments       Payment[]
+  domains        Domain[]
 
   @@index([name])
 }
@@ -163,6 +178,7 @@ model Site {
   releases          SiteRelease[]
   generationJobs    GenerationJob[]
   publishedRelease  SiteRelease?  @relation("PublishedRelease", fields: [publishedReleaseId], references: [id], onDelete: SetNull)
+  domains           Domain[]
 
   @@unique([businessId, slug])
   @@index([businessId, status])
@@ -282,4 +298,25 @@ model Payment {
   @@unique([provider, providerReference])
   @@index([businessId, status])
   @@index([businessId, createdAt])
+}
+
+model Domain {
+  id                 String       @id @default(cuid())
+  businessId         String
+  siteId             String?
+  hostname           String       @unique
+  kind               DomainKind
+  status             DomainStatus @default(REQUESTED)
+  registrarReference String?
+  expiresAt          DateTime?
+  requestedAt        DateTime     @default(now())
+  verifiedAt         DateTime?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  business           Business     @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  site               Site?        @relation(fields: [siteId], references: [id], onDelete: SetNull)
+
+  @@unique([businessId, hostname])
+  @@index([businessId, status])
+  @@index([expiresAt])
 }
