@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import type { SiteSpecification } from "@where-they-are/contracts";
@@ -22,5 +22,14 @@ export class ReleaseStore {
       JSON.stringify(release, null, 2),
       "utf8",
     );
+  }
+
+  public async exists(releaseId: string): Promise<boolean> {
+    try {
+      await access(join(this.rootDirectory, releaseId, "release.json"));
+      return true;
+    } catch {
+      return false;
+    }
   }
 }
