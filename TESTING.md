@@ -8,6 +8,7 @@ The implementation intentionally does not install packages or browser binaries a
 
 ```bash
 pnpm install
+pnpm --filter @where-they-are/db db:generate
 pnpm --dir packages/test-kit exec playwright install chromium
 ```
 
@@ -34,7 +35,21 @@ SERVER_BASE_URL=http://localhost:3100
 
 # apps/web/.env.local
 NEXT_PUBLIC_SERVER_BASE_URL=http://localhost:3100
+
+# apps/server/.env when using PostgreSQL-backed releases
+DATABASE_ENABLED=true
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/wheretheyare?schema=public
 ```
+
+After PostgreSQL is available, create and seed the database:
+
+```bash
+pnpm --filter @where-they-are/db db:validate
+pnpm --filter @where-they-are/db run db:migrate -- --name init
+pnpm --filter @where-they-are/db db:seed
+```
+
+When `DATABASE_ENABLED=true`, generation requests must include both `businessId` and `siteId`. The server still writes the generated HTML artifact to the release directory, but release metadata, preview ownership, versioning, and deployment lookup are read from PostgreSQL.
 
 For the WhatsApp worker, add `OPENROUTER_API_KEY`, `SERVER_BASE_URL`, and the persistent WhatsApp session settings defined in `apps/worker-whatsapp/.env.schema`. For Coolify checks, add `COOLIFY_API_URL`, `COOLIFY_API_TOKEN`, and, for a write deployment check, `COOLIFY_SITE_RESOURCE_UUID`.
 
