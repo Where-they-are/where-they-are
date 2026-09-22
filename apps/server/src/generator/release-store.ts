@@ -1,4 +1,4 @@
-import { access, mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import type { SiteSpecification } from "@where-they-are/contracts";
@@ -31,5 +31,30 @@ export class ReleaseStore {
     } catch {
       return false;
     }
+  }
+
+  public async findByPreviewSlug(previewSlug: string): Promise<SiteRelease | null> {
+    let releaseDirectories: string[];
+
+    try {
+      releaseDirectories = await readdir(this.rootDirectory);
+    } catch {
+      return null;
+    }
+
+    for (const releaseId of releaseDirectories) {
+      const manifestPath = join(this.rootDirectory, releaseId, "release.json");
+
+      try {
+        const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as SiteRelease;
+        if (manifest.previewSlug === previewSlug) {
+          return manifest;
+        }
+      } catch {
+        continue;
+      }
+    }
+
+    return null;
   }
 }

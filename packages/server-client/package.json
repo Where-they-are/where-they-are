@@ -1,0 +1,19 @@
+{
+  "name": "@where-they-are/server-client",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@where-they-are/contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "@where-they-are/config": "workspace:*",
+    "typescript": "catalog:"
+  }
+}
