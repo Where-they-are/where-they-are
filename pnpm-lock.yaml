@@ -225,6 +225,12 @@ importers:
 
   apps/worker-jobs:
     dependencies:
+      '@where-they-are/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@where-they-are/server-client':
+        specifier: workspace:*
+        version: link:../../packages/server-client
       bullmq:
         specifier: ^5.58.0
         version: 5.81.5
