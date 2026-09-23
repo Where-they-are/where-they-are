@@ -1,0 +1,16 @@
+{
+  "name": "@where-they-are/jev-router",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@where-they-are/config": "workspace:*",
+    "typescript": "catalog:"
+  }
+}
