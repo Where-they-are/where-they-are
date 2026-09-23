@@ -272,7 +272,7 @@ The modular design direction and complete designer handoff are documented in [`p
 
 The available product-planning document in `plans/` is `USER-STORIES.md`; it references `USER-FLOWS.md`, but that file is not currently present. The available stories and end-to-end slices were reviewed. The implementation intentionally keeps only the core customer journey and leaves teams, support queues, audits, advanced analytics, and future operations-console capabilities out of scope.
 
-The authoritative MVP scope and feature pushback protocol is [`plans/MVP-SCOPE.md`](plans/MVP-SCOPE.md). Agents must read it before implementing features, push back on unnecessary or out-of-scope requests, and require an explicit scope change recorded in that document before adding deferred product surface area.
+The authoritative MVP scope and feature pushback protocol is [`plans/MVP-SCOPE.md`](plans/MVP-SCOPE.md). Agents must read it before implementing features, push back on unnecessary or out-of-scope requests, and require an explicit scope change recorded in that document before adding deferred product surface area. The current backlog audit is [`plans/MVP-BACKLOG-AUDIT.md`](plans/MVP-BACKLOG-AUDIT.md); it identifies production auth, WhatsApp persistence mapping, Paynow callback reconciliation, approval/revision flow, manual domain/publication, bounded retention/abuse protection, minimum portal status, and core verification as the only active backlog themes.
 
 ## Known limitations and next backend work
 
