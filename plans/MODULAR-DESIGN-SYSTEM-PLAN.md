@@ -41,6 +41,7 @@ The following matrix is the initial design catalogue. Each cell is a **design co
 |---|---|---|---|
 | Restaurants & Hospitality | **Clean Local Welcome**: bright, direct, menu-led, with a compact hero, offerings list, location, and WhatsApp CTA | **Editorial Table**: richer food imagery, grouped menu or services, venue story, gallery rhythm, and stronger local discovery | **Signature Hospitality**: art-directed image composition, layered venue story, featured offerings, atmosphere, gallery storytelling, and premium conversion moments |
 | Beauty & Grooming | **Polished Studio**: clean service cards, one strong gallery, studio details, and WhatsApp CTA | **Studio Editorial**: stronger portrait imagery, service categories, process or experience section, gallery rhythm, and enquiry form | **Artisan Beauty House**: refined editorial typography, image-led storytelling, service highlights, transformations, atmosphere, and premium enquiry path |
+| Fitness & Wellness | **Active Local**: clear class or service cards, approachable imagery, location, and WhatsApp CTA | **Wellbeing Journey**: programme groups, coach or studio story, proof, gallery, and enquiry form | **Performance & Balance**: art-directed movement imagery, programme pathways, transformation story, facility narrative, and premium consultation path |
 | Professional Services | **Clear Authority**: practice areas, concise about section, contact actions, and location | **Trusted Practice**: process steps, principal or team profile, representative work, FAQ, and consultation form | **Distinctive Advisory**: editorial authority, case-led proof, layered expertise sections, stronger narrative, and premium consultation journey |
 | Local & Home Services | **Reliable Local Service**: service list, service area, direct call and WhatsApp actions, and simple proof | **Proven Local Operator**: process steps, service-area coverage, project gallery, quote form, and FAQ | **Craft & Confidence**: strong project imagery, detailed service journeys, proof-led composition, and premium quote experience |
 | Events & Community | **Event Essentials**: event purpose, date or location when supplied, key information, gallery, and enquiry CTA | **Gathering Story**: richer event narrative, programme or offerings, previous-event gallery, directions, and enquiry form | **Immersive Occasion**: high-impact hero, event atmosphere, programme storytelling, venue experience, gallery composition, and premium registration-interest path |
@@ -667,6 +668,354 @@ conversion.cta
 ```
 
 The composer should use General Business when vertical confidence is low instead of forcing a misleading niche.
+
+## 10A. Remaining business-group modular specifications
+
+The following specifications complete the first business-group catalogue. They use the shared module inventory and add only the variations that make each group feel credible. Each group has a clear customer goal, a controlled set of niche adaptations, and a recipe for every plan.
+
+### 10A.1 Professional Services
+
+#### Design objective
+
+Professional-services sites should communicate competence, clarity, and trust without looking like a generic corporate brochure. The first screen should explain the service and the type of client helped. The page should then make expertise understandable before asking for a consultation.
+
+Internal ID: `professional-services`.
+
+#### Niche adaptations
+
+| Niche | Priority content | Primary action |
+|---|---|---|
+| Lawyer or legal practice | Practice areas, consultation context, supplied credentials, location | Consultation enquiry |
+| Accountant or financial adviser | Services, client types, process, supplied qualifications | Call or consultation enquiry |
+| Consultant | Areas of expertise, process, representative work, client outcome claims only when supplied | Consultation enquiry |
+| Creative or marketing agency | Services, selected work, process, industries served | Enquiry or portfolio review |
+| Architect or designer | Portfolio, capabilities, approach, location | Project enquiry |
+| Recruitment or HR service | Service categories, process, industries, enquiry path | Enquiry |
+
+#### Modular variations
+
+| Module family | Approved variations | Design rule |
+|---|---|---|
+| Hero | `centered`, `split-image`, `minimal-service`, `dark-panel` | Lead with the service and client problem, not a vague slogan |
+| Practice areas | `simple-list`, `grouped-categories`, `featured-area`, `editorial-split` | Use customer language and supplied areas only |
+| Expertise | `principal-profile`, `team-card`, `credentials-list`, `approach-panel` | Do not imply qualifications or team members that were not supplied |
+| Process | `three-step`, `timeline`, `numbered-list` | Use only the business’s real process |
+| Proof | `case-cards`, `project-grid`, `testimonial-quote`, `credential-row` | Each proof item needs approved source content |
+| Conversion | `consultation`, `quote`, `call`, `contact-form` | Growth and Premium may use forms; Starter uses direct actions |
+
+#### Starter: Clear Authority
+
+```text
+shell.header.simple
+hero.primary.centered or hero.primary.minimal-service
+orientation.trust-strip.inline
+offerings.list.simple-list
+story.about.short
+proof.credentials.logo-row when supplied
+local.location when relevant
+conversion.cta.consultation
+shell.footer.standard
+```
+
+Starter should use a calm canvas, strong reading width, limited decorative imagery, and one primary action. It should not use invented case studies, statistics, or client logos.
+
+#### Growth: Trusted Practice
+
+```text
+Home: hero.primary.split-image
+      orientation.trust-strip.icon-row
+      offerings.list.grouped-categories
+      proof.process.three-step
+      story.about.split-image
+      proof.projects.case-cards when supplied
+      conversion.faq.accordion when supplied
+      conversion.contact-form.compact
+
+Inner page: hero.inner.compact
+            offerings.featured.featured-item
+            proof.credentials.logo-row
+            conversion.cta.consultation
+```
+
+Growth may add a principal or team profile, provided names, roles, and biographies are supplied. The contact form should ask only for information needed to begin a conversation.
+
+#### Premium: Distinctive Advisory
+
+```text
+Home: hero.primary.layered-editorial
+      story.feature.large-type
+      offerings.featured.editorial-card
+      offerings.list.grouped-categories
+      proof.projects.featured-project
+      proof.process.timeline
+      proof.credentials.credential-cards
+      conversion.cta.consultation
+
+Practice page: hero.inner.editorial
+               offerings.list.grouped-categories
+               media.image-text.overlap when relevant
+               proof.testimonials.editorial-quote when supplied
+               conversion.contact-form.split
+
+About page: hero.inner.image-strip
+            story.about.editorial
+            expertise.principal-profile or team-card
+            proof.credentials.logo-row
+            conversion.cta
+```
+
+Premium may use asymmetric grids and editorial type, but the reading order must remain obvious. A legal or financial site should prefer authority and legibility over visual novelty.
+
+#### Professional-services content rules
+
+- Do not invent legal outcomes, financial returns, certifications, memberships, awards, client names, or guarantees.
+- Do not turn a supplied service list into a claim of expertise beyond the supplied wording.
+- Case studies require a supplied context, service, and approved result statement.
+- If no team information exists, use an approach or process module instead of a fictitious profile.
+- The primary CTA should normally be `consultation`, `call`, or `enquiry`, not a generic “learn more”.
+
+### 10A.2 Fitness & Wellness
+
+#### Design objective
+
+Fitness and wellness sites should communicate energy, care, and a clear first step without making unsupported health or transformation claims. The design should show the experience of the place or programme, explain who it is for, and make an enquiry easy.
+
+Internal ID: `fitness-wellness`.
+
+#### Niche adaptations
+
+| Niche | Priority content | Primary action |
+|---|---|---|
+| Gym or fitness studio | Classes, facilities, membership enquiry, location | Visit or WhatsApp enquiry |
+| Personal trainer | Training approach, client type, supplied programme details | Consultation enquiry |
+| Yoga or Pilates studio | Class types, approach, studio atmosphere, timetable information when supplied | Enquiry or visit |
+| Dance school | Classes, age groups, programme information, showcase gallery | Enquiry |
+| Sports club or academy | Programmes, age groups, facilities, supplied schedule | Enquiry or visit |
+| Wellness coach | Approach, programme structure, supplied qualifications, enquiry path | Consultation enquiry |
+
+#### Modular variations
+
+| Module family | Approved variations | Design rule |
+|---|---|---|
+| Hero | `image-led`, `split-image`, `centered`, `dark-panel` | Show movement or calm, but keep the action visible |
+| Programmes | `class-grid`, `grouped-categories`, `pathway-cards`, `featured-programme` | Use age, level, duration, or schedule only when supplied |
+| Coach or instructor | `profile-card`, `approach-panel`, `team-row` | Names, roles, and qualifications must be grounded |
+| Experience | `facility-gallery`, `studio-story`, `process-steps`, `what-to-expect` | Explain the first visit without promising results |
+| Progress or proof | `testimonial-quote`, `milestone-list`, `community-panel` | Never create before-and-after or health claims |
+| Conversion | `trial-enquiry`, `consultation`, `visit`, `contact-form` | Do not imply instant booking unless implemented |
+
+#### Starter: Active Local
+
+```text
+shell.header.simple
+hero.primary.split-image or hero.primary.centered
+story.about.short
+offerings.list.compact-cards
+media.gallery.two-column when supplied
+local.location + local.hours when supplied
+conversion.cta.whatsapp or visit
+shell.footer.standard
+```
+
+Starter should feel approachable and energetic. Use one accent colour and one strong image treatment. Avoid fake transformation statistics, membership prices, class schedules, and medical claims.
+
+#### Growth: Wellbeing Journey
+
+```text
+Home: hero.primary.image-led
+      orientation.trust-strip.inline
+      offerings.list.grouped-categories
+      story.feature.image-text
+      proof.process.three-step or what-to-expect
+      media.gallery.featured-thumbnails
+      local.location + local.hours
+      conversion.contact-form.compact
+
+Programmes: hero.inner.compact
+            offerings.featured.featured-item
+            offerings.list.grouped-categories
+            conversion.faq.accordion
+            conversion.cta.trial-enquiry
+```
+
+Growth can include a coach or instructor profile, facilities gallery, and supplied testimonials. A timetable may be displayed as content, but the site must not suggest real-time availability without a booking integration.
+
+#### Premium: Performance & Balance
+
+```text
+Home: hero.primary.layered-editorial
+      orientation.quick-links.pills
+      offerings.featured.editorial-card
+      story.feature.image-text
+      offerings.list.pathway-cards
+      media.gallery.editorial-collage
+      expertise.profile-card or team-row
+      conversion.cta.consultation
+
+Programmes: hero.inner.editorial
+            offerings.list.grouped-categories
+            proof.process.timeline
+            media.image-text.overlap
+            conversion.contact-form.split
+
+Studio: hero.inner.image-strip
+        story.about.editorial
+        media.gallery.horizontal-scroll
+        local.location.dark-panel
+        conversion.cta.visit
+```
+
+#### Fitness and wellness content rules
+
+- Do not invent health, medical, weight-loss, body-transformation, or performance claims.
+- Do not invent membership prices, class times, instructor qualifications, or facility features.
+- Use “enquire about a trial” only when the business actually offers a trial.
+- Display supplied schedules as informational content, not as live availability.
+- Use real supplied work or facility imagery. Do not use generic athletic imagery as if it were the customer’s facility.
+- A wellness site should use calm composition and readable contrast even when the brand is energetic.
+
+### 10A.3 Local & Home Services
+
+#### Design objective
+
+Local and home-service sites must establish reliability quickly. The customer should understand the service area, type of work, response path, and next action before reading a long story.
+
+Internal ID: `local-services`.
+
+#### Niche adaptations and modules
+
+| Niche | Priority modules | Primary action |
+|---|---|---|
+| Plumber, electrician, or repair service | `offerings.list`, `local.service-area`, `proof.process`, `conversion.cta.quote` | Quote or call |
+| Cleaner or gardener | `offerings.grouped-categories`, `proof.process`, `media.gallery`, `local.service-area` | WhatsApp or quote |
+| Builder or contractor | `offerings.featured`, `proof.projects`, `media.gallery`, `proof.process` | Project enquiry |
+| Automotive or appliance repair | `offerings.list`, `utility.tag-list`, `local.location`, `conversion.cta.call` | Call or visit |
+| Security or technical installer | `offerings.list`, `proof.credentials`, `service-area`, `conversion.contact-form` | Quote enquiry |
+
+#### Plan recipes
+
+Starter uses `hero.primary.split-image`, `orientation.trust-strip.inline`, `offerings.list.compact-cards`, `local.service-area.tag-list`, `proof.process.three-step`, and `conversion.cta.quote`.
+
+Growth adds `media.gallery.featured-thumbnails`, `proof.projects.case-cards`, `conversion.faq.accordion`, `local.location`, and `conversion.contact-form.compact`. It may use a quote-specific page when the supplied service list is long.
+
+Premium uses `hero.primary.image-led` or `layered-editorial`, `offerings.featured.editorial-card`, `proof.projects.featured-project`, `media.gallery.editorial-collage`, `proof.process.timeline`, and `conversion.contact-form.split`.
+
+#### Local-service content rules
+
+- Service-area claims must come from the customer.
+- Do not create emergency-response promises, response times, guarantees, prices, or licences.
+- Project galleries need supplied project context and must not expose private customer information.
+- The quote form should not request sensitive information that is unnecessary for an initial enquiry.
+
+### 10A.4 Events & Community
+
+#### Design objective
+
+Events and community sites should make the purpose, audience, timing, and location easy to understand. Their strongest asset is usually atmosphere, so images and clear information should work together rather than compete.
+
+Internal ID: `events-community`.
+
+#### Niche adaptations and modules
+
+| Niche | Priority modules | Primary action |
+|---|---|---|
+| Event organizer | `hero`, `offerings.list`, `media.gallery`, `conversion.contact-form` | Enquiry |
+| Wedding or event supplier | `media.gallery`, `offerings.featured`, `proof.process`, `conversion.cta.quote` | Quote enquiry |
+| Church or community organization | `story.about`, `offerings.list`, `local.location`, `conversion.cta.whatsapp` | Visit or contact |
+| NGO or community project | `story.about`, `proof.projects`, `proof.process`, `conversion.cta.enquiry` | Enquiry or support interest |
+| Conference or workshop | `hero`, `orientation.quick-links`, `offerings.list`, `local.location` | Interest or enquiry |
+
+#### Plan recipes
+
+Starter uses `hero.primary.image-led`, `orientation.trust-strip.inline`, `story.about.short`, `offerings.list.simple-list`, `media.gallery.two-column`, `local.location`, and `conversion.cta.whatsapp`.
+
+Growth adds `orientation.quick-links.pills`, `offerings.list.grouped-categories`, `media.gallery.featured-thumbnails`, `proof.process.three-step`, `conversion.faq.accordion`, and `conversion.contact-form.compact`.
+
+Premium uses `hero.primary.layered-editorial`, `story.feature.image-text`, `offerings.featured.editorial-card`, `media.gallery.editorial-collage`, `local.location.dark-panel`, `proof.projects.featured-project`, and `conversion.contact-form.split`.
+
+#### Events and community content rules
+
+- Dates, venues, programmes, registration status, and ticket information must be supplied.
+- Do not create event schedules or registration functionality unless it is implemented.
+- Use `conversion.cta` for interest or enquiry rather than implying a confirmed registration.
+- Community and faith-based organizations require respectful, factual language with no invented impact claims.
+
+### 10A.5 Education & Care
+
+#### Design objective
+
+Education and care sites should feel trustworthy, warm, and organized. Parents, learners, or caregivers must be able to understand the programme, audience, location, and enquiry path without navigating a dense institutional interface.
+
+Internal ID: `education-care`.
+
+#### Niche adaptations and modules
+
+| Niche | Priority modules | Primary action |
+|---|---|---|
+| Private school | `offerings.list`, `story.about`, `proof.process`, `local.location`, `conversion.contact-form` | Admissions enquiry |
+| Tutor or training provider | `offerings.grouped-categories`, `proof.process`, `conversion.cta.consultation` | Enquiry |
+| Childcare or early-learning centre | `story.about`, `media.gallery`, `local.location`, `conversion.contact-form` | Visit or enquiry |
+| Skills or vocational provider | `offerings.list`, `proof.credentials`, `proof.process`, `conversion.cta.enquiry` | Enquiry |
+| Care or support service | `story.about`, `offerings.featured`, `proof.credentials`, `conversion.cta.call` | Call or enquiry |
+
+#### Plan recipes
+
+Starter uses `hero.primary.split-image`, `story.about.short`, `offerings.list.grouped-categories`, `media.gallery.two-column`, `local.location`, and `conversion.cta.enquiry`.
+
+Growth adds `proof.process.three-step`, `proof.credentials.logo-row`, `conversion.faq.accordion`, `media.image-text.image-right`, and `conversion.contact-form.compact`.
+
+Premium uses `hero.primary.layered-editorial`, `story.feature.image-text`, `offerings.featured.editorial-card`, `offerings.list.pathway-cards`, `media.gallery.editorial-collage`, `proof.process.timeline`, and `conversion.contact-form.split`.
+
+#### Education and care content rules
+
+- Do not invent accreditation, pass rates, safety claims, staff credentials, age ranges, fees, term dates, or facilities.
+- Images of children require explicit approval and appropriate privacy handling.
+- Use a text-based alternative when a supplied prospectus is represented visually.
+- Avoid language that guarantees educational, developmental, or care outcomes.
+
+### 10A.6 General Business
+
+#### Design objective
+
+General Business is the safe fallback for businesses that do not fit the initial groups or whose intake is too incomplete for confident classification. It should feel purposeful rather than generic.
+
+Internal ID: `general-business`.
+
+#### Niche adaptations and modules
+
+| Business situation | Priority modules | Primary action |
+|---|---|---|
+| Product or trading business | `offerings.list`, `media.gallery`, `conversion.cta.whatsapp` | Enquiry |
+| Small agency or studio | `story.about`, `offerings.list`, `proof.projects`, `conversion.cta.consultation` | Consultation |
+| Community or nonprofit business | `story.about`, `proof.projects`, `local.location`, `conversion.cta.enquiry` | Enquiry |
+| Unclassified SME | `hero`, `story.about`, `offerings.list`, `conversion.cta` | Supplied primary action |
+
+#### Plan recipes
+
+Starter uses `hero.primary.centered`, `story.about.short`, `offerings.list.simple-list`, `media.gallery.two-column` when supplied, `local.location` when relevant, and `conversion.cta`.
+
+Growth adds `hero.primary.split-image`, `story.feature.image-text`, `proof.process.three-step`, `proof.projects.case-cards`, `conversion.faq.accordion`, and `conversion.contact-form.compact`.
+
+Premium uses `hero.primary.layered-editorial`, `story.feature.large-type`, `offerings.featured.editorial-card`, `proof.projects.featured-project`, `media.gallery.editorial-collage`, and `conversion.contact-form.split`.
+
+#### General-business content rules
+
+- Do not force a business into a specific vertical when classification confidence is low.
+- Use neutral labels such as “Services”, “What we offer”, or “Contact” when a more specific label is not grounded.
+- The fallback must still have a strong visual point of view through the chosen concept, typography, and composition.
+- A future review of generated sites should promote repeated General Business patterns into new vertical modules when demand is proven.
+
+### 10A.7 Cross-group variation rules
+
+The business groups share implementation primitives but differ in emphasis. The designer should follow these rules when adapting a module:
+
+1. Change the content label before creating a new component. `offerings.list` can become menu, services, programmes, practice areas, classes, or packages.
+2. Create a new variant only when the hierarchy, responsive behavior, or content contract materially changes.
+3. Keep the primary CTA tied to the customer goal: visit, call, WhatsApp, consultation, quote, admissions enquiry, or event interest.
+4. Keep proof factual. If a group has no supplied proof, use story, process, or location instead.
+5. Use imagery that represents the actual business or clearly approved assets. Do not use stock imagery as implied evidence.
+6. Every group must work with a text-led composition when images are missing.
+7. Do not let a niche adaptation alter plan entitlements.
 
 ## 11. Page and section hierarchy
 
