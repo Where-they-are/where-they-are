@@ -367,6 +367,9 @@ importers:
       '@where-they-are/db':
         specifier: workspace:*
         version: link:../db
+      '@where-they-are/jev-router':
+        specifier: workspace:*
+        version: link:../jev-router
       '@where-they-are/server-client':
         specifier: workspace:*
         version: link:../server-client

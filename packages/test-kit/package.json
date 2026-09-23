@@ -17,6 +17,7 @@
   "dependencies": {
     "@where-they-are/contracts": "workspace:*",
     "@where-they-are/db": "workspace:*",
+    "@where-they-are/jev-router": "workspace:*",
     "@where-they-are/server-client": "workspace:*"
   },
   "devDependencies": {
