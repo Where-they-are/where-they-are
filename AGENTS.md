@@ -142,4 +142,25 @@ Keep the todo list and commit history aligned. If a todo is split further, updat
 
 ---
 
+## Mandatory MVP scope gate
+
+Before implementing any feature, read [`plans/MVP-SCOPE.md`](plans/MVP-SCOPE.md). That document is the authoritative boundary for the Where They Are MVP.
+
+Every proposed feature must directly support the approved WhatsApp-to-intake-to-preview-to-payment-to-publication-to-hosting journey or the minimum operation required to deliver it. The target is a fast, high-quality brochure or service website for a Zimbabwean SME, not a general-purpose website builder, ecommerce platform, booking system, CRM, support suite, advanced analytics product, mobile app, or enterprise operations platform.
+
+Agents must classify each proposal as **in scope**, **ambiguous**, **out of scope**, or **prohibited** before coding:
+
+- For an in-scope proposal, state the supported MVP outcome and implement the smallest useful version.
+- For an ambiguous proposal, ask the minimum questions needed to classify it; do not begin implementation while the classification is unresolved.
+- For an out-of-scope or unnecessary proposal, push back respectfully. State the boundary it crosses, explain why it is not needed for MVP validation, propose a smaller in-scope alternative when possible, and recommend when it should be reconsidered.
+- For prohibited work, such as invented customer facts or fabricated testimonials, refuse the implementation and preserve the grounding rule.
+
+Do not implement an out-of-scope request merely because it was mentioned casually. If the project owner explicitly wants to change the scope, update `plans/MVP-SCOPE.md` first with the reason and tradeoff, then create small modular todos and separate commits for the approved change. Update `CONTEXT.md` and tests in the same task.
+
+When scope is uncertain, use this response pattern:
+
+> This is outside the current MVP because it creates a new product category rather than helping us deliver and host brochure websites. I recommend deferring it until the core delivery flow is validated. The smallest in-scope alternative is [alternative]. I will not implement the larger feature unless the MVP scope is explicitly changed in `plans/MVP-SCOPE.md`.
+
+---
+
 Most formatting and common issues are automatically fixed by Biome. Run `pnpm dlx ultracite fix` before committing to ensure compliance.
