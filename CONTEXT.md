@@ -257,6 +257,8 @@ The database, first tenant backend, and lean features 13–18 implementation pha
 
 The frontend is intentionally not the current priority. Design and frontend product work will be handled separately with a designer.
 
+The modular design direction is documented in [`plans/MODULAR-DESIGN-SYSTEM-PLAN.md`](plans/MODULAR-DESIGN-SYSTEM-PLAN.md). New sites should gradually move from broad vertical templates toward versioned compositions made from approved modules, variants, themes, and page recipes. Hospitality & Food across all three plans is the recommended first designer slice.
+
 The available product-planning document in `plans/` is `USER-STORIES.md`; it references `USER-FLOWS.md`, but that file is not currently present. The available stories and end-to-end slices were reviewed. The implementation intentionally keeps only the core customer journey and leaves teams, support queues, audits, advanced analytics, and future operations-console capabilities out of scope.
 
 ## Known limitations and next backend work
