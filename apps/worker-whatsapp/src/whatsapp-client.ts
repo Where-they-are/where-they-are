@@ -1,4 +1,5 @@
 import { Client, LocalAuth, type Message } from "whatsapp-web.js";
+import { JevClient, preflightWhatsAppMessage } from "@where-they-are/jev-router";
 
 import type { WorkerConfig } from "./config.js";
 import { extractSiteIntake } from "./agent.js";
@@ -14,6 +15,7 @@ export type IntakeResultHandler = (input: {
 export const createWhatsAppClient = (
   config: WorkerConfig,
   agent: Parameters<typeof extractSiteIntake>[0],
+  jevClient: JevClient | undefined,
   onIntake: IntakeResultHandler,
 ): Client => {
   const client = new Client({
@@ -42,6 +44,24 @@ export const createWhatsAppClient = (
   client.on("message", async (message: Message) => {
     try {
       const normalized = await normalizeMessage(message);
+      const preflight = await preflightWhatsAppMessage(jevClient, normalized, {
+        enabled: config.JEV_ENABLED,
+        failOpen: config.JEV_FAIL_OPEN,
+        minConfidence: config.JEV_MIN_CONFIDENCE,
+      });
+
+      if (!preflight.allowed) {
+        const replies = {
+          support: "I can help with an existing site, payment, hosting, domain, preview, or technical question. Please describe what you need help with.",
+          sales: "I can help you choose a plan. Please tell me your business type and whether you need a Starter, Growth, or Premium website.",
+          chitchat: "I’m here to help you create a modern business website. Send your business details or ask me about our plans.",
+          unsupported: "That request is outside the current brochure-website service. I can help with a modern business website, content, preview, hosting, domain, or contact details.",
+          "site-intake": "Please send your business details and I’ll help prepare the website brief.",
+        } as const;
+        await message.reply(replies[preflight.route]);
+        return;
+      }
+
       const intake = await extractSiteIntake(agent, normalized);
 
       await onIntake({
