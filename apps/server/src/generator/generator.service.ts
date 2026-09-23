@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
+import { JevClient, preflightSiteGeneration } from "@where-they-are/jev-router";
 import {
   generateSiteRequestSchema,
   type GenerateSiteRequest,
@@ -25,10 +26,18 @@ const slugify = (value: string): string =>
 export class GeneratorService {
   private readonly config: ServerConfig;
   private readonly releaseStore: ReleaseStore;
+  private readonly jevClient?: JevClient;
 
   public constructor() {
     this.config = readServerConfig();
     this.releaseStore = new ReleaseStore();
+    if (this.config.OPENROUTER_API_KEY && this.config.JEV_ENABLED) {
+      this.jevClient = new JevClient({
+        apiKey: this.config.OPENROUTER_API_KEY,
+        model: this.config.JEV_MODEL,
+        siteName: "Where They Are",
+      });
+    }
   }
 
   public async generate(input: unknown): Promise<GenerateSiteResponse> {
@@ -56,6 +65,20 @@ export class GeneratorService {
   }
 
   private async createSpecification(request: GenerateSiteRequest): Promise<SiteSpecification> {
+    const preflight = await preflightSiteGeneration(this.jevClient, request, {
+      enabled: this.config.JEV_ENABLED,
+      failOpen: this.config.JEV_FAIL_OPEN,
+      minConfidence: this.config.JEV_MIN_CONFIDENCE,
+    });
+
+    if (!preflight.allowed) {
+      throw new BadRequestException({
+        message: "The request did not pass the website-generation relevance check",
+        relevance: preflight.relevance,
+        grounded: preflight.grounded,
+      });
+    }
+
     if (!this.config.OPENROUTER_API_KEY) {
       return buildSiteSpecification(request);
     }
