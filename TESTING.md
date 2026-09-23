@@ -28,7 +28,7 @@ pnpm --dir packages/test-kit exec playwright install --with-deps chromium
 
 ## Environment setup
 
-Create the environment files from the committed schemas. The server needs `OPENROUTER_API_KEY` for Gemini generation. If the key is absent, the server uses the deterministic approved-template fallback, which is useful for local smoke tests.
+Create the environment files from the committed schemas. The server needs `OPENROUTER_API_KEY` for Gemini generation and Jev preflight decisions. If the key is absent, the server uses the deterministic approved-template fallback and skips Jev, which is useful for local smoke tests.
 
 The minimum local values are:
 
@@ -37,6 +37,10 @@ The minimum local values are:
 SERVER_PORT=3100
 PREVIEW_SITE_ORIGIN=http://localhost:3103
 OPENROUTER_MODEL=google/gemini-3-flash-preview
+JEV_ENABLED=true
+JEV_MODEL=~typesafe/jev-latest
+JEV_MIN_CONFIDENCE=0.75
+JEV_FAIL_OPEN=true
 
 # apps/site-origin/.env
 SERVER_BASE_URL=http://localhost:3100
@@ -59,7 +63,9 @@ pnpm --filter @where-they-are/db db:seed
 
 When `DATABASE_ENABLED=true`, generation requests must include both `businessId` and `siteId`. The server still writes the generated HTML artifact to the release directory, but release metadata, preview ownership, versioning, and deployment lookup are read from PostgreSQL.
 
-For the WhatsApp worker, add `OPENROUTER_API_KEY`, `SERVER_BASE_URL`, and the persistent WhatsApp session settings defined in `apps/worker-whatsapp/.env.schema`. Coolify is disabled by default while the deployment server is being evaluated; the NestJS server starts without Coolify credentials. To opt into Coolify checks later, add `COOLIFY_CHECKS_ENABLED=true`, `COOLIFY_API_URL`, `COOLIFY_API_TOKEN`, and, for a write deployment check, `COOLIFY_SITE_RESOURCE_UUID`.
+For the WhatsApp worker, add `OPENROUTER_API_KEY`, `SERVER_BASE_URL`, `JEV_ENABLED`, `JEV_MODEL`, `JEV_MIN_CONFIDENCE`, and the persistent WhatsApp session settings defined in `apps/worker-whatsapp/.env.schema`. Jev runs through the OpenRouter Decisions API before Gemini intake extraction. A non-site-intake route receives a canned WhatsApp response and does not call Gemini. With `JEV_FAIL_OPEN=true`, a Jev timeout or provider error continues through the existing intake path; set it to `false` when strict preflight enforcement is required.
+
+Coolify is disabled by default while the deployment server is being evaluated; the NestJS server starts without Coolify credentials. To opt into Coolify checks later, add `COOLIFY_CHECKS_ENABLED=true`, `COOLIFY_API_URL`, `COOLIFY_API_TOKEN`, and, for a write deployment check, `COOLIFY_SITE_RESOURCE_UUID`.
 
 ## Commands
 
@@ -71,6 +77,12 @@ pnpm run test:db
 pnpm run check-types
 pnpm --filter server run build
 pnpm --filter @where-they-are/worker-whatsapp run test
+```
+
+The Jev tests mock `fetch` and never call OpenRouter. They verify typed response parsing, WhatsApp route blocking, site-generation rejection below the confidence threshold, and fail-open behavior:
+
+```bash
+pnpm --filter @where-they-are/test-kit run test:unit -- src/unit/jev-router.test.ts
 ```
 
 Start the services in separate terminals:

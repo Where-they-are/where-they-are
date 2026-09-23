@@ -1,6 +1,6 @@
 ﻿# Where They Are ÔÇö Project Context
 
-_Last updated: 2026-09-22_
+_Last updated: 2026-09-23_
 
 ## Project identity
 
@@ -99,6 +99,16 @@ The monorepo contains the portal, Astro marketing application, WhatsApp worker, 
 - Dispatches the validated intake to the central server.
 - Logs the generated preview URL returned by the server.
 
+### Jev decision layer
+
+`packages/jev-router` provides a typed, dependency-free client for TypeSafe Jev through OpenRouter's Decisions API. Jev is used as a preflight decision layer rather than a prose generator:
+
+- WhatsApp messages are classified into site intake, support, sales, chitchat, or unsupported routes before Gemini extraction.
+- Non-site-intake routes receive a canned response and do not call the Gemini intake agent.
+- Site-generation requests are checked for brochure-site relevance and grounded content before the Gemini site-specification agent runs.
+- `JEV_MODEL` defaults to `~typesafe/jev-latest`, `JEV_MIN_CONFIDENCE` defaults to `0.75`, and `JEV_FAIL_OPEN=true` keeps the existing workflow available during a Jev provider outage.
+- Jev returns typed decisions and probabilities; it does not generate explanations or website copy.
+
 ### Central NestJS API
 
 `apps/server` currently exposes:
@@ -144,6 +154,7 @@ The server includes:
 - `service-pro`, `hospitality`, and `events-community` templates.
 - Safe static HTML rendering with HTML escaping.
 - Mastra/OpenRouter site-specification generation when an OpenRouter key is configured.
+- Jev/OpenRouter preflight routing for WhatsApp intake and site generation when enabled.
 - Deterministic fallback generation when no OpenRouter key is configured.
 - Coolify deployment triggering by resource UUID.
 - No-index preview headers.
@@ -167,7 +178,7 @@ The server includes:
 - Generation requests/responses.
 - Deployment requests/responses.
 
-`packages/server-client` provides typed methods for:
+`packages/jev-router` provides a typed, dependency-free client for TypeSafe Jev through OpenRouter's Decisions API. `packages/server-client` provides typed methods for:
 
 - Central server health.
 - Site generation.
@@ -273,6 +284,7 @@ The available product-planning document in `plans/` is `USER-STORIES.md`; it ref
 - Coolify deployment is currently a typed adapter around deployment triggering; the new deployment record provides a server-owned lifecycle state, while external reconciliation remains pending. Coolify credentials are optional and the Coolify smoke test is skipped unless `COOLIFY_CHECKS_ENABLED=true`; calling deployment without configured Coolify still returns an unavailable-provider error rather than preventing server startup.
 - Paynow hosted-payment creation/callback verification is not yet wired; payment records and status transitions are ready for that provider adapter.
 - Advanced analytics, support queues, operator consoles, audit systems, teams, invitations, and permission-management UX are intentionally out of scope for this phase.
+- Jev policy decisions are currently synchronous and in-process. Decision audit persistence, route-specific support workflows, and human escalation queues remain out of scope.
 - Public contact submissions currently have validation, idempotency, retention, starring, reading, and archiving primitives; rate limiting and scheduled expiry execution still need to be connected to the runtime.
 
 ## Development rules
