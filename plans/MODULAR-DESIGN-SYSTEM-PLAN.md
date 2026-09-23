@@ -2,310 +2,821 @@
 
 _Last updated: 2026-09-23_
 
-## Recommendation
+> This is the single authoritative design handoff for the first generation of Where They Are websites. It defines the starting business-group matrix, plan-level design concepts, module inventory, visual hierarchy, tokens, and the first two detailed vertical specifications.
 
-Where They Are should replace the current fixed-template model with a **vertical-aware modular design system**. A generated site should be assembled from approved modules, visual variants, themes, and page recipes. This gives customers variety without allowing AI to invent arbitrary layouts.
+## 1. Design-system direction
 
-Use these terms internally:
+Where They Are should not generate an unlimited collection of unrelated templates. It should assemble each website from a controlled library of **modules**, **visual variants**, **themes**, and **page recipes**. This gives the designer room to create variety while keeping quality, accessibility, performance, and implementation predictable.
 
-- **Vertical:** a broad business group, such as Hospitality & Food.
-- **Niche:** a specific business type inside a vertical, such as restaurant or barber.
-- **Module:** an independent website section with a purpose, content contract, responsive behavior, and visual variants.
-- **Variant:** an approved visual treatment of a module, such as `split-image` or `centered-editorial`.
+Use the following internal vocabulary:
+
+- **Business group:** the broad customer-facing category, such as Restaurants & Hospitality.
+- **Niche:** a more specific business type, such as restaurant, cafe, barber, or law firm.
+- **Module:** an independent website section with a clear purpose, content contract, responsive behavior, and visual variants.
+- **Variant:** an approved visual treatment of a module, such as `split-image` or `editorial-collage`.
 - **Recipe:** an approved ordered composition of modules for a page.
-- **Theme:** typography, colour, spacing, imagery, and surface tokens.
-- **Plan tier:** Starter, Growth, or Premium.
+- **Theme:** the visual token set applied to a site.
+- **Plan concept:** the design direction and level of composition assigned to Starter, Growth, or Premium.
 
-Use **industry** or **business type** in customer-facing language. Use **vertical** and **niche** in the internal system. The word **template** can remain temporarily in legacy code, but it should no longer be the primary design concept.
+The word **template** may remain in legacy code, but the new design system should use versioned module compositions instead of one fixed template per business.
 
-## Product constraints
+## 2. Product constraints
 
-The system must preserve the current product model and user stories [1] [2]:
+The design system must support the current product model and user stories [1] [2]:
 
-- Starter is `$50`, Growth is `$150`, and Premium is `$450` for website creation.
-- Hosting and domain charges remain separate.
-- Starter must look deliberate and modern, not unfinished.
-- All plans include WhatsApp actions, analytics, galleries, maps where relevant, and responsive layouts.
-- Growth and Premium include contact forms, deeper SEO, additional pages, and priority support.
-- Starter has one revision, Growth has three, and Premium has five.
-- Growth includes two additional pages; Premium includes four.
-- The generator must not invent testimonials, prices, awards, opening hours, history, or service claims.
-- Version one remains focused on brochure and service websites. Booking systems, ecommerce, ordering, calendars, customer accounts, and advanced dashboards are out of scope.
+- **Starter:** `$50` creation price, one revision, one strong single-page site.
+- **Growth:** `$150` creation price, three revisions, up to two additional pages, contact forms, deeper SEO, and richer composition.
+- **Premium:** `$450` creation price, five revisions, up to four additional pages, contact forms, deeper SEO, priority treatment, and the strongest visual direction.
+- All plans include responsive layouts, WhatsApp actions, phone and email actions where supplied, analytics, galleries, and maps or location information where relevant.
+- Starter must look complete and modern. Its limitation is composition depth, not basic quality.
+- The system must not invent testimonials, prices, awards, opening hours, credentials, history, service claims, or business facts.
+- A module that requires information the customer has not supplied must be removed or replaced by a truthful no-data alternative.
+- Version one is for brochure and service websites. Booking engines, ecommerce, food ordering, calendars, customer accounts, memberships, advanced dashboards, and complex integrations are out of scope.
 
-## Design-system layers
+## 3. Concrete starting matrix
 
-### Foundations
+The following matrix is the initial design catalogue. Each cell is a **design concept**, not a separate codebase. All concepts use the shared foundations and approved modules.
 
-Create the shared visual foundation before vertical-specific work. It should define typography, type scale, colour roles, surface treatments, spacing, grids, container widths, borders, radii, shadows, icons, buttons, form states, image ratios, focus states, breakpoints, and motion guidance.
-
-There should be three levels of visual depth, not three unrelated brands:
-
-| Plan | Design direction | Main difference |
-|---|---|---|
-| Starter | Clean and focused | Fewer variants, restrained type, simple grids, clear conversion |
-| Growth | Editorial and conversion-focused | Richer composition, stronger image treatment, more page rhythm |
-| Premium | Art-directed and distinctive | Layered composition, stronger hierarchy, richer page structures |
-
-Accessibility, responsiveness, performance limits, and the quality threshold must be shared by all plans.
-
-### Semantic modules
-
-Each module must have a stable ID and specification covering its purpose, supported verticals, supported plans, required and optional fields, visual variants, image requirements, empty states, mobile behavior, accessibility, conversion action, repeatability, valid placement, and revision category.
-
-The generator should receive structured module data. It must never generate arbitrary HTML or CSS.
-
-### Vertical adaptations
-
-Vertical adaptations change labels, content mapping, imagery guidance, and module priority. They should not require a completely separate renderer for every niche.
-
-For example, the same offerings module can become menu categories for a restaurant, services for a salon, practice areas for a law firm, programmes for a school, or packages for an event organizer.
-
-### Page recipes
-
-Recipes are approved sequences of modules. They prevent random combinations from producing awkward layouts. Initial recipes should include:
-
-- `local-service-home`
-- `hospitality-home`
-- `professional-practice-home`
-- `beauty-studio-home`
-- `events-community-home`
-- `education-home`
-- `about-page`
-- `services-page`
-- `gallery-page`
-- `contact-page`
-
-A recipe should define required positions and optional slots. The customer sees a finished site; recipes remain an internal composition tool.
-
-### Release composition
-
-Every release should store the vertical, niche, plan, theme, page recipes, module IDs, variants, grounded content, approved assets, entitlements, and module-registry version. This prevents future registry changes from silently altering an approved site.
-
-## Initial vertical taxonomy
-
-| Internal ID | Customer-facing label | Example niches | Main conversion |
+| Business group | Starter concept | Growth concept | Premium concept |
 |---|---|---|---|
-| `hospitality-food` | Restaurants & Hospitality | Restaurant, cafe, caterer, bakery, lodge, guesthouse | Visit, call, WhatsApp, menu, directions |
-| `beauty-grooming` | Beauty & Grooming | Salon, barber, spa, nail studio, makeup artist | WhatsApp enquiry, call, services, gallery |
-| `professional-services` | Professional Services | Lawyer, accountant, consultant, agency, designer | Consultation, call, email, WhatsApp |
-| `local-services` | Local & Home Services | Plumber, electrician, cleaner, builder, repair service | Quote request, call, WhatsApp |
-| `events-community` | Events & Community | Event organizer, wedding supplier, church, NGO, conference | Enquiry, registration interest, WhatsApp |
-| `education-care` | Education & Care | Private school, tutor, training provider, childcare | Enquiry, visit, call, programmes |
-| `general-business` | General Business | Businesses outside the initial groups | Contact, call, WhatsApp, learn more |
+| Restaurants & Hospitality | **Clean Local Welcome**: bright, direct, menu-led, with a compact hero, offerings list, location, and WhatsApp CTA | **Editorial Table**: richer food imagery, grouped menu or services, venue story, gallery rhythm, and stronger local discovery | **Signature Hospitality**: art-directed image composition, layered venue story, featured offerings, atmosphere, gallery storytelling, and premium conversion moments |
+| Beauty & Grooming | **Polished Studio**: clean service cards, one strong gallery, studio details, and WhatsApp CTA | **Studio Editorial**: stronger portrait imagery, service categories, process or experience section, gallery rhythm, and enquiry form | **Artisan Beauty House**: refined editorial typography, image-led storytelling, service highlights, transformations, atmosphere, and premium enquiry path |
+| Professional Services | **Clear Authority**: practice areas, concise about section, contact actions, and location | **Trusted Practice**: process steps, principal or team profile, representative work, FAQ, and consultation form | **Distinctive Advisory**: editorial authority, case-led proof, layered expertise sections, stronger narrative, and premium consultation journey |
+| Local & Home Services | **Reliable Local Service**: service list, service area, direct call and WhatsApp actions, and simple proof | **Proven Local Operator**: process steps, service-area coverage, project gallery, quote form, and FAQ | **Craft & Confidence**: strong project imagery, detailed service journeys, proof-led composition, and premium quote experience |
+| Events & Community | **Event Essentials**: event purpose, date or location when supplied, key information, gallery, and enquiry CTA | **Gathering Story**: richer event narrative, programme or offerings, previous-event gallery, directions, and enquiry form | **Immersive Occasion**: high-impact hero, event atmosphere, programme storytelling, venue experience, gallery composition, and premium registration-interest path |
+| Education & Care | **Warm Learning Welcome**: programme summary, approach, contact actions, location, and simple gallery | **Guided Learning**: programme cards, learning approach, facilities, admissions steps, FAQ, and enquiry form | **Learning Community**: editorial learning story, programme pathways, facilities narrative, admissions journey, and premium enquiry composition |
+| General Business | **Focused Business Introduction**: clear value proposition, services, about, and contact actions | **Structured Business Story**: richer service presentation, process, proof, FAQ, and enquiry form | **Distinctive Brand Presence**: art-directed story, stronger content hierarchy, richer proof, and premium conversion path |
 
-Start with these groups. Add Retail & Lifestyle after real demand is measured. Classification should consider the category, description, services, operating model, location, and customer goal. The customer or operator must be able to correct the classification before publication.
+### Matrix rules
 
-## First module catalogue
+1. A business group may use several recipes, but it must begin from one of these named concepts.
+2. A niche changes labels, imagery direction, and module priority; it does not create an uncontrolled layout.
+3. The same concept must remain recognizable across mobile and desktop.
+4. Premium is not merely a darker colour palette or more animation. Its difference is composition, hierarchy, art direction, and richer page storytelling.
+5. The plan entitlement must be enforced by the generator. A Starter site must not receive Growth or Premium modules because the AI selected them.
+6. The customer can request a different visual direction only from the approved concepts available to the purchased plan.
 
-### Global modules
+## 4. Plan-level design specification
 
-The first library should include:
+### Starter: Clean and focused
 
-1. Announcement bar.
-2. Site header.
-3. Hero.
-4. Trust strip.
-5. About story.
-6. Services or offerings.
-7. Gallery.
-8. Testimonial or quote.
-9. FAQ.
-10. Location and hours.
-11. Contact CTA.
-12. Contact form.
-13. Social links.
-14. Footer.
+Starter sites use a restrained type scale, one primary accent, straightforward grids, compact section spacing, and a small set of reliable module variants. The page should reach the primary conversion action quickly. The recommended home page has six to eight meaningful sections.
 
-Testimonials, prices, hours, maps, and social proof must only appear when the business supplies or approves the information.
+Starter should prioritize:
 
-### Vertical-specific modules
+- A clear hero with one primary CTA.
+- A concise about or value section.
+- A services or offerings section.
+- A gallery when approved images exist.
+- Location or operating details when supplied.
+- A final WhatsApp, phone, email, or contact-link CTA.
 
-**Hospitality & Food:** grouped menu, signature offering, venue story, opening-hours/location, catering callout, accommodation highlights.
+Starter should avoid overlapping cards, large decorative backgrounds, complex scroll effects, multiple competing CTAs, and dense content blocks.
 
-**Beauty & Grooming:** service categories, before-and-after gallery, studio experience, booking enquiry CTA, opening-hours/location, seasonal service callout.
+### Growth: Editorial and conversion-focused
 
-**Professional Services:** practice areas, principal profile, process steps, credentials, representative work, consultation CTA.
+Growth sites use more visual rhythm, more section variants, stronger image treatment, grouped content, and a clearer inner-page structure. The home page should have eight to twelve meaningful sections, with two additional pages available when the content justifies them.
 
-**Local & Home Services:** service areas, quote request, service checklist, process steps, project gallery, supplied availability notice.
+Growth may use:
 
-**Events & Community:** event hero, date and location, programme, organizer profile, venue directions, previous-event gallery, registration-interest CTA.
+- Split or image-led heroes.
+- Grouped offerings and featured items.
+- Process, FAQ, proof, or trust sections.
+- Richer galleries.
+- Contact forms.
+- About and services inner pages.
+- Deeper page metadata and structured content.
 
-**Education & Care:** programme overview, learning approach, facilities gallery, admissions steps, term notice, location and contact panel.
+### Premium: Art-directed and distinctive
 
-## Plan-level allowances
+Premium sites use the strongest approved typography, image composition, contrast, layering, editorial rhythm, and page narrative. Premium does not authorize arbitrary design. It authorizes a larger set of tested variants and more deliberate composition.
 
-| Capability | Starter | Growth | Premium |
-|---|---|---|---|
-| Page model | One strong single-page site | Home plus two extra pages | Home plus four extra pages |
-| Home modules | 6–8 | 8–12 | 10–16 |
-| Hero variants | 2 | 4 | 6 |
-| Theme depth | One restrained direction | More profiles and section contrast | Art-directed profiles and layering |
-| Offerings | Basic list or cards | Grouped, featured, or richer grids | Editorial and highly composed layouts |
-| Gallery | Simple grid or horizontal gallery | Multiple layouts | Editorial collage and richer treatment |
-| Contact | WhatsApp, phone, email links | Contact form plus Starter actions | Contact form plus stronger conversion composition |
-| SEO | Technical baseline | Expanded page metadata | Deeper page hierarchy and content fields |
-| Revisions | 1 | 3 | 5 |
-| Extra pages | 0 | 2 | 4 |
+Premium may use:
 
-The server must enforce these entitlements. AI output must not unlock Growth or Premium capabilities for a Starter request.
+- Layered or art-directed heroes.
+- Controlled overlap and asymmetric grids.
+- Featured offerings with supporting detail.
+- Editorial galleries and story sections.
+- Stronger proof and process narratives.
+- Up to four additional pages.
+- Premium consultation or enquiry journeys.
 
-## Required visual variants
+Motion must remain purposeful, short, and respectful of reduced-motion preferences. Visual complexity must never reduce readability or conversion clarity.
 
-### Hero
+## 5. Shared visual foundations and token guidelines
 
-Create `centered-editorial`, `split-image`, `image-led`, `dark-panel`, and `minimal-service` variants. Starter should use the first two. Growth can add image-led and dark-panel. Premium can use all five, including controlled overlap and layering.
+The designer should create one foundation library before creating vertical-specific modules. Token names should remain stable so they can be mapped directly into the renderer.
 
-### Offerings
+### 5.1 Colour tokens
 
-Create `simple-list`, `card-grid`, `grouped-categories`, `featured-item`, and `editorial-split` variants. The family must handle one item, many items, long descriptions, missing prices, and mobile stacking.
-
-### Gallery
-
-Create `two-column-grid`, `three-column-grid`, `editorial-collage`, `horizontal-scroll`, and `featured-with-thumbnails` variants. If no approved images exist, use an image-free alternative rather than empty image cards.
-
-### Conversion
-
-Create WhatsApp-first, phone-first, quote-request, consultation, visit-location, and contact-form variants. Each page should have one primary conversion goal.
-
-## Designer deliverables
-
-### Foundations file
-
-The Figma file should contain brand direction, typography, colour, spacing, grid, buttons, links, form controls, navigation, footer, image treatment, responsive behavior, and accessibility states. Each foundation needs a usage note and a do/don’t example.
-
-### Module library
-
-Show Starter, Growth, and Premium behavior where it materially differs. Provide desktop and mobile frames, long and short content, missing optional fields, empty states, focus states, and image failures. Use stable IDs that can become code registry IDs.
-
-### Vertical adaptation boards
-
-For each initial vertical, show the recommended hero, offerings module, proof/story module, gallery treatment, conversion action, image guidance, and modules that should not be used.
-
-### Recipe boards
-
-Create at least one home recipe per vertical and plan. Create inner-page recipes for Growth and Premium. Label modules with IDs, for example:
+Use semantic roles, not raw colour names. A site theme may change the underlying values while preserving the role.
 
 ```text
-hospitality-food / growth / home
-hero.split-image
-trust-strip.operating-details
-offerings.grouped-categories
-story.short-about
-gallery.editorial-grid
-location.hours-map
-cta.whatsapp-form
-footer.standard
+color.canvas              Page background
+color.surface              Card, panel, and raised-surface background
+color.surface-muted        Low-emphasis section background
+color.ink                  Primary text
+color.ink-muted            Secondary text and metadata
+color.ink-subtle           Tertiary text; never use for essential information
+color.brand                Primary brand accent
+color.brand-strong         Hover, active, or high-contrast brand accent
+color.brand-soft           Light accent background
+color.action               Primary CTA background
+color.action-ink           Primary CTA text
+color.border               Default border
+color.border-strong        Emphasized border or divider
+color.success              Success state
+color.warning              Warning state
+color.danger               Error and destructive state
+color.focus                Keyboard focus indicator
 ```
 
-### Handoff specification
+Every theme must specify contrast-safe values for text, links, buttons, form controls, image overlays, and focus indicators. Do not use colour as the only way to communicate meaning.
 
-Every module needs a written specification beside the Figma component. It must state the content contract, responsive behavior, plan availability, vertical tags, registry ID, and revision category.
+### 5.2 Typography tokens
 
-## Generator and registry rules
+Typography should use a display family and a reading family only when the pairing is justified. A single-family system is acceptable for Starter.
 
-The future implementation should use a versioned registry. A simplified entry could look like this:
+```text
+type.family-display       Headings and display statements
+type.family-body          Paragraphs, labels, and UI text
+type.weight-regular       Body copy
+type.weight-medium        Labels and supporting emphasis
+type.weight-semibold      Buttons, cards, and subheadings
+type.weight-bold          Strong display emphasis
+type.size-display         Large hero statement
+type.size-h1              Page heading
+type.size-h2              Major section heading
+type.size-h3              Module heading
+type.size-body            Default reading size
+type.size-small           Metadata and supporting copy
+type.size-label           Buttons, tags, and form labels
+type.leading-display      Display line height
+type.leading-heading      Heading line height
+type.leading-body         Reading line height
+type.tracking-display     Display letter spacing
+type.tracking-label       Label letter spacing
+```
+
+Recommended hierarchy:
+
+- One visible `h1` per page.
+- `h2` for major sections.
+- `h3` for module-level subheadings.
+- Paragraph text should normally use 45–75 characters per line on desktop.
+- A hero should communicate the business and customer benefit before decorative language.
+- Uppercase labels are optional and must not replace meaningful headings.
+
+### 5.3 Spacing and layout tokens
+
+Use a four-point base scale with larger composition steps. Avoid one-off spacing values.
+
+```text
+space-1   4px       space-2   8px       space-3   12px
+space-4   16px      space-5   20px      space-6   24px
+space-8   32px      space-10  40px      space-12  48px
+space-16  64px      space-20  80px      space-24  96px
+space-32  128px
+```
+
+```text
+layout.page-gutter-mobile   20px
+layout.page-gutter-tablet   32px
+layout.page-gutter-desktop  48px
+layout.content-max          1200px
+layout.reading-max          720px
+layout.hero-max             1280px
+layout.grid-gap             24px
+layout.section-gap          80px Starter baseline
+layout.section-gap-rich     112px Growth/Premium maximum baseline
+```
+
+The exact pixel values may be tuned during implementation, but the relationships must remain consistent. The smallest screens must never require horizontal scrolling.
+
+### 5.4 Shape, elevation, and motion tokens
+
+```text
+radius-none       0px       radius-sm       6px
+radius-md         10px      radius-lg       16px
+radius-xl         24px      radius-pill     999px
+shadow-none       none      shadow-soft     low-elevation card
+shadow-raised     medium-elevation panel
+shadow-focus      visible keyboard focus treatment
+```
+
+Use rounded surfaces intentionally. Hospitality and Beauty may use softer radii; Professional Services may use sharper geometry. The theme must not apply a radius to every element automatically.
+
+```text
+motion-fast       120ms
+motion-standard   220ms
+motion-slow       420ms
+motion-ease       ease-out
+motion-reduced    no transform, no parallax, no essential motion
+```
+
+Do not make content appear only after motion. Hover effects must have keyboard-equivalent states.
+
+### 5.5 Responsive and media tokens
+
+The designer must show at least these states:
+
+- Narrow mobile: approximately 320–375px.
+- Wide mobile: approximately 390–480px.
+- Tablet: approximately 768px.
+- Desktop: approximately 1280px.
+- Wide desktop: approximately 1440px and above.
+
+```text
+media.hero-wide          16:9 or wider
+media.hero-portrait      4:5
+media.card-landscape     4:3
+media.card-portrait      3:4
+media.gallery-square     1:1
+media.avatar             1:1
+media.logo               intrinsic, constrained by height
+```
+
+Every image slot needs an approved crop strategy, an `alt`-text rule, a loading rule, and a no-image fallback. Decorative images should use empty alternative text; informative images need supplied descriptions.
+
+## 6. Module specification format
+
+Every module delivered by the designer must include the following fields:
+
+```text
+id
+family
+purpose
+supportedBusinessGroups
+supportedNiches
+supportedPlans
+requiredContent
+optionalContent
+visualVariants
+primaryAction
+secondaryAction
+allowedPositions
+mobileBehavior
+emptyState
+accessibilityState
+imageRequirements
+performanceNotes
+revisionCategory
+registryVersion
+```
+
+The `revisionCategory` must be one of:
+
+- `content`: copy, label, link, image, or colour-level change.
+- `composition`: module ordering, spacing, variant, or layout change.
+- `new-scope`: unsupported module, new page, or plan upgrade request.
+
+This classification will support the future intelligent edit-cost calculation.
+
+## 7. Complete shared module inventory
+
+The following inventory is the initial implementation catalogue. Each module should have a Figma component, mobile and desktop frames, long-content behavior, empty state, and a renderer specification.
+
+### 7.1 Global shell modules
+
+| Module ID | Purpose and hierarchy | Initial variants | Availability |
+|---|---|---|---|
+| `shell.announcement` | Optional time-sensitive notice above navigation; never compete with the hero | `quiet`, `accent`, `dismissible` | All plans when supplied |
+| `shell.header` | Brand first, primary navigation second, primary action third | `simple`, `transparent`, `editorial` | All plans; richer variants Growth/Premium |
+| `shell.mobile-navigation` | Accessible menu with clear close state and primary CTA | `drawer`, `compact` | All plans |
+| `shell.breadcrumbs` | Context for inner pages; never needed on a single-page Starter site | `minimal`, `labelled` | Growth/Premium where useful |
+| `shell.footer` | Contact summary, navigation, legal links, social links, and final action | `standard`, `expanded`, `editorial` | All plans |
+
+### 7.2 Hero and orientation modules
+
+| Module ID | Purpose and hierarchy | Initial variants | Required content |
+|---|---|---|---|
+| `hero.primary` | One `h1`, short supporting statement, one primary CTA, optional secondary action | `centered`, `split-image`, `image-led`, `dark-panel`, `minimal-service`, `layered-editorial` | Business name or supplied title; truthful value proposition |
+| `hero.inner` | Page title and orientation for inner pages | `compact`, `image-strip`, `editorial` | Page title |
+| `orientation.trust-strip` | Fast confidence or operating facts; only supplied facts | `inline`, `icon-row`, `metrics` | At least two factual items |
+| `orientation.quick-links` | Direct links to key sections or pages | `pills`, `stacked`, `rail` | Destination labels and links |
+
+The hero must not contain invented claims. If no approved image is available, use a strong typographic or colour-led variant rather than an empty image frame.
+
+### 7.3 Story, offering, and proof modules
+
+| Module ID | Purpose and hierarchy | Initial variants | Notes |
+|---|---|---|---|
+| `story.about` | Explain who the business is and why it exists | `short`, `split-image`, `editorial` | Use supplied facts only |
+| `story.feature` | Highlight one supplied differentiator or offering | `image-text`, `dark-panel`, `large-type` | One idea, not a second hero |
+| `offerings.list` | Present a scannable list of services, products, menu items, or programmes | `simple-list`, `compact-cards`, `grouped-categories` | Prices optional and never invented |
+| `offerings.featured` | Give one or two supplied items visual priority | `featured-item`, `split-detail`, `editorial-card` | Must link to fuller information when needed |
+| `offerings.comparison` | Compare supplied packages or programmes | `cards`, `horizontal`, `stacked-mobile` | Growth/Premium; avoid false equivalence |
+| `proof.process` | Show how the business works | `three-step`, `timeline`, `numbered-list` | Use only supplied process steps |
+| `proof.testimonials` | Show customer quotes | `quote-card`, `editorial-quote`, `stacked` | Only when real approved quotes exist |
+| `proof.credentials` | Display supplied qualifications, associations, or certifications | `logo-row`, `credential-cards`, `text-list` | Never infer credentials |
+| `proof.projects` | Show representative work or completed projects | `case-cards`, `featured-project`, `gallery-linked` | Professional and local-service groups |
+| `proof.stats` | Show supplied measurable facts | `number-row`, `highlight-card` | Do not create numbers |
+
+### 7.4 Media modules
+
+| Module ID | Purpose and hierarchy | Initial variants | Empty behavior |
+|---|---|---|---|
+| `media.gallery` | Let customers inspect approved work, venue, products, or atmosphere | `two-column`, `three-column`, `horizontal-scroll`, `editorial-collage`, `featured-thumbnails` | Remove module or use image-free story section |
+| `media.image-text` | Combine one approved image with a focused story | `image-left`, `image-right`, `overlap` | Fall back to text-only story |
+| `media.video-placeholder` | Reserved for a supplied hosted video or approved embed | `poster-card`, `full-bleed` | Do not render if no video exists |
+| `media.logo-strip` | Show supplied partners or brands | `quiet-row`, `scrolling-rail` | Remove if no approved logos |
+
+### 7.5 Local information and conversion modules
+
+| Module ID | Purpose and hierarchy | Initial variants | Availability |
+|---|---|---|---|
+| `local.location` | Address, area served, directions, and map when supplied | `map-split`, `text-card`, `dark-panel` | All groups where relevant |
+| `local.hours` | Opening or operating hours supplied by the customer | `table`, `compact-list`, `highlight` | Remove when absent |
+| `local.service-area` | Areas served by local businesses | `tag-list`, `map-free-list`, `split` | Local & Home Services |
+| `conversion.cta` | One strong next action | `whatsapp`, `phone`, `email`, `visit`, `consultation`, `quote` | All plans |
+| `conversion.contact-form` | Structured enquiry capture | `compact`, `split`, `multi-step-light` | Growth and Premium only |
+| `conversion.faq` | Address approved recurring questions | `accordion`, `two-column`, `editorial` | Growth/Premium or content-rich Starter |
+| `conversion.social-links` | Provide supplied social destinations | `inline`, `icon-row`, `footer-only` | All plans when supplied |
+| `conversion.notice` | Important supplied notice or next step | `quiet`, `accent`, `warning` | All plans when needed |
+
+### 7.6 Utility and state modules
+
+| Module ID | Purpose | Required states |
+|---|---|---|
+| `utility.section-heading` | Consistent eyebrow, heading, and supporting copy | Short, long, no-supporting-copy |
+| `utility.button-group` | Primary and secondary actions | One action, two actions, narrow mobile |
+| `utility.tag-list` | Niche, service area, programme, or category labels | One tag, many tags, wrapping |
+| `utility.divider` | Separate content without excessive borders | Light, strong, hidden mobile |
+| `utility.empty-content` | Truthful fallback when optional content is absent | No image, no testimonial, no map |
+| `utility.form-field` | Shared form input behavior | Default, focus, error, success, disabled |
+| `utility.status-message` | Submission and error feedback | Success, validation error, network error |
+
+## 8. Vertical specification: Restaurants & Hospitality
+
+### 8.1 Design objective
+
+The Hospitality & Food family must make the business feel real, local, and easy to visit or contact. Food and venue imagery should create appetite or atmosphere, but the first screen must still answer: what is this business, where is it, and what should I do next?
+
+Use **Restaurants & Hospitality** as the customer-facing group. Internally use `hospitality-food`.
+
+### 8.2 Niche adaptations
+
+| Niche | Priority content | Primary action |
+|---|---|---|
+| Restaurant | Menu or offerings, signature items, location, hours, atmosphere | Visit, call, WhatsApp |
+| Cafe | Menu highlights, atmosphere, location, opening hours | Visit, directions, WhatsApp |
+| Bakery | Signature products, gallery, ordering or enquiry details | WhatsApp, call |
+| Caterer | Catering services, event types, service area, enquiry | Quote or WhatsApp |
+| Lodge or guesthouse | Accommodation highlights, facilities, location, gallery | Enquiry or call |
+| Takeaway | Menu, ordering contact, collection details, operating hours | WhatsApp or call |
+
+### 8.3 Plan concepts and page recipes
+
+#### Starter: Clean Local Welcome
+
+Visual direction: warm canvas, clear display heading, one prominent supplied image or a typography-led hero, compact menu or offerings cards, and a visible location/action path. Use no more than two strong image moments.
+
+Recommended home sequence:
+
+```text
+shell.header.simple
+hero.primary.split-image or hero.primary.centered
+orientation.trust-strip.inline
+offerings.list.grouped-categories or offerings.list.simple-list
+story.about.short
+media.gallery.two-column              when approved images exist
+local.location + local.hours
+conversion.cta.whatsapp
+shell.footer.standard
+```
+
+Allowed Starter variations:
+
+- `hero.primary.centered` for businesses without an approved hero image.
+- `offerings.list.simple-list` for short menus or service lists.
+- `offerings.list.grouped-categories` when the customer supplies categories.
+- `media.gallery.two-column` for four to eight images.
+- `local.location` may be text-only when map data is absent.
+
+Starter should not use editorial collage, complex overlapping cards, video, or a contact form.
+
+#### Growth: Editorial Table
+
+Visual direction: richer food or venue imagery, stronger section rhythm, grouped offerings, one featured item, a simple venue story, gallery variety, and a contact form. Use two or three strong image moments with clear text balance.
+
+Recommended pages:
+
+```text
+Home: hero.primary.image-led
+      orientation.trust-strip.icon-row
+      offerings.featured.featured-item
+      offerings.list.grouped-categories
+      story.about.split-image
+      media.gallery.featured-thumbnails
+      local.location + local.hours
+      conversion.cta + conversion.contact-form
+
+About or Visit: hero.inner.image-strip
+                story.about.editorial
+                media.image-text
+                local.location + local.hours
+
+Menu or Services: hero.inner.compact
+                   offerings.list.grouped-categories
+                   offerings.featured.split-detail
+                   conversion.cta.whatsapp
+```
+
+Growth may use `media.gallery.horizontal-scroll`, `proof.process.three-step` for catering, and `conversion.faq.accordion`. The form should remain short and appropriate to an enquiry, not a booking engine.
+
+#### Premium: Signature Hospitality
+
+Visual direction: art-directed atmosphere, stronger typographic contrast, controlled overlap, featured offerings, editorial venue story, and a deliberate journey from desire to action. Use image depth without obscuring content or slowing the page.
+
+Recommended pages:
+
+```text
+Home: hero.primary.layered-editorial
+      orientation.quick-links.pills
+      offerings.featured.editorial-card
+      story.feature.image-text
+      offerings.list.grouped-categories
+      media.gallery.editorial-collage
+      local.location.dark-panel
+      proof.testimonials.editorial-quote when supplied
+      conversion.cta.visit or whatsapp
+
+About: hero.inner.editorial
+       story.about.editorial
+       media.image-text.overlap
+       proof.process.timeline when supplied
+       conversion.cta
+
+Menu or Services: hero.inner.image-strip
+                   offerings.featured.split-detail
+                   offerings.list.grouped-categories
+                   media.gallery.horizontal-scroll
+                   conversion.contact-form.split
+
+Visit or Contact: hero.inner.compact
+                  local.location + local.hours
+                  conversion.faq.two-column
+                  conversion.contact-form.split
+```
+
+Premium may use `hero.primary.dark-panel`, `media.gallery.editorial-collage`, and `media.image-text.overlap`, but no more than one overlapping composition should appear in a short page sequence.
+
+### 8.4 Hospitality module rules
+
+- Never generate menu items, ingredients, prices, dietary claims, opening hours, or awards.
+- If a menu is supplied as an image or document, show only approved extracted content and preserve an accessible text alternative where possible.
+- Do not use a generic food photograph as if it were the business’s own food. Label supplied stock or placeholder imagery internally and replace it before publication.
+- For lodges and guesthouses, use `offerings.featured` for accommodation types and `media.gallery` for supplied facilities or rooms.
+- For caterers, replace menu language with `offerings.list` for catering packages and use `proof.process` for the enquiry journey.
+- For takeaways, prioritize menu and WhatsApp or phone action above a long story section.
+- Location and hours are high-priority modules but must disappear cleanly when the business has not supplied them.
+
+## 9. Vertical specification: Beauty & Grooming
+
+### 9.1 Design objective
+
+The Beauty & Grooming family should communicate confidence, care, skill, and a clear path to enquire. Images should show the studio, work, or supplied products. The design should feel polished without making unsupported claims about expertise, results, or safety.
+
+Use **Beauty & Grooming** as the customer-facing group. Internally use `beauty-grooming`.
+
+### 9.2 Niche adaptations
+
+| Niche | Priority content | Primary action |
+|---|---|---|
+| Salon | Services, style gallery, studio details, opening information | WhatsApp or call |
+| Barber | Cuts and grooming services, work gallery, location | WhatsApp or call |
+| Spa | Treatments, atmosphere, facilities, enquiry details | WhatsApp or enquiry |
+| Nail studio | Service menu, style gallery, studio details | WhatsApp or enquiry |
+| Makeup artist | Portfolio, occasion types, process, service area | Consultation enquiry |
+| Wellness or beauty therapist | Treatment list, approach, location, supplied credentials | Enquiry or WhatsApp |
+
+### 9.3 Plan concepts and page recipes
+
+#### Starter: Polished Studio
+
+Visual direction: light or softly tinted canvas, confident type, clear services, one gallery, and a direct WhatsApp action. The design should feel finished without excessive decoration.
+
+Recommended home sequence:
+
+```text
+shell.header.simple
+hero.primary.centered or hero.primary.split-image
+story.about.short
+offerings.list.simple-list or offerings.list.compact-cards
+media.gallery.two-column
+local.location + local.hours when supplied
+conversion.cta.whatsapp
+shell.footer.standard
+```
+
+Allowed variants:
+
+- `hero.primary.centered` when the customer has no approved portrait or studio image.
+- `offerings.list.compact-cards` for short service groups.
+- `media.gallery.two-column` for supplied work examples.
+- `utility.tag-list` for service categories or style categories.
+
+Starter must not use invented before-and-after results, testimonials, booking availability, or product claims. It must not include a contact form.
+
+#### Growth: Studio Editorial
+
+Visual direction: stronger portrait or studio imagery, grouped service categories, a clear experience or process section, gallery rhythm, and contact form. The page should guide the customer from visual confidence to enquiry.
+
+Recommended pages:
+
+```text
+Home: hero.primary.image-led
+      orientation.trust-strip.inline
+      offerings.list.grouped-categories
+      story.feature.image-text
+      media.gallery.featured-thumbnails
+      proof.process.three-step when supplied
+      conversion.cta + conversion.contact-form
+
+Services: hero.inner.compact
+          offerings.list.grouped-categories
+          offerings.featured.featured-item
+          conversion.faq.accordion when supplied
+          conversion.contact-form.compact
+
+About or Studio: hero.inner.image-strip
+                  story.about.split-image
+                  media.image-text.image-right
+                  local.location + local.hours
+```
+
+Growth may use one `media.image-text.overlap` composition, provided the content remains readable on mobile. Use a short form with name, contact method, requested service, preferred message, and consent.
+
+#### Premium: Artisan Beauty House
+
+Visual direction: refined editorial type, carefully framed portraits or studio images, quiet luxury or distinctive craft, service highlights, transformations only when supplied, and a premium enquiry journey.
+
+Recommended pages:
+
+```text
+Home: hero.primary.layered-editorial
+      orientation.quick-links.pills
+      offerings.featured.editorial-card
+      story.feature.image-text
+      media.gallery.editorial-collage
+      proof.process.timeline when supplied
+      local.location.dark-panel
+      conversion.cta.consultation or whatsapp
+
+Services: hero.inner.editorial
+          offerings.list.grouped-categories
+          offerings.featured.split-detail
+          media.image-text.overlap
+          conversion.faq.two-column
+          conversion.contact-form.split
+
+Studio or About: hero.inner.image-strip
+                  story.about.editorial
+                  media.gallery.horizontal-scroll
+                  proof.credentials.logo-row when supplied
+                  local.hours + location
+
+Contact: hero.inner.compact
+         conversion.cta.consultation
+         conversion.contact-form.split
+         local.location
+```
+
+Premium may use a quiet dark panel or a high-contrast editorial section, but it must not imply luxury, exclusivity, medical efficacy, or professional credentials unless those facts are supplied and approved.
+
+### 9.4 Beauty module rules
+
+- Do not invent treatment names, prices, products, qualifications, sanitation claims, or results.
+- Do not present generic stock portraits as the studio’s own work.
+- Before-and-after content is permitted only when supplied and explicitly approved.
+- A gallery without sufficient images should be removed rather than filled with repetitive placeholders.
+- Service cards should support a short title, short description, optional duration, optional price, and optional image. Missing duration or price must not produce empty labels.
+- For barbers, prioritise service categories, work gallery, location, and WhatsApp action.
+- For makeup artists, prioritise portfolio, occasion types, process, service area, and consultation enquiry.
+- For spas and wellness businesses, use supplied treatment information and avoid health or medical claims.
+
+## 10. Other business-group starter recipes
+
+These are the first recipes to design after Hospitality & Food and Beauty & Grooming. They are included so the matrix has a complete starting scope without requiring full vertical specifications yet.
+
+### Professional Services
+
+```text
+hero.primary.centered or split-image
+orientation.trust-strip.inline
+story.about.short
+offerings.list.simple-list
+proof.process.three-step when supplied
+proof.credentials.logo-row when supplied
+conversion.cta.consultation
+```
+
+Growth adds `proof.projects`, `conversion.faq`, and `conversion.contact-form`. Premium adds `story.feature`, `proof.projects.featured-project`, and a case-led inner page.
+
+### Local & Home Services
+
+```text
+hero.primary.split-image
+orientation.trust-strip.inline
+offerings.list.compact-cards
+local.service-area.tag-list
+proof.process.three-step
+media.gallery.two-column when supplied
+conversion.cta.quote
+```
+
+Growth adds a quote form and FAQ. Premium adds project storytelling and a richer service-area composition.
+
+### Events & Community
+
+```text
+hero.primary.image-led
+orientation.quick-links.pills
+story.about.short
+offerings.list.grouped-categories or event details
+media.gallery.two-column
+local.location
+conversion.cta.whatsapp or enquiry
+```
+
+Growth adds programme, previous-event gallery, and enquiry form. Premium adds an immersive event story and additional inner pages.
+
+### Education & Care
+
+```text
+hero.primary.split-image
+story.about.short
+offerings.list.grouped-categories
+proof.process.three-step
+media.gallery.two-column
+local.location
+conversion.cta.enquiry
+```
+
+Growth adds admissions steps, FAQ, and contact form. Premium adds programme pathways and a richer learning-community narrative.
+
+### General Business
+
+```text
+hero.primary.centered
+story.about.short
+offerings.list.simple-list
+story.feature.image-text
+media.gallery.two-column when supplied
+conversion.cta
+```
+
+The composer should use General Business when vertical confidence is low instead of forcing a misleading niche.
+
+## 11. Page and section hierarchy
+
+Every page should follow this hierarchy unless the recipe explicitly states otherwise:
+
+```text
+Page
+└── Header
+    └── Main
+        ├── Hero: page identity and primary action
+        ├── Orientation: trust, quick links, or essential facts
+        ├── Core offer: services, menu, programmes, or practice areas
+        ├── Differentiation: story, process, proof, or featured item
+        ├── Evidence: gallery, credentials, projects, or supplied testimonials
+        ├── Local information: location, hours, service area, or directions
+        ├── Conversion: one clear next action or form
+        └── Footer
+```
+
+Hierarchy rules:
+
+1. The hero owns the page `h1`.
+2. Each major section has one `h2`.
+3. Cards use `h3` only when they represent a meaningful sub-item.
+4. An eyebrow or label supports a heading; it never replaces it.
+5. A primary CTA must be visually distinct from secondary links.
+6. The page should not have more than one visually dominant section in a row.
+7. The first screen should explain the business before asking for a detailed action.
+8. The final section should repeat the primary action in a calmer form.
+9. On mobile, visual order must follow reading order. Do not rely on image position to communicate essential meaning.
+10. Every form error must be visible in text and associated with its field.
+
+## 12. Registry and generation rules
+
+The generator should choose from a versioned registry. A registry entry should resemble the following:
 
 ```ts
 {
   id: "offerings.grouped-categories",
   family: "offerings",
   supportedPlans: ["starter", "growth", "premium"],
-  verticals: ["hospitality-food", "education-care"],
+  businessGroups: ["hospitality-food", "beauty-grooming", "education-care"],
   variants: ["compact", "editorial", "featured"],
   requiredFields: ["groups"],
   optionalFields: ["prices", "notes", "image"],
-  repeatable: false,
+  allowedPositions: ["home.core-offer", "services.core-offer"],
   registryVersion: "2026.09.1"
 }
 ```
 
-The existing `siteTemplate` field can remain for backward compatibility. New releases should add `vertical`, `niche`, `theme`, `recipes`, `modules`, and `moduleRegistryVersion`. Existing releases should continue to render through the legacy path until migrated.
+The generation flow is:
 
-The generation flow should be:
+1. Validate the intake object.
+2. Classify business group and niche.
+3. Store classification confidence.
+4. Use `general-business` when confidence is low.
+5. Select the plan concept, theme, page recipe, and module variants.
+6. Fill modules only from grounded intake facts and approved assets.
+7. Remove modules whose required content is missing.
+8. Enforce plan limits, page count, form entitlement, and module ordering.
+9. Render through trusted module components.
+10. Store the exact composition, theme, and registry version on the release.
 
-1. Validate intake.
-2. Classify vertical and niche.
-3. Assign confidence and use `general-business` when confidence is low.
-4. Select a plan-appropriate theme and recipe.
-5. Fill modules from grounded facts and approved assets.
-6. Select variants based on available content.
-7. Remove modules whose required data is missing.
-8. Enforce plan limits, page count, content length, CTA rules, and module ordering.
-9. Render through trusted module renderers.
-10. Store the composition and registry version with the release.
+The AI may choose among approved registry entries. It may not create new module IDs, unsupported variants, arbitrary markup, invented facts, or higher-plan entitlements. The deterministic fallback must use the same registry and recipes [3].
 
-The AI may choose among approved options. It may not create module IDs, unsupported variants, arbitrary markup, or plan features. The deterministic fallback must use the same registry and recipes.
+## 13. Designer handoff requirements
 
-## Composition quality rules
+### Figma foundations
 
-The composer must enforce the following:
+Deliver a foundations page containing typography, colour roles, spacing, grid, container widths, buttons, links, form controls, navigation, footer, image treatment, focus states, error states, and reduced-motion notes. Every token must have a stable name and a usage note.
 
-1. One primary hero and one primary conversion goal per page.
-2. No repeated module family without a clear content reason.
-3. Galleries require approved assets.
-4. Testimonials require approved testimonial content.
-5. Contact forms are unavailable to Starter.
-6. Two visually dominant image sections must not appear consecutively.
-7. Long content moves to an inner page or is shortened without changing facts.
-8. Every site has a route to WhatsApp, phone, or another approved contact action.
-9. The footer remains consistent across verticals.
-10. Every module works at narrow mobile widths.
-11. Accessibility and contrast checks run before preview generation.
-12. The same intake produces a stable composition unless a new design direction is requested.
+### Figma module library
 
-## Delivery phases
+For each module, provide:
 
-### Phase 1: Foundations
+- Desktop and narrow-mobile frames.
+- Starter, Growth, and Premium states where the difference is meaningful.
+- Short, long, and missing-content examples.
+- Image and no-image states.
+- Keyboard focus, error, and success states where relevant.
+- Content labels that map to the module contract.
+- Stable component and variant IDs.
 
-Finalize vocabulary, tokens, typography, colour, grids, buttons, navigation, footer, responsive behavior, and accessibility rules.
+### Vertical boards
 
-### Phase 2: Core library
+For Hospitality & Food and Beauty & Grooming, provide one board for each plan concept, one complete home recipe, the supported niche adaptations, and the prohibited or unavailable modules.
 
-Create and document the global modules. Prioritize complete states and excellent responsive behavior over a large number of sections.
+### Handoff metadata
 
-### Phase 3: Vertical modules
+Every module handoff must include:
 
-Add signature modules for Hospitality & Food, Beauty & Grooming, Professional Services, Local & Home Services, Events & Community, and Education & Care.
+```text
+module ID
+variant ID
+business-group tags
+niche tags
+plan availability
+required fields
+optional fields
+image ratio
+mobile stacking rule
+empty-state rule
+accessibility notes
+performance notes
+revision category
+registry version
+```
 
-### Phase 4: Plan depth
+## 14. Implementation sequence
 
-Apply Starter, Growth, and Premium visual depth without creating three unrelated design systems.
+### Phase 1: Hospitality & Food
 
-### Phase 5: Recipes and examples
+Design and implement the shared foundations, global shell, six core modules, three plan concepts, and the complete home recipe for Hospitality & Food. Validate the result at mobile and desktop widths before expanding the catalogue.
 
-Create one canonical home recipe per vertical and plan. Use fictional, clearly labelled content until real examples are approved.
+### Phase 2: Beauty & Grooming
 
-### Phase 6: Engineering handoff
+Reuse the foundations and shell. Add beauty-specific module variants, the three plan concepts, and complete home and services recipes.
 
-Convert IDs, variants, content contracts, and entitlements into the versioned registry. Update the shared contracts and renderer so new sites use modules rather than only the current broad template field [3].
+### Phase 3: Remaining groups
 
-### Phase 7: Verification
+Add Professional Services, Local & Home Services, Events & Community, Education & Care, and General Business one group at a time. Do not design all groups in parallel before the first two have passed implementation review.
 
-Test every module at mobile and desktop widths with long names, missing assets, missing optional fields, long lists, keyboard navigation, contrast, and no-data states. Test at least one complete composition per vertical and plan before adding more combinations.
+### Phase 4: Registry migration
 
-## Readiness definition
+Extend the existing generator contracts with `businessGroup`, `niche`, `theme`, `recipes`, `modules`, and `moduleRegistryVersion`. Keep the legacy broad template value for backward compatibility while new releases use the registry [3].
 
-The system is ready for implementation when every module has a stable ID, content contract, plan availability, responsive design, empty state, and accessibility behavior; every initial vertical has a canonical recipe; the AI can select only from the registry; and each release stores the exact composition and registry version.
+### Phase 5: Verification
 
-## Immediate designer assignment
+Test every module with long names, missing optional fields, missing images, many items, narrow mobile widths, keyboard navigation, contrast, reduced motion, and no-data states. Test at least one complete composition per plan and business group before adding more variants.
 
-Start with **Hospitality & Food across all three plans**. Design the foundations, six core modules, three hero variants, two offerings variants, two gallery variants, two conversion variants, and one complete home recipe per plan.
+## 15. Readiness definition
 
-This vertical is a strong first slice because it demonstrates imagery, structured offerings, location information, and WhatsApp conversion. After approval, reuse the foundations and contracts for Beauty & Grooming and Professional Services. Do not design every vertical in parallel before one complete slice has been implemented and tested.
+The first designer slice is ready for engineering when:
+
+- The three Hospitality & Food and three Beauty & Grooming concepts have approved Figma frames.
+- Every used module has a stable ID and content contract.
+- Every used module has mobile, desktop, empty, and accessibility states.
+- The plan matrix and entitlements are reflected in the registry.
+- The designer has provided image ratios, crop rules, and alt-text guidance.
+- The complete recipe can be rendered without invented content.
+- The approved composition and registry version can be stored on a release.
 
 ## References
 
 [1]: ../CONTEXT.md "Where They Are project context"
 
-[2]: USER-STORIES.md "Where They Are detailed user stories"
+[2]: USER-STORIES.md "Where They Are product user stories"
 
 [3]: ../packages/contracts/src/generator.ts "Where They Are generator contracts"
 
 **Document owner:** Where They Are product and design team  
-**Implementation owner:** Central NestJS generator and shared site-rendering system
-
-**Revision status:** Planning baseline. Update after the first approved Figma vertical slice.
-
-The current implementation should continue supporting existing broad template values until the module-registry migration is complete.
-
-End of plan.
+**Implementation owner:** Central NestJS generator and shared site-rendering system  
+**Revision status:** Expanded designer handoff; update after the first approved Figma slice.
