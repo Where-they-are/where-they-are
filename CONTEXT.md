@@ -272,6 +272,8 @@ The modular design direction and complete designer handoff are documented in [`p
 
 The available product-planning document in `plans/` is `USER-STORIES.md`; it references `USER-FLOWS.md`, but that file is not currently present. The available stories and end-to-end slices were reviewed. The implementation intentionally keeps only the core customer journey and leaves teams, support queues, audits, advanced analytics, and future operations-console capabilities out of scope.
 
+The authoritative MVP scope and feature pushback protocol is [`plans/MVP-SCOPE.md`](plans/MVP-SCOPE.md). Agents must read it before implementing features, push back on unnecessary or out-of-scope requests, and require an explicit scope change recorded in that document before adding deferred product surface area.
+
 ## Known limitations and next backend work
 
 - Authentication currently uses a bootstrap endpoint plus `x-user-id`/business membership headers as a development boundary; a production session/auth provider is still required.
@@ -299,6 +301,7 @@ The available product-planning document in `plans/` is `USER-STORIES.md`; it ref
 8. Create a separate Git commit for each modular todo.
 9. Do not install packages automatically when the user has asked to run installation commands themselves.
 10. Run the appropriate type checks, unit tests, smoke tests, and end-to-end tests before marking a feature complete.
+11. Apply the MVP scope gate in `plans/MVP-SCOPE.md` before implementing any new feature.
 
 The current database verification commands are `pnpm --filter @where-they-are/db db:generate`, `pnpm --filter @where-they-are/db db:validate`, `pnpm --filter @where-they-are/db db:seed`, `pnpm run test:db`, and `pnpm run test:e2e:db`. The new local migrations are named `add_payments`, `add_domains`, `add_billing`, `add_contact_submissions`, `add_feedback_approvals`, and `add_publication_state`.
 
