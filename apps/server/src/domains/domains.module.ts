@@ -4,7 +4,7 @@ import { DomainsController } from "./domains.controller.js";
 import { DomainsService } from "./domains.service.js";
 
 @Module({
-  controllers: [DomainsController],
-  providers: [DomainsService],
+	controllers: [DomainsController],
+	providers: [DomainsService],
 })
 export class DomainsModule {}

@@ -4,7 +4,7 @@ import { PublicationController } from "./publication.controller.js";
 import { PublicationService } from "./publication.service.js";
 
 @Module({
-  controllers: [PublicationController],
-  providers: [PublicationService],
+	controllers: [PublicationController],
+	providers: [PublicationService],
 })
 export class PublicationModule {}

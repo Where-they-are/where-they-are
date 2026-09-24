@@ -6,7 +6,7 @@ import { DeploymentController } from "./deployment.controller.js";
 import { DeploymentService } from "./deployment.service.js";
 
 @Module({
-  controllers: [DeploymentController],
-  providers: [CoolifyClient, DeploymentService, ReleaseStore],
+	controllers: [DeploymentController],
+	providers: [CoolifyClient, DeploymentService, ReleaseStore],
 })
 export class DeploymentModule {}

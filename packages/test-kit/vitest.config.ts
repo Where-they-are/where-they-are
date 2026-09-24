@@ -1,10 +1,10 @@
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
-  test: {
-    include: ["src/**/*.test.ts"],
-    exclude: ["node_modules/**", "dist/**"],
-    restoreMocks: true,
-    clearMocks: true,
-  },
+	test: {
+		clearMocks: true,
+		exclude: ["node_modules/**", "dist/**"],
+		include: ["src/**/*.test.ts"],
+		restoreMocks: true,
+	},
 });

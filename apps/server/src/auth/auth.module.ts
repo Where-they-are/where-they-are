@@ -4,8 +4,8 @@ import { AuthController } from "./auth.controller.js";
 import { TenantAuthGuard } from "./tenant-auth.guard.js";
 
 @Module({
-  controllers: [AuthController],
-  providers: [TenantAuthGuard],
-  exports: [TenantAuthGuard],
+	controllers: [AuthController],
+	exports: [TenantAuthGuard],
+	providers: [TenantAuthGuard],
 })
 export class AuthModule {}

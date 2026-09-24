@@ -6,13 +6,13 @@
   "scripts": {
     "check-types": "tsc --noEmit",
     "test": "vitest run",
-    "test:unit": "vitest run src/unit",
-    "test:watch": "vitest",
-    "test:db": "vitest run src/integration",
-    "test:smoke": "tsx scripts/smoke.ts",
     "test:coolify": "tsx scripts/coolify-smoke.ts",
+    "test:db": "vitest run src/integration",
     "test:e2e": "playwright test",
-    "test:e2e:db": "tsx scripts/db-e2e.ts"
+    "test:e2e:db": "tsx scripts/db-e2e.ts",
+    "test:smoke": "tsx scripts/smoke.ts",
+    "test:unit": "vitest run src/unit",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@where-they-are/contracts": "workspace:*",

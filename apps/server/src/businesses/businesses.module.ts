@@ -5,7 +5,7 @@ import { BusinessesController } from "./businesses.controller.js";
 import { BusinessesService } from "./businesses.service.js";
 
 @Module({
-  controllers: [BusinessesController],
-  providers: [BusinessesService, TenantAuthGuard],
+	controllers: [BusinessesController],
+	providers: [BusinessesService, TenantAuthGuard],
 })
 export class BusinessesModule {}

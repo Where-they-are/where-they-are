@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node --import tsx --import varlock/auto-load --watch src/index.ts",
     "build": "tsc",
     "check-types": "tsc --noEmit",
+    "dev": "node --import tsx --import varlock/auto-load --watch src/index.ts",
     "env:generate": "varlock codegen",
     "start": "node --import varlock/auto-load dist/index.js",
     "test": "vitest run"

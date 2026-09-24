@@ -6,8 +6,8 @@ import { SitesController } from "./sites.controller.js";
 import { SitesService } from "./sites.service.js";
 
 @Module({
-  imports: [GeneratorModule],
-  controllers: [SitesController],
-  providers: [SitesService, TenantAuthGuard],
+	controllers: [SitesController],
+	imports: [GeneratorModule],
+	providers: [SitesService, TenantAuthGuard],
 })
 export class SitesModule {}

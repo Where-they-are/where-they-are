@@ -5,8 +5,8 @@ import { GeneratorService } from "./generator.service.js";
 import { PreviewController } from "./preview.controller.js";
 
 @Module({
-  controllers: [GeneratorController, PreviewController],
-  providers: [GeneratorService],
-  exports: [GeneratorService],
+	controllers: [GeneratorController, PreviewController],
+	exports: [GeneratorService],
+	providers: [GeneratorService],
 })
 export class GeneratorModule {}

@@ -14,7 +14,19 @@ import { PublicationModule } from "./publication/publication.module.js";
 import { SitesModule } from "./sites/sites.module.js";
 
 @Module({
-  controllers: [HealthController],
-  imports: [AuthModule, BillingModule, BusinessesModule, ContactModule, DeploymentModule, DomainsModule, FeedbackModule, GeneratorModule, PaymentsModule, PublicationModule, SitesModule],
+	controllers: [HealthController],
+	imports: [
+		AuthModule,
+		BillingModule,
+		BusinessesModule,
+		ContactModule,
+		DeploymentModule,
+		DomainsModule,
+		FeedbackModule,
+		GeneratorModule,
+		PaymentsModule,
+		PublicationModule,
+		SitesModule,
+	],
 })
 export class AppModule {}

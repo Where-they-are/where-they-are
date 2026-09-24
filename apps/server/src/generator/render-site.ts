@@ -1,23 +1,31 @@
-import type { SitePage, SiteSection, SiteSpecification } from "@where-they-are/contracts";
+import type {
+	SitePage,
+	SiteSection,
+	SiteSpecification,
+} from "@where-they-are/contracts";
 
 const escapeHtml = (value: string): string =>
-  value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+	value
+		.replaceAll("&", "&amp;")
+		.replaceAll("<", "&lt;")
+		.replaceAll(">", "&gt;")
+		.replaceAll('"', "&quot;")
+		.replaceAll("'", "&#039;");
 
-const renderSection = (section: SiteSection, specification: SiteSpecification): string => {
-  const items = section.items.length
-    ? `<ul>${section.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
-    : "";
+const renderSection = (
+	section: SiteSection,
+	specification: SiteSpecification
+): string => {
+	const items = section.items.length
+		? `<ul>${section.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
+		: "";
 
-  const contact = section.type === "contact"
-    ? `<a class="button" href="https://wa.me/${encodeURIComponent(specification.whatsapp ?? specification.phone ?? "")}">Chat on WhatsApp</a>`
-    : "";
+	const contact =
+		section.type === "contact"
+			? `<a class="button" href="https://wa.me/${encodeURIComponent(specification.whatsapp ?? specification.phone ?? "")}">Chat on WhatsApp</a>`
+			: "";
 
-  return `<section class="section section-${section.type}">
+	return `<section class="section section-${section.type}">
     <div class="container">
       <h2>${escapeHtml(section.heading)}</h2>
       <p>${escapeHtml(section.body)}</p>
@@ -28,15 +36,21 @@ const renderSection = (section: SiteSection, specification: SiteSpecification): 
 };
 
 const renderPage = (page: SitePage, specification: SiteSpecification): string =>
-  page.sections.map((section) => renderSection(section, specification)).join("\n");
+	page.sections
+		.map((section) => renderSection(section, specification))
+		.join("\n");
 
 export const renderSiteHtml = (specification: SiteSpecification): string => {
-  const home = specification.pages[0];
-  const pageTitle = escapeHtml(home?.title ?? specification.businessName);
-  const description = escapeHtml(home?.description ?? `Learn more about ${specification.businessName}.`);
-  const body = specification.pages.map((page) => renderPage(page, specification)).join("\n");
+	const home = specification.pages[0];
+	const pageTitle = escapeHtml(home?.title ?? specification.businessName);
+	const description = escapeHtml(
+		home?.description ?? `Learn more about ${specification.businessName}.`
+	);
+	const body = specification.pages
+		.map((page) => renderPage(page, specification))
+		.join("\n");
 
-  return `<!doctype html>
+	return `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />

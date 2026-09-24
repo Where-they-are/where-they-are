@@ -1,30 +1,31 @@
 {
   "name": "where-they-are",
   "private": true,
+  "type": "module",
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
-  "type": "module",
   "scripts": {
-    "dev": "turbo run dev",
     "build": "turbo run build",
+    "check": "ultracite check",
     "check-types": "turbo run check-types",
+    "dev": "turbo run dev",
+    "dev:dealership-demo": "turbo run dev -F @where-they-are/dealership-demo --",
     "dev:web": "turbo run dev -F web --",
-    "test:unit": "pnpm --filter @where-they-are/test-kit test:unit",
-    "test:db": "pnpm --filter @where-they-are/test-kit test:db",
-    "test:smoke": "pnpm --filter @where-they-are/test-kit test:smoke",
-    "test:coolify": "pnpm --filter @where-they-are/test-kit test:coolify",
-    "test:e2e": "pnpm --filter @where-they-are/test-kit test:e2e",
-    "test:e2e:db": "pnpm --filter @where-they-are/test-kit test:e2e:db",
     "docker:build": "docker compose build",
-    "docker:up": "docker compose up -d --build",
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f",
+    "docker:up": "docker compose up -d --build",
     "env:generate": "varlock codegen --path ./apps/web/",
+    "fix": "ultracite fix",
     "postinstall": "varlock codegen --path ./apps/web/",
-    "check": "ultracite check",
-    "fix": "ultracite fix"
+    "test:coolify": "pnpm --filter @where-they-are/test-kit test:coolify",
+    "test:db": "pnpm --filter @where-they-are/test-kit test:db",
+    "test:e2e": "pnpm --filter @where-they-are/test-kit test:e2e",
+    "test:e2e:db": "pnpm --filter @where-they-are/test-kit test:e2e:db",
+    "test:smoke": "pnpm --filter @where-they-are/test-kit test:smoke",
+    "test:unit": "pnpm --filter @where-they-are/test-kit test:unit"
   },
   "dependencies": {
     "zod": "catalog:"

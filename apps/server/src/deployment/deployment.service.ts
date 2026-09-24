@@ -1,32 +1,36 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import {
-  deploySiteRequestSchema,
-  type DeploySiteResponse,
+	type DeploySiteResponse,
+	deploySiteRequestSchema,
 } from "@where-they-are/contracts";
-
-import { CoolifyClient } from "./coolify.client.js";
-import { ReleaseStore } from "../generator/release-store.js";
+import type { ReleaseStore } from "../generator/release-store.js";
+import type { CoolifyClient } from "./coolify.client.js";
 
 @Injectable()
 export class DeploymentService {
-  public constructor(
-    private readonly coolifyClient: CoolifyClient,
-    private readonly releaseStore: ReleaseStore,
-  ) {}
+	public constructor(
+		private readonly coolifyClient: CoolifyClient,
+		private readonly releaseStore: ReleaseStore
+	) {}
 
-  public async deploy(input: unknown): Promise<DeploySiteResponse> {
-    const request = deploySiteRequestSchema.parse(input);
-    if (!(await this.releaseStore.exists(request.releaseId, request.businessId))) {
-      throw new NotFoundException(`Release ${request.releaseId} was not found`);
-    }
+	public async deploy(input: unknown): Promise<DeploySiteResponse> {
+		const request = deploySiteRequestSchema.parse(input);
+		if (
+			!(await this.releaseStore.exists(request.releaseId, request.businessId))
+		) {
+			throw new NotFoundException(`Release ${request.releaseId} was not found`);
+		}
 
-    const deployment = await this.coolifyClient.deploy(request.coolifyResourceUuid, request.force);
+		const deployment = await this.coolifyClient.deploy(
+			request.coolifyResourceUuid,
+			request.force
+		);
 
-    return {
-      releaseId: request.releaseId,
-      status: deployment ? "queued" : "deployed",
-      deploymentUuid: deployment?.deployment_uuid ?? null,
-      message: deployment?.message ?? "Coolify accepted the deployment request",
-    };
-  }
+		return {
+			deploymentUuid: deployment?.deployment_uuid ?? null,
+			message: deployment?.message ?? "Coolify accepted the deployment request",
+			releaseId: request.releaseId,
+			status: deployment ? "queued" : "deployed",
+		};
+	}
 }

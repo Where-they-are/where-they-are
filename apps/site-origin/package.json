@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "check-types": "tsc --noEmit",
+    "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js"
   },
   "devDependencies": {
