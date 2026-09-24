@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 
+import { SampleBanner } from "@/components/sample-banner";
+import { SiteFooter } from "@/components/site-footer";
+
 import "./globals.css";
 
 const geist = localFont({
@@ -42,7 +45,17 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
 	return (
 		<html className={`${geist.variable} ${geistMono.variable}`} lang="en">
-			<body className="min-h-svh antialiased">{children}</body>
+			<body className="flex min-h-svh flex-col antialiased">
+				<a
+					className="sr-only z-50 rounded-full bg-ink px-4 py-2 font-semibold text-white focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+					href="#main"
+				>
+					Skip to content
+				</a>
+				<SampleBanner />
+				<div className="flex-1">{children}</div>
+				<SiteFooter />
+			</body>
 		</html>
 	);
 }

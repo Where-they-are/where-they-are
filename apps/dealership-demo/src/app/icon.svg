@@ -1,0 +1,16 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+	<title>Ridgeline Motors</title>
+	<rect fill="#0E0F11" height="64" rx="14" width="64" />
+	<text
+		fill="#FFFFFF"
+		font-family="Arial,Helvetica,sans-serif"
+		font-size="30"
+		font-weight="700"
+		text-anchor="middle"
+		x="32"
+		y="40"
+	>
+		R
+	</text>
+	<rect fill="#FF5A1F" height="4" rx="2" width="24" x="20" y="47" />
+</svg>

@@ -54,4 +54,11 @@ export const getOneLikeItMessage =
 export const demoActionMessage = (action: string): string =>
 	`Hi Where They Are, I tapped "${action}" on the Ridgeline Motors sample site. I'd like to talk about a website like this for my dealership.`;
 
+/**
+ * Link for a dealership call or WhatsApp action. The dealership is fictional,
+ * so the visitor reaches Where They Are instead of a placeholder number.
+ */
+export const demoActionLink = (action: string): string =>
+	whatsappLink(demoActionMessage(action));
+
 export const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent("Mutare Road, Msasa, Harare")}`;
