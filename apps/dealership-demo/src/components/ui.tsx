@@ -137,12 +137,20 @@ const fieldBase =
 const fieldState = (invalid?: boolean) =>
 	invalid ? "border-danger ring-4 ring-danger/10" : "border-line-strong";
 
-type InputProps = InputHTMLAttributes<HTMLInputElement> & {
+type InputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "size"> & {
 	invalid?: boolean;
 	prefix?: string;
+	size?: "sm" | "md";
 };
 
-export function Input({ className, invalid, prefix, ...props }: InputProps) {
+export function Input({
+	className,
+	invalid,
+	prefix,
+	size = "md",
+	...props
+}: InputProps) {
+	const height = size === "sm" ? "h-11 text-[14.5px]" : "h-12";
 	if (prefix) {
 		return (
 			<div className="relative">
@@ -154,7 +162,8 @@ export function Input({ className, invalid, prefix, ...props }: InputProps) {
 					className={cn(
 						fieldBase,
 						fieldState(invalid),
-						"h-12 pl-14",
+						height,
+						prefix.length > 1 ? "pl-14" : "pl-7",
 						className
 					)}
 					{...props}
@@ -165,7 +174,7 @@ export function Input({ className, invalid, prefix, ...props }: InputProps) {
 	return (
 		<input
 			aria-invalid={invalid || undefined}
-			className={cn(fieldBase, fieldState(invalid), "h-12", className)}
+			className={cn(fieldBase, fieldState(invalid), height, className)}
 			{...props}
 		/>
 	);

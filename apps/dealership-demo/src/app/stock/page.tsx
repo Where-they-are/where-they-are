@@ -1,12 +1,22 @@
+import type { Metadata } from "next";
+import { Suspense } from "react";
+
 import { SiteHeader } from "@/components/site-header";
+import { StockBrowser } from "@/components/stock/stock-browser";
+
+export const metadata: Metadata = {
+	description:
+		"Browse the sample stock at Ridgeline Motors, a fictional Harare dealership: filter by body type, price, fuel, make, year and gearbox.",
+	title: "Stock",
+};
 
 export default function StockPage() {
 	return (
 		<>
 			<SiteHeader />
-			<main className="container-page py-24" id="main">
-				<h1 className="font-semibold text-5xl tracking-tight">Stock</h1>
-			</main>
+			<Suspense>
+				<StockBrowser />
+			</Suspense>
 		</>
 	);
 }
