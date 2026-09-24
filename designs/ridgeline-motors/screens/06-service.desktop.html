@@ -1,0 +1,1043 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta content="width=device-width, initial-scale=1" name="viewport">
+		<title>
+			Ridgeline Motors design — 06 Service (Desktop · step 2, day and time)
+		</title>
+		<style>
+		/* latin-ext */
+		@font-face {
+			font-family: "Geist";
+			font-style: normal;
+			font-weight: 400;
+			font-display: swap;
+			src: url("../fonts/geist-latin-ext.woff2") format("woff2");
+			unicode-range:
+				U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+		}
+		/* latin */
+		@font-face {
+			font-family: "Geist";
+			font-style: normal;
+			font-weight: 400;
+			font-display: swap;
+			src: url("../fonts/geist-latin.woff2") format("woff2");
+			unicode-range:
+				U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+		}
+		/* latin-ext */
+		@font-face {
+			font-family: "Geist";
+			font-style: normal;
+			font-weight: 500;
+			font-display: swap;
+			src: url("../fonts/geist-latin-ext.woff2") format("woff2");
+			unicode-range:
+				U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+		}
+		/* latin */
+		@font-face {
+			font-family: "Geist";
+			font-style: normal;
+			font-weight: 500;
+			font-display: swap;
+			src: url("../fonts/geist-latin.woff2") format("woff2");
+			unicode-range:
+				U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+		}
+		/* latin-ext */
+		@font-face {
+			font-family: "Geist";
+			font-style: normal;
+			font-weight: 600;
+			font-display: swap;
+			src: url("../fonts/geist-latin-ext.woff2") format("woff2");
+			unicode-range:
+				U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+		}
+		/* latin */
+		@font-face {
+			font-family: "Geist";
+			font-style: normal;
+			font-weight: 600;
+			font-display: swap;
+			src: url("../fonts/geist-latin.woff2") format("woff2");
+			unicode-range:
+				U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+		}
+		/* latin-ext */
+		@font-face {
+			font-family: "Geist";
+			font-style: normal;
+			font-weight: 700;
+			font-display: swap;
+			src: url("../fonts/geist-latin-ext.woff2") format("woff2");
+			unicode-range:
+				U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+		}
+		/* latin */
+		@font-face {
+			font-family: "Geist";
+			font-style: normal;
+			font-weight: 700;
+			font-display: swap;
+			src: url("../fonts/geist-latin.woff2") format("woff2");
+			unicode-range:
+				U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+		}
+		/* latin-ext */
+		@font-face {
+			font-family: "Geist Mono";
+			font-style: normal;
+			font-weight: 400;
+			font-display: swap;
+			src: url("../fonts/geist-mono-latin-ext.woff2") format("woff2");
+			unicode-range:
+				U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+		}
+		/* latin */
+		@font-face {
+			font-family: "Geist Mono";
+			font-style: normal;
+			font-weight: 400;
+			font-display: swap;
+			src: url("../fonts/geist-mono-latin.woff2") format("woff2");
+			unicode-range:
+				U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+		}
+		/* latin-ext */
+		@font-face {
+			font-family: "Geist Mono";
+			font-style: normal;
+			font-weight: 500;
+			font-display: swap;
+			src: url("../fonts/geist-mono-latin-ext.woff2") format("woff2");
+			unicode-range:
+				U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+		}
+		/* latin */
+		@font-face {
+			font-family: "Geist Mono";
+			font-style: normal;
+			font-weight: 500;
+			font-display: swap;
+			src: url("../fonts/geist-mono-latin.woff2") format("woff2");
+			unicode-range:
+				U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+		}
+		body {
+			padding: 24px;
+			margin: 0;
+			font-family: "Geist", sans-serif;
+			-webkit-font-smoothing: antialiased;
+			color: #0e0f11;
+			background: #e4e4e0;
+		}
+		a {
+			color: #0e0f11;
+		}
+		</style>
+	</head>
+	<body>
+		<svg height="0" style="position:absolute" width="0">
+			<defs>
+				<linearGradient id="kbg" x1="0" x2="0" y1="0" y2="1">
+					<stop offset="0" stop-color="#FFA784"></stop>
+					<stop offset="1" stop-color="#F0553A"></stop>
+				</linearGradient>
+				<filter height="160%" id="kgoo" width="160%" x="-30%" y="-30%">
+					<feGaussianBlur stdDeviation="3"></feGaussianBlur>
+					<feColorMatrix
+						values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 30 -14"
+					></feColorMatrix>
+				</filter>
+			</defs>
+			<symbol id="kIcon" viewBox="0 0 100 100">
+				<rect fill="url(#kbg)" height="100" width="100"></rect>
+				<g fill="#15171A" filter="url(#kgoo)">
+					<circle cx="39" cy="54" r="17"></circle>
+					<circle cx="54" cy="60" r="6"></circle>
+					<circle cx="66" cy="62" r="12"></circle>
+				</g>
+				<ellipse cx="43" cy="51" fill="#FFF3EC" rx="2.8" ry="4"></ellipse>
+				<ellipse cx="51" cy="51" fill="#FFF3EC" rx="2.8" ry="4"></ellipse>
+				<ellipse cx="62" cy="59.5" fill="#FFF3EC" rx="2" ry="3"></ellipse>
+				<ellipse cx="67.5" cy="59.5" fill="#FFF3EC" rx="2" ry="3"></ellipse>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-alert"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<circle cx="10" cy="10" r="7.5"></circle>
+				<path d="M10 6.5v4.5M10 13.6v.01"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-upload"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path
+					d="M10 13V4M6.5 7.5L10 4l3.5 3.5M4 13v2.5a1 1 0 001 1h10a1 1 0 001-1V13"
+				></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-x"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path d="M5.5 5.5l9 9M14.5 5.5l-9 9"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-clock"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<circle cx="10" cy="10" r="7.25"></circle>
+				<path d="M10 6v4l2.5 2"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-sliders"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path d="M4 6h8M15 6h1M4 14h2M9 14h7"></path>
+				<circle cx="13.5" cy="6" r="1.6"></circle>
+				<circle cx="7.5" cy="14" r="1.6"></circle>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-user"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<circle cx="10" cy="7" r="3.25"></circle>
+				<path d="M3.5 17c1-3 3.5-4.5 6.5-4.5s5.5 1.5 6.5 4.5"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-grid"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<rect height="6" rx="1.5" width="6" x="3" y="3"></rect>
+				<rect height="6" rx="1.5" width="6" x="11" y="3"></rect>
+				<rect height="6" rx="1.5" width="6" x="3" y="11"></rect>
+				<rect height="6" rx="1.5" width="6" x="11" y="11"></rect>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-list"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path
+					d="M7 5.5h10M7 10h10M7 14.5h10M3.5 5.5v.01M3.5 10v.01M3.5 14.5v.01"
+				></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-doc"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path
+					d="M5.5 2.75h6l3.75 3.75v10a.75.75 0 01-.75.75h-9a.75.75 0 01-.75-.75v-13a.75.75 0 01.75-.75z"
+				></path>
+				<path d="M11.25 2.75v4h4"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-key"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<circle cx="6.5" cy="13.5" r="3.25"></circle>
+				<path d="M8.8 11.2L16 4M13.5 6.5l2 2"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-play"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path d="M7 5l8 5-8 5z"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-plus"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path d="M10 4.5v11M4.5 10h11"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-arrow"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path d="M4 10h12M11 5l5 5-5 5"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-right"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path d="M8 4.5l5.5 5.5L8 15.5"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-down"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path d="M5 7.5l5 5 5-5"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-phone"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path
+					d="M5 3h3l1.5 4-2 1.2a9 9 0 004.3 4.3l1.2-2 4 1.5v3a1.5 1.5 0 01-1.6 1.5A14 14 0 013.5 4.6 1.5 1.5 0 015 3z"
+				></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-chat"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path
+					d="M10 3c4.1 0 7 2.7 7 6.2s-2.9 6.2-7 6.2c-.9 0-1.7-.1-2.5-.4L4 16.5l1-3.1C3.7 12.3 3 10.8 3 9.2 3 5.7 5.9 3 10 3z"
+				></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-search"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<circle cx="9" cy="9" r="5.5"></circle>
+				<path d="M13 13l4 4"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-check"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path d="M4.5 10.5l3.5 3.5 7.5-8" stroke-width="2.2"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-gauge"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path d="M3.5 13.5a6.5 6.5 0 1113 0"></path>
+				<path d="M10 13.5l3-4"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-cal"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<rect height="12" rx="2" width="14" x="3" y="4.5"></rect>
+				<path d="M3 8.5h14M7 3v3M13 3v3"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-fuel"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path
+					d="M4 17V4.5A1.5 1.5 0 015.5 3h5A1.5 1.5 0 0112 4.5V17M3 17h10M12 8h2a1.5 1.5 0 011.5 1.5V14a1.5 1.5 0 003 0V7l-2.5-2.5"
+				></path>
+				<path d="M6 6.5h4"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-gear"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<circle cx="5" cy="5" r="1.6"></circle>
+				<circle cx="10" cy="5" r="1.6"></circle>
+				<circle cx="15" cy="5" r="1.6"></circle>
+				<circle cx="5" cy="15" r="1.6"></circle>
+				<circle cx="10" cy="15" r="1.6"></circle>
+				<path d="M5 6.6v6.8M10 6.6v6.8M15 6.6V10H5"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-card"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<rect height="10.5" rx="2" width="14.5" x="2.75" y="4.75"></rect>
+				<path d="M2.75 8.5h14.5M6 12.5h3"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-swap"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path d="M4 7h11l-3-3M16 13H5l3 3"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-wrench"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path
+					d="M12.5 3.5a4 4 0 00-4.6 5.4L3.5 13.3a1.6 1.6 0 002.2 2.2l4.4-4.4a4 4 0 005.4-4.6l-2.4 2.4-2.1-.5-.5-2.1z"
+				></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-shield"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path
+					d="M10 2.75l6 2.5v4.5c0 3.8-2.6 6.4-6 7.5-3.4-1.1-6-3.7-6-7.5v-4.5z"
+				></path>
+				<path d="M7.3 10l2 2 3.6-3.8"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-pin"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path
+					d="M10 17.5s-5.5-5-5.5-9.5a5.5 5.5 0 0111 0c0 4.5-5.5 9.5-5.5 9.5z"
+				></path>
+				<circle cx="10" cy="8" r="2"></circle>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-mail"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<rect height="11.5" rx="2" width="14.5" x="2.75" y="4.25"></rect>
+				<path d="M3.5 5.5L10 10.5l6.5-5"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-menu"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path d="M4 7h12M4 13h12"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-lock"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<rect height="8.5" rx="2" width="12" x="4" y="8.75"></rect>
+				<path d="M6.75 8.75V6.5a3.25 3.25 0 016.5 0v2.25"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-share"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path
+					d="M10 3v9M6.5 6.5L10 3l3.5 3.5M4 12v3.5a1 1 0 001 1h10a1 1 0 001-1V12"
+				></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-heart"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path
+					d="M10 16.5s-6.5-3.8-6.5-8.4A3.6 3.6 0 0110 5.9a3.6 3.6 0 016.5 2.2c0 4.6-6.5 8.4-6.5 8.4z"
+				></path>
+			</symbol>
+		</svg>
+		<div
+			style="width:1440px;background:#FFFFFF;border-radius:20px;overflow:hidden;box-shadow:0 0 0 1px #D9D9D4,0 60px 120px -60px rgba(14,15,17,0.4);flex-shrink:0"
+		>
+			<div
+				style="height:42px;flex-shrink:0;background:#F3F3F1;box-shadow:inset 0 -1px 0 #E3E3DF;display:flex;align-items:center;justify-content:center;gap:10px;font-size:13.5px;color:#3C3F44;padding:0 14px"
+			>
+				<span
+					style="width:18px;height:18px;border-radius:5px;overflow:hidden;display:inline-flex;flex-shrink:0"
+					><svg height="18" width="18"><use href="#kIcon"></use></svg></span
+				><span style="white-space:nowrap;"
+					>This is a sample website made by the team at
+					<b style="color:#0E0F11;font-weight:600">Where They Are</b>.</span
+				><span
+					style="font-weight:600;color:#0E0F11;text-decoration:underline;text-underline-offset:3px;white-space:nowrap;"
+					>Get one like it</span
+				>
+			</div>
+			<div
+				style="height:84px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 52px;box-shadow:inset 0 -1px 0 #E3E3DF"
+			>
+				<div style="display:flex;gap:30px;font-size:14.5px;font-weight:500">
+					<span style="color:#5F6368">Stock</span
+					><span style="color:#5F6368">Finance</span
+					><span style="color:#5F6368">Sell your car</span
+					><span
+						style="box-shadow:inset 0 -1.5px 0 #0E0F11;padding-bottom:4px;font-weight:600"
+						>Service</span
+					>
+				</div>
+				<div style="display:flex;flex-direction:column;gap:3px;color:#0E0F11">
+					<span
+						style="font-weight:700;font-size:20px;letter-spacing:0.2em;line-height:1"
+						>RIDGELINE</span
+					><span
+						style="font-family:'Geist Mono',monospace;font-size:9.5px;letter-spacing:0.32em;opacity:0.7"
+						>MOTORS · HARARE</span
+					>
+				</div>
+				<div
+					style="display:flex;justify-content:flex-end;align-items:center;gap:26px;font-size:14.5px;font-weight:500"
+				>
+					<span style="color:#5F6368">About</span
+					><span style="color:#5F6368">Contact</span
+					><span style="display:flex;align-items:center;gap:8px"
+						><svg height="16" style="flex-shrink:0;" width="16">
+							<use href="#c-phone"></use>
+						</svg
+						>0242 486 110</span
+					><span
+						style="height:48px;padding:0 20px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:10px;font-size:15px;font-weight:600;white-space:nowrap;box-sizing:border-box;background:#0E0F11;color:#FFFFFF;height:44px"
+						>Book a test drive</span
+					>
+				</div>
+			</div>
+			<div
+				style="padding:40px 52px 36px;display:flex;flex-direction:column;gap:18px"
+			>
+				<div
+					style="display:flex;align-items:center;gap:8px;font-size:13.5px;color:#5F6368"
+				>
+					<span style="">Home</span
+					><svg height="12" style="flex-shrink:0;" width="12">
+						<use href="#c-right"></use>
+					</svg><span style="color:#0E0F11;font-weight:500"
+						>Service centre</span
+					>
+				</div>
+				<div
+					style="display:flex;justify-content:space-between;align-items:flex-end;gap:40px"
+				>
+					<div style="display:flex;flex-direction:column;gap:12px">
+						<span
+							style="font-weight:600;font-size:56px;letter-spacing:-0.035em;line-height:1.02;text-wrap:balance;"
+							>Book your car in</span
+						><span
+							style="font-size:17px;color:#5F6368;max-width:620px;line-height:1.5"
+							>Our workshop services all makes, not only cars bought from us.
+							Open Monday to Saturday from 07:30.</span
+						>
+					</div>
+				</div>
+			</div>
+			<div
+				style="padding:0 52px 104px;display:grid;grid-template-columns:1fr 360px;gap:36px;align-items:start"
+			>
+				<div
+					style="border-radius:24px;background:#FFFFFF;box-shadow:0 0 0 1px #E3E3DF,0 30px 60px -40px rgba(14,15,17,0.35);"
+				>
+					<div style="padding:30px;display:flex;flex-direction:column;gap:20px">
+						<div style="display:flex;flex-direction:column;gap:14px">
+							<div
+								style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"
+							>
+								<span
+									style="font-size:26px;font-weight:600;letter-spacing:-0.025em"
+									>Book a service</span
+								><span style="font-size:13px;color:#5F6368;white-space:nowrap;"
+									><b style="color:#0E0F11">Step 2</b>
+									of 3</span
+								>
+							</div>
+							<div
+								style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px"
+							>
+								<div
+									style="height:4px;border-radius:2px;background:#FF5A1F"
+								></div>
+								<div
+									style="height:4px;border-radius:2px;background:#FF5A1F"
+								></div>
+								<div
+									style="height:4px;border-radius:2px;background:#E6E6E1"
+								></div>
+							</div>
+							<span style="font-size:14.5px;color:#5F6368;line-height:1.5"
+								>Choose the work, then a day and drop-off time.</span
+							>
+						</div>
+						<div style="display:flex;flex-direction:column;gap:10px">
+							<span
+								style="font-size:13.5px;font-weight:600;display:flex;gap:4px;align-items:baseline"
+								>What does the car need?<span style="color:#D92D20"
+									>*</span
+								></span
+							>
+							<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+								<div
+									style="border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;box-shadow:inset 0 0 0 1.5px #0E0F11;background:#FFFFFF"
+								>
+									<div
+										style="display:flex;align-items:center;gap:10px;height:20px;font-size:14.5px"
+									>
+										<span
+											style="width:20px;height:20px;border-radius:6px;flex-shrink:0;background:#0E0F11;color:#FFFFFF;display:flex;align-items:center;justify-content:center"
+											><svg height="12" style="flex-shrink:0;" width="12">
+												<use href="#c-check"></use>
+											</svg></span
+										>
+									</div>
+									<div
+										style="flex:1;display:flex;flex-direction:column;gap:2px"
+									>
+										<span style="font-size:15px;font-weight:600"
+											>Minor service</span
+										><span style="font-size:13px;color:#5F6368"
+											>Oil, filters, 30-point check</span
+										>
+									</div>
+									<span
+										style="font-size:14px;font-weight:600;white-space:nowrap;"
+										>from $85</span
+									>
+								</div>
+								<div
+									style="border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;box-shadow:inset 0 0 0 1px #D2D2CD;background:#FFFFFF"
+								>
+									<div
+										style="display:flex;align-items:center;gap:10px;height:20px;font-size:14.5px"
+									>
+										<span
+											style="width:20px;height:20px;border-radius:6px;flex-shrink:0;box-shadow:inset 0 0 0 1.5px #C9C9C4;background:#FFFFFF;display:flex;align-items:center;justify-content:center"
+										></span>
+									</div>
+									<div
+										style="flex:1;display:flex;flex-direction:column;gap:2px"
+									>
+										<span style="font-size:15px;font-weight:600"
+											>Major service</span
+										><span style="font-size:13px;color:#5F6368"
+											>Plugs, belts, fluids, brakes</span
+										>
+									</div>
+									<span
+										style="font-size:14px;font-weight:600;white-space:nowrap;"
+										>from $190</span
+									>
+								</div>
+								<div
+									style="border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;box-shadow:inset 0 0 0 1px #D2D2CD;background:#FFFFFF"
+								>
+									<div
+										style="display:flex;align-items:center;gap:10px;height:20px;font-size:14.5px"
+									>
+										<span
+											style="width:20px;height:20px;border-radius:6px;flex-shrink:0;box-shadow:inset 0 0 0 1.5px #C9C9C4;background:#FFFFFF;display:flex;align-items:center;justify-content:center"
+										></span>
+									</div>
+									<div
+										style="flex:1;display:flex;flex-direction:column;gap:2px"
+									>
+										<span style="font-size:15px;font-weight:600">Brakes</span
+										><span style="font-size:13px;color:#5F6368"
+											>Pads, discs and fluid</span
+										>
+									</div>
+									<span
+										style="font-size:14px;font-weight:600;white-space:nowrap;"
+										>from $70</span
+									>
+								</div>
+								<div
+									style="border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;box-shadow:inset 0 0 0 1px #D2D2CD;background:#FFFFFF"
+								>
+									<div
+										style="display:flex;align-items:center;gap:10px;height:20px;font-size:14.5px"
+									>
+										<span
+											style="width:20px;height:20px;border-radius:6px;flex-shrink:0;box-shadow:inset 0 0 0 1.5px #C9C9C4;background:#FFFFFF;display:flex;align-items:center;justify-content:center"
+										></span>
+									</div>
+									<div
+										style="flex:1;display:flex;flex-direction:column;gap:2px"
+									>
+										<span style="font-size:15px;font-weight:600"
+											>Diagnostics</span
+										><span style="font-size:13px;color:#5F6368"
+											>Computer scan and report</span
+										>
+									</div>
+									<span
+										style="font-size:14px;font-weight:600;white-space:nowrap;"
+										>$35</span
+									>
+								</div>
+							</div>
+						</div>
+						<div style="display:flex;flex-direction:column;gap:10px">
+							<div style="display:flex;justify-content:space-between">
+								<span
+									style="font-size:13.5px;font-weight:600;display:flex;gap:4px;align-items:baseline"
+									>Drop-off day<span style="color:#D92D20">*</span></span
+								><span style="font-size:13.5px;font-weight:600"
+									>September 2026</span
+								>
+							</div>
+							<div
+								style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px"
+							>
+								<div
+									style="height:70px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:inset 0 0 0 1px #D2D2CD"
+								>
+									<span style="font-size:12px;color:#5F6368">Thu</span
+									><span style="font-size:19px;font-weight:600">24</span>
+								</div>
+								<div
+									style="height:70px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:inset 0 0 0 1px #D2D2CD"
+								>
+									<span style="font-size:12px;color:#5F6368">Fri</span
+									><span style="font-size:19px;font-weight:600">25</span>
+								</div>
+								<div
+									style="height:70px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:#0E0F11;color:#FFFFFF"
+								>
+									<span style="font-size:12px;color:#B4B7BD">Sat</span
+									><span style="font-size:19px;font-weight:600">26</span>
+								</div>
+								<div
+									style="height:70px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:inset 0 0 0 1px #D2D2CD"
+								>
+									<span style="font-size:12px;color:#5F6368">Mon</span
+									><span style="font-size:19px;font-weight:600">28</span>
+								</div>
+								<div
+									style="height:70px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:inset 0 0 0 1px #D2D2CD"
+								>
+									<span style="font-size:12px;color:#5F6368">Tue</span
+									><span style="font-size:19px;font-weight:600">29</span>
+								</div>
+							</div>
+						</div>
+						<div style="display:flex;flex-direction:column;gap:10px">
+							<span
+								style="font-size:13.5px;font-weight:600;display:flex;gap:4px;align-items:baseline"
+								>Drop-off time<span style="color:#D92D20">*</span></span
+							>
+							<div
+								style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px"
+							>
+								<span
+									style="height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;box-shadow:inset 0 0 0 1px #D2D2CD"
+									>07:30</span
+								><span
+									style="height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;background:#0E0F11;color:#FFFFFF"
+									>09:00</span
+								><span
+									style="height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;box-shadow:inset 0 0 0 1px #D2D2CD"
+									>10:30</span
+								><span
+									style="height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;background:#F1F1EE;color:#A3A5AA;text-decoration:line-through"
+									>12:00</span
+								><span
+									style="height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;box-shadow:inset 0 0 0 1px #D2D2CD"
+									>13:30</span
+								><span
+									style="height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;box-shadow:inset 0 0 0 1px #D2D2CD"
+									>15:00</span
+								>
+							</div>
+							<span style="font-size:12.5px;color:#5F6368"
+								>Saturday closes at 13:00. Collection from 16:00 the same
+								day.</span
+							>
+						</div>
+						<div style="height:1px;background:#E3E3DF"></div>
+						<div
+							style="display:flex;justify-content:space-between;align-items:center;gap:10px"
+						>
+							<span
+								style="height:48px;padding:0 20px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:10px;font-size:15px;font-weight:600;white-space:nowrap;box-sizing:border-box;box-shadow:inset 0 0 0 1px #CFCFCA;color:#0E0F11;background:#FFFFFF;border-radius:12px"
+								>Back</span
+							><span
+								style="height:48px;padding:0 20px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:10px;font-size:15px;font-weight:600;white-space:nowrap;box-sizing:border-box;background:#0E0F11;color:#FFFFFF;border-radius:12px"
+								>Continue</span
+							>
+						</div>
+					</div>
+				</div>
+				<div style="display:flex;flex-direction:column;gap:14px">
+					<div
+						style="border-radius:20px;background:#F3F3F1;padding:22px;display:flex;flex-direction:column;gap:14px"
+					>
+						<span style="font-size:16px;font-weight:600">Your booking</span>
+						<div
+							style="display:flex;justify-content:space-between;font-size:14.5px;padding-bottom:12px;box-shadow:inset 0 -1px 0 #E0E0DB"
+						>
+							<span style="color:#5F6368">Car</span
+							><span style="font-weight:600">Toyota Fortuner · ADV 4471</span>
+						</div>
+						<div
+							style="display:flex;justify-content:space-between;font-size:14.5px;padding-bottom:12px;box-shadow:inset 0 -1px 0 #E0E0DB"
+						>
+							<span style="color:#5F6368">Work</span
+							><span style="font-weight:600">Minor service</span>
+						</div>
+						<div
+							style="display:flex;justify-content:space-between;font-size:14.5px;padding-bottom:12px;box-shadow:inset 0 -1px 0 #E0E0DB"
+						>
+							<span style="color:#5F6368">Drop-off</span
+							><span style="font-weight:600">Sat 26 Sep, 09:00</span>
+						</div>
+						<div
+							style="display:flex;justify-content:space-between;font-size:14.5px;padding-bottom:12px;box-shadow:inset 0 -1px 0 #E0E0DB"
+						>
+							<span style="color:#5F6368">Estimate</span
+							><span style="font-weight:600">from $85</span>
+						</div>
+						<span style="font-size:13px;color:#5F6368;line-height:1.5"
+							>We call before doing any work not on this list.</span
+						>
+					</div>
+					<div
+						style="position:relative;overflow:hidden;background:#D8D9D6;height:220px;border-radius:20px"
+					>
+						<img
+							alt=""
+							src="../assets/ranger-interior.webp"
+							style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+						>
+					</div>
+					<div
+						style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:16px;box-shadow:inset 0 0 0 1px #E3E3DF"
+					>
+						<svg height="18" style="flex-shrink:0;" width="18">
+							<use href="#c-phone"></use>
+						</svg>
+						<div style="display:flex;flex-direction:column">
+							<span style="font-size:12.5px;color:#5F6368">Service desk</span
+							><span style="font-size:15px;font-weight:600">0242 486 115</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<footer
+				style="margin:0 12px 12px;border-radius:26px;background:#0E0F11;color:#FFFFFF;padding:72px 48px 0;overflow:hidden;display:flex;flex-direction:column"
+			>
+				<div
+					style="display:grid;grid-template-columns:1.3fr repeat(3,0.55fr) 1fr;gap:40px"
+				>
+					<div style="display:flex;flex-direction:column;gap:18px">
+						<div
+							style="display:flex;flex-direction:column;gap:3.3000000000000003px;color:#FFFFFF"
+						>
+							<span
+								style="font-weight:700;font-size:22px;letter-spacing:0.2em;line-height:1"
+								>RIDGELINE</span
+							><span
+								style="font-family:'Geist Mono',monospace;font-size:10.5px;letter-spacing:0.32em;opacity:0.7"
+								>MOTORS · HARARE</span
+							>
+						</div>
+						<span
+							style="font-size:15px;color:#B4B7BD;line-height:1.6;max-width:320px"
+							>New and pre-owned cars, finance and servicing. Msasa, Harare,
+							since 2009.</span
+						>
+					</div>
+					<div style="display:flex;flex-direction:column;gap:12px">
+						<span style="font-size:13px;color:#7C7F86">Stock</span
+						><span style="font-size:15px">All cars</span
+						><span style="font-size:15px">New cars</span
+						><span style="font-size:15px">Pre-owned</span
+						><span style="font-size:15px">Bakkies</span
+						><span style="font-size:15px">Just arrived</span>
+					</div>
+					<div style="display:flex;flex-direction:column;gap:12px">
+						<span style="font-size:13px;color:#7C7F86">Services</span
+						><span style="font-size:15px">Finance</span
+						><span style="font-size:15px">Sell your car</span
+						><span style="font-size:15px">Service centre</span
+						><span style="font-size:15px">Warranty</span>
+					</div>
+					<div style="display:flex;flex-direction:column;gap:12px">
+						<span style="font-size:13px;color:#7C7F86">Company</span
+						><span style="font-size:15px">About us</span
+						><span style="font-size:15px">Contact</span
+						><span style="font-size:15px">Careers</span
+						><span style="font-size:15px">Privacy</span>
+					</div>
+					<div style="display:flex;flex-direction:column;gap:12px">
+						<span style="font-size:15px;font-weight:600"
+							>New arrivals on WhatsApp</span
+						><span style="font-size:13.5px;color:#B4B7BD;line-height:1.5"
+							>One message when cars you'd like come in.</span
+						>
+						<div
+							style="height:52px;border-radius:999px;background:#1A1B1E;box-shadow:inset 0 0 0 1px #2E3034;display:flex;align-items:center;padding:0 5px 0 18px;gap:10px"
+						>
+							<span style="flex:1;font-size:14.5px;color:#7C7F86"
+								>+263 WhatsApp number</span
+							><span
+								style="width:42px;height:42px;border-radius:50%;background:#FF5A1F;color:#0E0F11;display:flex;align-items:center;justify-content:center"
+								><svg height="16" style="flex-shrink:0;" width="16">
+									<use href="#c-arrow"></use>
+								</svg></span
+							>
+						</div>
+					</div>
+				</div>
+				<span
+					style="margin-top:56px;font-weight:700;font-size:250px;letter-spacing:-0.055em;line-height:0.8;text-align:center;background:linear-gradient(180deg,#3A3C41 0%,#0E0F11 95%);-webkit-background-clip:text;background-clip:text;color:transparent"
+					>RIDGELINE</span
+				>
+				<div
+					style="display:flex;justify-content:space-between;align-items:center;padding:22px 0 26px;box-shadow:inset 0 1px 0 #26282C;font-size:13.5px;color:#7C7F86"
+				>
+					<span>© 2026 Ridgeline Motors (Pvt) Ltd · Privacy · Terms</span>
+					<div
+						style="display:flex;align-items:center;gap:10px;font-size:14px;color:#B4B7BD;flex-wrap:nowrap"
+					>
+						<span
+							style="width:22px;height:22px;border-radius:6px;overflow:hidden;display:inline-flex;flex-shrink:0"
+							><svg height="22" width="22"><use href="#kIcon"></use></svg></span
+						><span
+							>Website made by the team at
+							<b style="color:#FFFFFF;font-weight:600">Where They Are</b></span
+						><span
+							style="color:#FFFFFF;font-weight:600;text-decoration:underline;text-underline-offset:3px;white-space:nowrap;"
+							>Get one like it</span
+						>
+					</div>
+				</div>
+			</footer>
+		</div>
+	</body>
+</html>

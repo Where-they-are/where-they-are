@@ -1,0 +1,2594 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta content="width=device-width, initial-scale=1" name="viewport">
+		<title>Ridgeline Motors design — 01 Home (Desktop · 1440)</title>
+		<style>
+		/* latin-ext */
+		@font-face {
+			font-family: "Geist";
+			font-style: normal;
+			font-weight: 400;
+			font-display: swap;
+			src: url("../fonts/geist-latin-ext.woff2") format("woff2");
+			unicode-range:
+				U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+		}
+		/* latin */
+		@font-face {
+			font-family: "Geist";
+			font-style: normal;
+			font-weight: 400;
+			font-display: swap;
+			src: url("../fonts/geist-latin.woff2") format("woff2");
+			unicode-range:
+				U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+		}
+		/* latin-ext */
+		@font-face {
+			font-family: "Geist";
+			font-style: normal;
+			font-weight: 500;
+			font-display: swap;
+			src: url("../fonts/geist-latin-ext.woff2") format("woff2");
+			unicode-range:
+				U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+		}
+		/* latin */
+		@font-face {
+			font-family: "Geist";
+			font-style: normal;
+			font-weight: 500;
+			font-display: swap;
+			src: url("../fonts/geist-latin.woff2") format("woff2");
+			unicode-range:
+				U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+		}
+		/* latin-ext */
+		@font-face {
+			font-family: "Geist";
+			font-style: normal;
+			font-weight: 600;
+			font-display: swap;
+			src: url("../fonts/geist-latin-ext.woff2") format("woff2");
+			unicode-range:
+				U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+		}
+		/* latin */
+		@font-face {
+			font-family: "Geist";
+			font-style: normal;
+			font-weight: 600;
+			font-display: swap;
+			src: url("../fonts/geist-latin.woff2") format("woff2");
+			unicode-range:
+				U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+		}
+		/* latin-ext */
+		@font-face {
+			font-family: "Geist";
+			font-style: normal;
+			font-weight: 700;
+			font-display: swap;
+			src: url("../fonts/geist-latin-ext.woff2") format("woff2");
+			unicode-range:
+				U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+		}
+		/* latin */
+		@font-face {
+			font-family: "Geist";
+			font-style: normal;
+			font-weight: 700;
+			font-display: swap;
+			src: url("../fonts/geist-latin.woff2") format("woff2");
+			unicode-range:
+				U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+		}
+		/* latin-ext */
+		@font-face {
+			font-family: "Geist Mono";
+			font-style: normal;
+			font-weight: 400;
+			font-display: swap;
+			src: url("../fonts/geist-mono-latin-ext.woff2") format("woff2");
+			unicode-range:
+				U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+		}
+		/* latin */
+		@font-face {
+			font-family: "Geist Mono";
+			font-style: normal;
+			font-weight: 400;
+			font-display: swap;
+			src: url("../fonts/geist-mono-latin.woff2") format("woff2");
+			unicode-range:
+				U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+		}
+		/* latin-ext */
+		@font-face {
+			font-family: "Geist Mono";
+			font-style: normal;
+			font-weight: 500;
+			font-display: swap;
+			src: url("../fonts/geist-mono-latin-ext.woff2") format("woff2");
+			unicode-range:
+				U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+		}
+		/* latin */
+		@font-face {
+			font-family: "Geist Mono";
+			font-style: normal;
+			font-weight: 500;
+			font-display: swap;
+			src: url("../fonts/geist-mono-latin.woff2") format("woff2");
+			unicode-range:
+				U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+		}
+		body {
+			padding: 24px;
+			margin: 0;
+			font-family: "Geist", sans-serif;
+			-webkit-font-smoothing: antialiased;
+			color: #0e0f11;
+			background: #e4e4e0;
+		}
+		a {
+			color: #0e0f11;
+		}
+		</style>
+	</head>
+	<body>
+		<svg height="0" style="position:absolute" width="0">
+			<defs>
+				<linearGradient id="kbg" x1="0" x2="0" y1="0" y2="1">
+					<stop offset="0" stop-color="#FFA784"></stop>
+					<stop offset="1" stop-color="#F0553A"></stop>
+				</linearGradient>
+				<filter height="160%" id="kgoo" width="160%" x="-30%" y="-30%">
+					<feGaussianBlur stdDeviation="3"></feGaussianBlur>
+					<feColorMatrix
+						values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 30 -14"
+					></feColorMatrix>
+				</filter>
+			</defs>
+			<symbol id="kIcon" viewBox="0 0 100 100">
+				<rect fill="url(#kbg)" height="100" width="100"></rect>
+				<g fill="#15171A" filter="url(#kgoo)">
+					<circle cx="39" cy="54" r="17"></circle>
+					<circle cx="54" cy="60" r="6"></circle>
+					<circle cx="66" cy="62" r="12"></circle>
+				</g>
+				<ellipse cx="43" cy="51" fill="#FFF3EC" rx="2.8" ry="4"></ellipse>
+				<ellipse cx="51" cy="51" fill="#FFF3EC" rx="2.8" ry="4"></ellipse>
+				<ellipse cx="62" cy="59.5" fill="#FFF3EC" rx="2" ry="3"></ellipse>
+				<ellipse cx="67.5" cy="59.5" fill="#FFF3EC" rx="2" ry="3"></ellipse>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-alert"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<circle cx="10" cy="10" r="7.5"></circle>
+				<path d="M10 6.5v4.5M10 13.6v.01"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-upload"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path
+					d="M10 13V4M6.5 7.5L10 4l3.5 3.5M4 13v2.5a1 1 0 001 1h10a1 1 0 001-1V13"
+				></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-x"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path d="M5.5 5.5l9 9M14.5 5.5l-9 9"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-clock"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<circle cx="10" cy="10" r="7.25"></circle>
+				<path d="M10 6v4l2.5 2"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-sliders"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path d="M4 6h8M15 6h1M4 14h2M9 14h7"></path>
+				<circle cx="13.5" cy="6" r="1.6"></circle>
+				<circle cx="7.5" cy="14" r="1.6"></circle>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-user"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<circle cx="10" cy="7" r="3.25"></circle>
+				<path d="M3.5 17c1-3 3.5-4.5 6.5-4.5s5.5 1.5 6.5 4.5"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-grid"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<rect height="6" rx="1.5" width="6" x="3" y="3"></rect>
+				<rect height="6" rx="1.5" width="6" x="11" y="3"></rect>
+				<rect height="6" rx="1.5" width="6" x="3" y="11"></rect>
+				<rect height="6" rx="1.5" width="6" x="11" y="11"></rect>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-list"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path
+					d="M7 5.5h10M7 10h10M7 14.5h10M3.5 5.5v.01M3.5 10v.01M3.5 14.5v.01"
+				></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-doc"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path
+					d="M5.5 2.75h6l3.75 3.75v10a.75.75 0 01-.75.75h-9a.75.75 0 01-.75-.75v-13a.75.75 0 01.75-.75z"
+				></path>
+				<path d="M11.25 2.75v4h4"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-key"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<circle cx="6.5" cy="13.5" r="3.25"></circle>
+				<path d="M8.8 11.2L16 4M13.5 6.5l2 2"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-play"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path d="M7 5l8 5-8 5z"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-plus"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path d="M10 4.5v11M4.5 10h11"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-arrow"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path d="M4 10h12M11 5l5 5-5 5"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-right"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path d="M8 4.5l5.5 5.5L8 15.5"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-down"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path d="M5 7.5l5 5 5-5"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-phone"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path
+					d="M5 3h3l1.5 4-2 1.2a9 9 0 004.3 4.3l1.2-2 4 1.5v3a1.5 1.5 0 01-1.6 1.5A14 14 0 013.5 4.6 1.5 1.5 0 015 3z"
+				></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-chat"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path
+					d="M10 3c4.1 0 7 2.7 7 6.2s-2.9 6.2-7 6.2c-.9 0-1.7-.1-2.5-.4L4 16.5l1-3.1C3.7 12.3 3 10.8 3 9.2 3 5.7 5.9 3 10 3z"
+				></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-search"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<circle cx="9" cy="9" r="5.5"></circle>
+				<path d="M13 13l4 4"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-check"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path d="M4.5 10.5l3.5 3.5 7.5-8" stroke-width="2.2"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-gauge"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path d="M3.5 13.5a6.5 6.5 0 1113 0"></path>
+				<path d="M10 13.5l3-4"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-cal"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<rect height="12" rx="2" width="14" x="3" y="4.5"></rect>
+				<path d="M3 8.5h14M7 3v3M13 3v3"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-fuel"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path
+					d="M4 17V4.5A1.5 1.5 0 015.5 3h5A1.5 1.5 0 0112 4.5V17M3 17h10M12 8h2a1.5 1.5 0 011.5 1.5V14a1.5 1.5 0 003 0V7l-2.5-2.5"
+				></path>
+				<path d="M6 6.5h4"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-gear"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<circle cx="5" cy="5" r="1.6"></circle>
+				<circle cx="10" cy="5" r="1.6"></circle>
+				<circle cx="15" cy="5" r="1.6"></circle>
+				<circle cx="5" cy="15" r="1.6"></circle>
+				<circle cx="10" cy="15" r="1.6"></circle>
+				<path d="M5 6.6v6.8M10 6.6v6.8M15 6.6V10H5"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-card"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<rect height="10.5" rx="2" width="14.5" x="2.75" y="4.75"></rect>
+				<path d="M2.75 8.5h14.5M6 12.5h3"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-swap"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path d="M4 7h11l-3-3M16 13H5l3 3"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-wrench"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path
+					d="M12.5 3.5a4 4 0 00-4.6 5.4L3.5 13.3a1.6 1.6 0 002.2 2.2l4.4-4.4a4 4 0 005.4-4.6l-2.4 2.4-2.1-.5-.5-2.1z"
+				></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-shield"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path
+					d="M10 2.75l6 2.5v4.5c0 3.8-2.6 6.4-6 7.5-3.4-1.1-6-3.7-6-7.5v-4.5z"
+				></path>
+				<path d="M7.3 10l2 2 3.6-3.8"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-pin"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path
+					d="M10 17.5s-5.5-5-5.5-9.5a5.5 5.5 0 0111 0c0 4.5-5.5 9.5-5.5 9.5z"
+				></path>
+				<circle cx="10" cy="8" r="2"></circle>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-mail"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<rect height="11.5" rx="2" width="14.5" x="2.75" y="4.25"></rect>
+				<path d="M3.5 5.5L10 10.5l6.5-5"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-menu"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path d="M4 7h12M4 13h12"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-lock"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<rect height="8.5" rx="2" width="12" x="4" y="8.75"></rect>
+				<path d="M6.75 8.75V6.5a3.25 3.25 0 016.5 0v2.25"></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-share"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path
+					d="M10 3v9M6.5 6.5L10 3l3.5 3.5M4 12v3.5a1 1 0 001 1h10a1 1 0 001-1V12"
+				></path>
+			</symbol>
+			<symbol
+				fill="none"
+				id="c-heart"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="1.6"
+				viewBox="0 0 20 20"
+			>
+				<path
+					d="M10 16.5s-6.5-3.8-6.5-8.4A3.6 3.6 0 0110 5.9a3.6 3.6 0 016.5 2.2c0 4.6-6.5 8.4-6.5 8.4z"
+				></path>
+			</symbol>
+		</svg>
+		<div
+			style="width:1440px;background:#FFFFFF;border-radius:20px;overflow:hidden;box-shadow:0 0 0 1px #D9D9D4,0 60px 120px -60px rgba(14,15,17,0.4);flex-shrink:0"
+		>
+			<div
+				style="height:42px;flex-shrink:0;background:#F3F3F1;box-shadow:inset 0 -1px 0 #E3E3DF;display:flex;align-items:center;justify-content:center;gap:10px;font-size:13.5px;color:#3C3F44;padding:0 14px"
+			>
+				<span
+					style="width:18px;height:18px;border-radius:5px;overflow:hidden;display:inline-flex;flex-shrink:0"
+					><svg height="18" width="18"><use href="#kIcon"></use></svg></span
+				><span style="white-space:nowrap;"
+					>This is a sample website made by the team at
+					<b style="color:#0E0F11;font-weight:600">Where They Are</b>.</span
+				><span
+					style="font-weight:600;color:#0E0F11;text-decoration:underline;text-underline-offset:3px;white-space:nowrap;"
+					>Get one like it</span
+				>
+			</div>
+			<div
+				style="margin:12px 12px 0;height:820px;border-radius:26px;overflow:hidden;position:relative;background:#1B1C1F"
+			>
+				<img
+					alt=""
+					src="../assets/land-cruiser-hero.webp"
+					style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+				>
+				<div
+					style="position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(14,15,17,0.55) 0%,rgba(14,15,17,0) 30%,rgba(14,15,17,0) 55%,rgba(14,15,17,0.85) 100%)"
+				></div>
+				<div
+					style="position:absolute;left:40px;right:40px;top:26px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;color:#FFFFFF;z-index:2"
+				>
+					<div style="display:flex;gap:30px;font-size:14.5px;font-weight:500">
+						<span style="box-shadow:inset 0 -1.5px 0 #FFFFFF;padding-bottom:4px"
+							>Stock</span
+						><span style="opacity:0.85">Finance</span
+						><span style="opacity:0.85">Sell your car</span
+						><span style="opacity:0.85">Service</span>
+					</div>
+					<div style="display:flex;flex-direction:column;gap:3px;color:#FFFFFF">
+						<span
+							style="font-weight:700;font-size:20px;letter-spacing:0.2em;line-height:1"
+							>RIDGELINE</span
+						><span
+							style="font-family:'Geist Mono',monospace;font-size:9.5px;letter-spacing:0.32em;opacity:0.7"
+							>MOTORS · HARARE</span
+						>
+					</div>
+					<div
+						style="display:flex;justify-content:flex-end;align-items:center;gap:26px;font-size:14.5px;font-weight:500"
+					>
+						<span style="opacity:0.85">About</span
+						><span style="opacity:0.85">Contact</span
+						><span style="display:flex;align-items:center;gap:8px"
+							><svg height="16" style="flex-shrink:0;" width="16">
+								<use href="#c-phone"></use>
+							</svg
+							>0242 486 110</span
+						><span
+							style="height:48px;padding:0 20px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:10px;font-size:15px;font-weight:600;white-space:nowrap;box-sizing:border-box;background:#FFFFFF;color:#0E0F11;height:44px"
+							>Book a test drive</span
+						>
+					</div>
+				</div>
+				<span
+					style="position:absolute;left:0;right:0;top:92px;text-align:center;font-weight:700;font-size:236px;letter-spacing:-0.055em;line-height:0.8;color:rgba(255,255,255,0.94);pointer-events:none"
+					>RIDGELINE</span
+				>
+				<div
+					style="position:absolute;left:48px;bottom:120px;display:flex;flex-direction:column;gap:22px;color:#FFFFFF;max-width:520px;pointer-events:none"
+				>
+					<span style="font-size:22px;line-height:1.4;font-weight:500"
+						>New and pre-owned cars in Harare, inspected, priced up front and
+						ready to drive home.</span
+					>
+					<div style="display:flex;gap:10px">
+						<span
+							style="height:48px;padding:0 6px 0 20px;border-radius:999px;display:inline-flex;align-items:center;gap:14px;font-size:15px;font-weight:600;white-space:nowrap;box-sizing:border-box;background:#0E0F11;color:#FFFFFF;background:#0E0F11;color:#FFFFFF"
+							>Browse 142 cars<span
+								style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#FFFFFF;color:#0E0F11"
+								><svg height="15" style="flex-shrink:0;" width="15">
+									<use href="#c-arrow"></use>
+								</svg></span
+							></span
+						><span
+							style="height:48px;padding:0 20px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:10px;font-size:15px;font-weight:600;white-space:nowrap;box-sizing:border-box;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.45);color:#FFFFFF;"
+							>Sell your car</span
+						>
+					</div>
+				</div>
+				<div
+					style="position:absolute;right:40px;bottom:120px;width:320px;border-radius:20px;background:rgba(255,255,255,0.14);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.28);padding:16px;display:flex;flex-direction:column;gap:12px;color:#FFFFFF;pointer-events:none"
+				>
+					<div
+						style="display:flex;justify-content:space-between;align-items:center"
+					>
+						<span
+							style="height:26px;padding:0 10px;border-radius:999px;background:#FF5A1F;color:#0E0F11;display:flex;align-items:center;font-size:12px;font-weight:700"
+							>Just arrived</span
+						><span
+							style="font-family:'Geist Mono',monospace;font-size:12px;opacity:0.85"
+							>RM-2214</span
+						>
+					</div>
+					<span style="font-size:18px;font-weight:600;line-height:1.25"
+						>2024 Toyota Land Cruiser Prado 250 VX</span
+					>
+					<div
+						style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.2)"
+					>
+						<span style="font-size:22px;font-weight:700">$78,500</span
+						><span
+							style="font-size:13.5px;font-weight:600;display:flex;gap:6px;align-items:center"
+							>View car<svg height="14" style="flex-shrink:0;" width="14">
+								<use href="#c-arrow"></use>
+							</svg></span
+						>
+					</div>
+				</div>
+			</div>
+			<div
+				style="position:relative;z-index:3;margin:-72px auto 0;width:1180px;border-radius:22px;background:#FFFFFF;box-shadow:0 0 0 1px #E3E3DF,0 30px 60px -30px rgba(14,15,17,0.35);padding:22px 24px;display:flex;flex-direction:column;gap:18px"
+			>
+				<div
+					style="display:flex;justify-content:space-between;align-items:center"
+				>
+					<div style="display:flex;gap:6px">
+						<span
+							style="height:40px;padding:0 16px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;white-space:nowrap;background:#0E0F11;color:#FFFFFF"
+							>All<span
+								style="font-family:'Geist Mono',monospace;font-size:12px;opacity:0.6"
+								>142</span
+							></span
+						><span
+							style="height:40px;padding:0 16px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;white-space:nowrap;box-shadow:inset 0 0 0 1px #D2D2CD;background:#FFFFFF;color:#0E0F11"
+							>New<span
+								style="font-family:'Geist Mono',monospace;font-size:12px;opacity:0.6"
+								>18</span
+							></span
+						><span
+							style="height:40px;padding:0 16px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;white-space:nowrap;box-shadow:inset 0 0 0 1px #D2D2CD;background:#FFFFFF;color:#0E0F11"
+							>Pre-owned<span
+								style="font-family:'Geist Mono',monospace;font-size:12px;opacity:0.6"
+								>124</span
+							></span
+						><span
+							style="height:40px;padding:0 16px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;white-space:nowrap;box-shadow:inset 0 0 0 1px #D2D2CD;background:#FFFFFF;color:#0E0F11"
+							>Bakkies<span
+								style="font-family:'Geist Mono',monospace;font-size:12px;opacity:0.6"
+								>36</span
+							></span
+						>
+					</div>
+					<span
+						style="font-size:13.5px;color:#5F6368;display:flex;align-items:center;gap:8px"
+						><span
+							style="width:7px;height:7px;border-radius:50%;background:#12B76A"
+						></span
+						>Stock updated today, 08:10</span
+					>
+				</div>
+				<div
+					style="display:grid;grid-template-columns:repeat(4,1fr) 170px;gap:12px;align-items:end"
+				>
+					<div style="display:flex;flex-direction:column;gap:7px;min-width:0">
+						<span style="font-size:13.5px;font-weight:600;display:flex;gap:3px"
+							>Make</span
+						>
+						<div
+							style="height:50px;border-radius:12px;background:#FFFFFF;box-shadow:inset 0 0 0 1px #D2D2CD;display:flex;align-items:center;gap:10px;padding:0 14px;font-size:15px;box-sizing:border-box"
+						>
+							<span
+								style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#0E0F11"
+								>Any make</span
+							><svg height="16" style="flex-shrink:0;color:#5F6368" width="16">
+								<use href="#c-down"></use>
+							</svg>
+						</div>
+					</div>
+					<div style="display:flex;flex-direction:column;gap:7px;min-width:0">
+						<span style="font-size:13.5px;font-weight:600;display:flex;gap:3px"
+							>Model</span
+						>
+						<div
+							style="height:50px;border-radius:12px;background:#FFFFFF;box-shadow:inset 0 0 0 1px #D2D2CD;display:flex;align-items:center;gap:10px;padding:0 14px;font-size:15px;box-sizing:border-box"
+						>
+							<span
+								style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#0E0F11"
+								>Any model</span
+							><svg height="16" style="flex-shrink:0;color:#5F6368" width="16">
+								<use href="#c-down"></use>
+							</svg>
+						</div>
+					</div>
+					<div style="display:flex;flex-direction:column;gap:7px;min-width:0">
+						<span style="font-size:13.5px;font-weight:600;display:flex;gap:3px"
+							>Year</span
+						>
+						<div
+							style="height:50px;border-radius:12px;background:#FFFFFF;box-shadow:inset 0 0 0 1px #D2D2CD;display:flex;align-items:center;gap:10px;padding:0 14px;font-size:15px;box-sizing:border-box"
+						>
+							<span
+								style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#0E0F11"
+								>2018 or newer</span
+							><svg height="16" style="flex-shrink:0;color:#5F6368" width="16">
+								<use href="#c-down"></use>
+							</svg>
+						</div>
+					</div>
+					<div style="display:flex;flex-direction:column;gap:7px;min-width:0">
+						<span style="font-size:13.5px;font-weight:600;display:flex;gap:3px"
+							>Max price</span
+						>
+						<div
+							style="height:50px;border-radius:12px;background:#FFFFFF;box-shadow:inset 0 0 0 1px #D2D2CD;display:flex;align-items:center;gap:10px;padding:0 14px;font-size:15px;box-sizing:border-box"
+						>
+							<span
+								style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#0E0F11"
+								>$45,000</span
+							><svg height="16" style="flex-shrink:0;color:#5F6368" width="16">
+								<use href="#c-down"></use>
+							</svg>
+						</div>
+					</div>
+					<span
+						style="height:48px;padding:0 20px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:10px;font-size:15px;font-weight:600;white-space:nowrap;box-sizing:border-box;background:#0E0F11;color:#FFFFFF;height:50px;border-radius:12px"
+						><svg height="17" style="flex-shrink:0;" width="17">
+							<use href="#c-search"></use>
+						</svg
+						>Search 38 cars</span
+					>
+				</div>
+			</div>
+			<section
+				style="padding:104px 56px 96px;display:flex;flex-direction:column;gap:36px"
+			>
+				<div
+					style="display:flex;justify-content:space-between;align-items:flex-end"
+				>
+					<span
+						style="font-weight:600;font-size:48px;letter-spacing:-0.035em;line-height:1.02;text-wrap:balance;"
+						>Shop by make</span
+					><span
+						style="font-size:15px;font-weight:600;display:flex;gap:8px;align-items:center"
+						>All 22 makes<svg height="15" style="flex-shrink:0;" width="15">
+							<use href="#c-arrow"></use>
+						</svg></span
+					>
+				</div>
+				<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px">
+					<div
+						style="height:104px;border-radius:16px;background:#0E0F11;color:#FFFFFF;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px"
+					>
+						<span style="font-size:19px;font-weight:600;letter-spacing:-0.01em"
+							>Toyota</span
+						><span
+							style="font-family:'Geist Mono',monospace;font-size:12px;opacity:0.65"
+							>38 cars</span
+						>
+					</div>
+					<div
+						style="height:104px;border-radius:16px;background:#F3F3F1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px"
+					>
+						<span style="font-size:19px;font-weight:600;letter-spacing:-0.01em"
+							>Mazda</span
+						><span
+							style="font-family:'Geist Mono',monospace;font-size:12px;opacity:0.65"
+							>14 cars</span
+						>
+					</div>
+					<div
+						style="height:104px;border-radius:16px;background:#F3F3F1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px"
+					>
+						<span style="font-size:19px;font-weight:600;letter-spacing:-0.01em"
+							>Honda</span
+						><span
+							style="font-family:'Geist Mono',monospace;font-size:12px;opacity:0.65"
+							>17 cars</span
+						>
+					</div>
+					<div
+						style="height:104px;border-radius:16px;background:#F3F3F1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px"
+					>
+						<span style="font-size:19px;font-weight:600;letter-spacing:-0.01em"
+							>Nissan</span
+						><span
+							style="font-family:'Geist Mono',monospace;font-size:12px;opacity:0.65"
+							>12 cars</span
+						>
+					</div>
+					<div
+						style="height:104px;border-radius:16px;background:#F3F3F1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px"
+					>
+						<span style="font-size:19px;font-weight:600;letter-spacing:-0.01em"
+							>Ford</span
+						><span
+							style="font-family:'Geist Mono',monospace;font-size:12px;opacity:0.65"
+							>11 cars</span
+						>
+					</div>
+					<div
+						style="height:104px;border-radius:16px;background:#F3F3F1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px"
+					>
+						<span style="font-size:19px;font-weight:600;letter-spacing:-0.01em"
+							>Mercedes-Benz</span
+						><span
+							style="font-family:'Geist Mono',monospace;font-size:12px;opacity:0.65"
+							>9 cars</span
+						>
+					</div>
+					<div
+						style="height:104px;border-radius:16px;background:#F3F3F1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px"
+					>
+						<span style="font-size:19px;font-weight:600;letter-spacing:-0.01em"
+							>BMW</span
+						><span
+							style="font-family:'Geist Mono',monospace;font-size:12px;opacity:0.65"
+							>7 cars</span
+						>
+					</div>
+					<div
+						style="height:104px;border-radius:16px;background:#F3F3F1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px"
+					>
+						<span style="font-size:19px;font-weight:600;letter-spacing:-0.01em"
+							>Volkswagen</span
+						><span
+							style="font-family:'Geist Mono',monospace;font-size:12px;opacity:0.65"
+							>8 cars</span
+						>
+					</div>
+					<div
+						style="height:104px;border-radius:16px;background:#F3F3F1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px"
+					>
+						<span style="font-size:19px;font-weight:600;letter-spacing:-0.01em"
+							>Isuzu</span
+						><span
+							style="font-family:'Geist Mono',monospace;font-size:12px;opacity:0.65"
+							>10 cars</span
+						>
+					</div>
+					<div
+						style="height:104px;border-radius:16px;background:#F3F3F1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px"
+					>
+						<span style="font-size:19px;font-weight:600;letter-spacing:-0.01em"
+							>Mitsubishi</span
+						><span
+							style="font-family:'Geist Mono',monospace;font-size:12px;opacity:0.65"
+							>6 cars</span
+						>
+					</div>
+					<div
+						style="height:104px;border-radius:16px;background:#F3F3F1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px"
+					>
+						<span style="font-size:19px;font-weight:600;letter-spacing:-0.01em"
+							>Hyundai</span
+						><span
+							style="font-family:'Geist Mono',monospace;font-size:12px;opacity:0.65"
+							>5 cars</span
+						>
+					</div>
+					<div
+						style="height:104px;border-radius:16px;background:#F3F3F1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px"
+					>
+						<span style="font-size:19px;font-weight:600;letter-spacing:-0.01em"
+							>Land Rover</span
+						><span
+							style="font-family:'Geist Mono',monospace;font-size:12px;opacity:0.65"
+							>5 cars</span
+						>
+					</div>
+				</div>
+			</section>
+			<section style="padding:0 12px">
+				<div
+					style="border-radius:26px;background:#F3F3F1;padding:72px 44px 44px;display:flex;flex-direction:column;gap:28px"
+				>
+					<div
+						style="display:flex;justify-content:space-between;align-items:flex-end"
+					>
+						<div style="display:flex;flex-direction:column;gap:12px">
+							<span
+								style="font-family:'Geist Mono',monospace;font-size:12.5px;letter-spacing:0.08em;color:#5F6368"
+								>JUST ARRIVED · STOCK RM-2214</span
+							><span
+								style="font-weight:600;font-size:48px;letter-spacing:-0.035em;line-height:1.02;text-wrap:balance;"
+								>2024 Toyota Land Cruiser Prado 250 VX</span
+							>
+							<div style="display:flex;gap:8px;margin-top:4px">
+								<span
+									style="height:32px;padding:0 12px;border-radius:999px;background:#FFFFFF;box-shadow:inset 0 0 0 1px #E3E3DF;display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:500"
+									><svg
+										height="13"
+										style="flex-shrink:0;color:#12B76A"
+										width="13"
+									>
+										<use href="#c-check"></use>
+									</svg
+									>One owner</span
+								><span
+									style="height:32px;padding:0 12px;border-radius:999px;background:#FFFFFF;box-shadow:inset 0 0 0 1px #E3E3DF;display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:500"
+									><svg
+										height="13"
+										style="flex-shrink:0;color:#12B76A"
+										width="13"
+									>
+										<use href="#c-check"></use>
+									</svg
+									>Full service history</span
+								><span
+									style="height:32px;padding:0 12px;border-radius:999px;background:#FFFFFF;box-shadow:inset 0 0 0 1px #E3E3DF;display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:500"
+									><svg
+										height="13"
+										style="flex-shrink:0;color:#12B76A"
+										width="13"
+									>
+										<use href="#c-check"></use>
+									</svg
+									>Duty paid</span
+								>
+							</div>
+						</div>
+						<div style="display:flex;gap:8px">
+							<span
+								style="height:48px;padding:0 20px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:10px;font-size:15px;font-weight:600;white-space:nowrap;box-sizing:border-box;box-shadow:inset 0 0 0 1px #CFCFCA;color:#0E0F11;background:#FFFFFF;height:44px"
+								><svg height="15" style="flex-shrink:0;" width="15">
+									<use href="#c-share"></use>
+								</svg
+								>Share</span
+							><span
+								style="height:48px;padding:0 20px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:10px;font-size:15px;font-weight:600;white-space:nowrap;box-sizing:border-box;box-shadow:inset 0 0 0 1px #CFCFCA;color:#0E0F11;background:#FFFFFF;height:44px"
+								><svg height="15" style="flex-shrink:0;" width="15">
+									<use href="#c-heart"></use>
+								</svg
+								>Save</span
+							>
+						</div>
+					</div>
+					<div
+						style="position:relative;height:540px;border-radius:22px;background:#FFFFFF;overflow:hidden"
+					>
+						<span
+							style="position:absolute;left:0;right:0;top:40px;text-align:center;font-weight:700;font-size:250px;letter-spacing:-0.05em;line-height:0.8;color:#F1F1EE;pointer-events:none"
+							>PRADO</span
+						>
+						<div
+							style="position:absolute;left:300px;top:130px;width:760px;height:340px;border-radius:50%;box-shadow:inset 0 0 0 1px #E6E6E2;transform:scaleY(0.28) translateY(560px)"
+						></div>
+						<div
+							style="position:relative;overflow:hidden;background:rgba(228,228,224,0.6);position:absolute;left:280px;top:100px;width:780px;height:340px;border-radius:14px"
+						>
+							<img
+								alt=""
+								src="../assets/prado-blue.webp"
+								style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+							>
+						</div>
+						<div
+							style="position:absolute;left:36px;top:60px;width:190px;border-radius:14px;background:#FFFFFF;box-shadow:0 0 0 1px #E3E3DF,0 14px 30px -18px rgba(14,15,17,0.35);padding:10px;display:flex;flex-direction:column;gap:8px;z-index:2"
+						>
+							<div
+								style="position:relative;overflow:hidden;background:#ECECE8;height:84px;border-radius:9px"
+							>
+								<img
+									alt=""
+									src="../assets/fortuner-silver.webp"
+									style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+								>
+							</div>
+							<span style="font-size:13.5px;font-weight:600;padding:0 2px"
+								>Factory tyres, 80% tread</span
+							>
+						</div>
+						<div
+							style="position:absolute;left:226px;top:122px;width:120px;height:1px;background:#9A9DA3;z-index:1"
+						></div>
+						<div
+							style="position:absolute;right:36px;top:40px;width:190px;border-radius:14px;background:#FFFFFF;box-shadow:0 0 0 1px #E3E3DF,0 14px 30px -18px rgba(14,15,17,0.35);padding:10px;display:flex;flex-direction:column;gap:8px;z-index:2"
+						>
+							<div
+								style="position:relative;overflow:hidden;background:#ECECE8;height:84px;border-radius:9px"
+							>
+								<img
+									alt=""
+									src="../assets/ranger-interior.webp"
+									style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+								>
+							</div>
+							<span style="font-size:13.5px;font-weight:600;padding:0 2px"
+								>Leather, third-row seats</span
+							>
+						</div>
+						<div
+							style="position:absolute;right:226px;top:102px;width:160px;height:1px;background:#9A9DA3;z-index:1"
+						></div>
+						<div
+							style="position:absolute;right:60px;bottom:40px;width:190px;border-radius:14px;background:#FFFFFF;box-shadow:0 0 0 1px #E3E3DF,0 14px 30px -18px rgba(14,15,17,0.35);padding:10px;display:flex;flex-direction:column;gap:8px;z-index:2"
+						>
+							<div
+								style="position:relative;overflow:hidden;background:#ECECE8;height:84px;border-radius:9px"
+							>
+								<img
+									alt=""
+									src="../assets/fortuner-silver.webp"
+									style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+								>
+							</div>
+							<span style="font-size:13.5px;font-weight:600;padding:0 2px"
+								>Tow bar and roof rails</span
+							>
+						</div>
+						<div
+							style="position:absolute;right:250px;bottom:104px;width:130px;height:1px;background:#9A9DA3;z-index:1"
+						></div>
+						<div
+							style="position:absolute;left:50%;bottom:26px;transform:translateX(-50%);display:flex;align-items:center;gap:12px;font-size:13px;color:#5F6368"
+						>
+							<span
+								style="width:36px;height:36px;border-radius:50%;box-shadow:inset 0 0 0 1px #D2D2CD;display:flex;align-items:center;justify-content:center;color:#0E0F11"
+								><svg
+									height="14"
+									style="flex-shrink:0;transform:rotate(180deg)"
+									width="14"
+								>
+									<use href="#c-right"></use>
+								</svg></span
+							><span style="font-family:'Geist Mono',monospace"
+								>01 / 24 photos</span
+							><span
+								style="width:36px;height:36px;border-radius:50%;background:#0E0F11;color:#FFFFFF;display:flex;align-items:center;justify-content:center"
+								><svg height="14" style="flex-shrink:0;" width="14">
+									<use href="#c-right"></use>
+								</svg></span
+							>
+						</div>
+					</div>
+					<div
+						style="display:grid;grid-template-columns:420px 1fr;gap:28px;align-items:center"
+					>
+						<div
+							style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px"
+						>
+							<div
+								style="position:relative;overflow:hidden;background:#E6E6E2;height:78px;border-radius:12px;box-shadow:0 0 0 2px #0E0F11"
+							>
+								<img
+									alt=""
+									src="../assets/prado-blue.webp"
+									style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+								>
+							</div>
+							<div
+								style="position:relative;overflow:hidden;background:#E6E6E2;height:78px;border-radius:12px;"
+							>
+								<img
+									alt=""
+									src="../assets/ranger-interior.webp"
+									style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+								>
+							</div>
+							<div
+								style="position:relative;overflow:hidden;background:#E6E6E2;height:78px;border-radius:12px;"
+							>
+								<img
+									alt=""
+									src="../assets/mercedes-interior.webp"
+									style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+								>
+							</div>
+							<div
+								style="position:relative;overflow:hidden;background:#E6E6E2;height:78px;border-radius:12px;"
+							>
+								<img
+									alt=""
+									src="../assets/mercedes-interior.webp"
+									style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+								>
+							</div>
+						</div>
+						<div style="display:grid;grid-template-columns:repeat(4,1fr)">
+							<div
+								style="display:flex;flex-direction:column;gap:6px;padding:0 22px;"
+							>
+								<span style="font-size:13px;color:#5F6368">Mileage</span
+								><span
+									style="font-size:20px;font-weight:600;letter-spacing:-0.01em"
+									>18,400 km</span
+								>
+							</div>
+							<div
+								style="display:flex;flex-direction:column;gap:6px;padding:0 22px;box-shadow:inset 1px 0 0 #D6D6D1"
+							>
+								<span style="font-size:13px;color:#5F6368">Engine</span
+								><span
+									style="font-size:20px;font-weight:600;letter-spacing:-0.01em"
+									>2.8 GD-6 diesel</span
+								>
+							</div>
+							<div
+								style="display:flex;flex-direction:column;gap:6px;padding:0 22px;box-shadow:inset 1px 0 0 #D6D6D1"
+							>
+								<span style="font-size:13px;color:#5F6368">Gearbox</span
+								><span
+									style="font-size:20px;font-weight:600;letter-spacing:-0.01em"
+									>8-speed auto</span
+								>
+							</div>
+							<div
+								style="display:flex;flex-direction:column;gap:6px;padding:0 22px;box-shadow:inset 1px 0 0 #D6D6D1"
+							>
+								<span style="font-size:13px;color:#5F6368">Drive</span
+								><span
+									style="font-size:20px;font-weight:600;letter-spacing:-0.01em"
+									>4x4, low range</span
+								>
+							</div>
+						</div>
+					</div>
+					<div style="display:grid;grid-template-columns:420px 1fr;gap:28px">
+						<div
+							style="border-radius:20px;background:#FFFFFF;box-shadow:0 0 0 1px #E3E3DF;padding:24px;display:flex;flex-direction:column;gap:18px"
+						>
+							<div
+								style="display:flex;justify-content:space-between;align-items:baseline"
+							>
+								<span style="font-size:14px;color:#5F6368">Price</span
+								><span
+									style="font-size:36px;font-weight:700;letter-spacing:-0.03em"
+									>$78,500</span
+								>
+							</div>
+							<div
+								style="display:flex;justify-content:space-between;font-size:14px;padding-top:14px;box-shadow:inset 0 1px 0 #E3E3DF"
+							>
+								<span style="color:#5F6368">Finance from</span
+								><span><b style="font-weight:700">$1,590</b>/month</span>
+							</div>
+							<span style="font-size:12.5px;color:#5F6368;margin-top:-8px"
+								>30% deposit, 48 months. Subject to bank approval.</span
+							>
+							<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+								<span
+									style="height:48px;padding:0 20px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:10px;font-size:15px;font-weight:600;white-space:nowrap;box-sizing:border-box;background:#0E0F11;color:#FFFFFF;"
+									>Book a test drive</span
+								><span
+									style="height:48px;padding:0 20px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:10px;font-size:15px;font-weight:600;white-space:nowrap;box-sizing:border-box;box-shadow:inset 0 0 0 1px #CFCFCA;color:#0E0F11;background:#FFFFFF;"
+									><svg height="16" style="flex-shrink:0;" width="16">
+										<use href="#c-chat"></use>
+									</svg
+									>WhatsApp us</span
+								>
+							</div>
+						</div>
+						<div
+							style="display:flex;flex-direction:column;gap:14px;padding:8px 0 0 20px"
+						>
+							<span style="font-size:20px;font-weight:600">Overview</span
+							><span
+								style="font-size:16px;line-height:1.7;color:#3C3F44;max-width:720px"
+								>One owner from new, serviced every 10,000 km at Toyota Zimbabwe
+								with stamped book. Seven leather seats, sunroof, reverse camera
+								and a tow bar rated to 3,000 kg. New tyres in March 2026 and a
+								fresh service before delivery. Viewing at our Msasa showroom, or
+								we can bring it to you in Harare for a test drive.</span
+							>
+							<div
+								style="display:flex;gap:26px;font-size:14px;color:#5F6368;margin-top:4px"
+							>
+								<span style="display:flex;gap:8px;align-items:center"
+									><svg
+										height="15"
+										style="flex-shrink:0;color:#0E0F11"
+										width="15"
+									>
+										<use href="#c-shield"></use>
+									</svg
+									>Inspected by our workshop</span
+								><span style="display:flex;gap:8px;align-items:center"
+									><svg
+										height="15"
+										style="flex-shrink:0;color:#0E0F11"
+										width="15"
+									>
+										<use href="#c-shield"></use>
+									</svg
+									>6-month warranty</span
+								><span style="display:flex;gap:8px;align-items:center"
+									><svg
+										height="15"
+										style="flex-shrink:0;color:#0E0F11"
+										width="15"
+									>
+										<use href="#c-shield"></use>
+									</svg
+									>Trade-ins welcome</span
+								>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+			<section
+				style="padding:104px 56px;display:flex;flex-direction:column;gap:32px"
+			>
+				<div
+					style="display:flex;justify-content:space-between;align-items:flex-end"
+				>
+					<div style="display:flex;flex-direction:column;gap:12px">
+						<span
+							style="font-family:'Geist Mono',monospace;font-size:12.5px;letter-spacing:0.08em;color:#5F6368"
+							>IN STOCK</span
+						><span
+							style="font-weight:600;font-size:52px;letter-spacing:-0.035em;line-height:1.02;text-wrap:balance;"
+							>In the showroom now</span
+						>
+					</div>
+					<span
+						style="height:48px;padding:0 6px 0 20px;border-radius:999px;display:inline-flex;align-items:center;gap:14px;font-size:15px;font-weight:600;white-space:nowrap;box-sizing:border-box;background:#0E0F11;color:#FFFFFF;"
+						>View all 142 cars<span
+							style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#FFFFFF;color:#0E0F11"
+							><svg height="15" style="flex-shrink:0;" width="15">
+								<use href="#c-arrow"></use>
+							</svg></span
+						></span
+					>
+				</div>
+				<div style="display:flex;gap:8px">
+					<span
+						style="height:40px;padding:0 16px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;white-space:nowrap;background:#0E0F11;color:#FFFFFF"
+						>All<span
+							style="font-family:'Geist Mono',monospace;font-size:12px;opacity:0.6"
+							>142</span
+						></span
+					><span
+						style="height:40px;padding:0 16px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;white-space:nowrap;box-shadow:inset 0 0 0 1px #D2D2CD;background:#FFFFFF;color:#0E0F11"
+						>SUVs<span
+							style="font-family:'Geist Mono',monospace;font-size:12px;opacity:0.6"
+							>48</span
+						></span
+					><span
+						style="height:40px;padding:0 16px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;white-space:nowrap;box-shadow:inset 0 0 0 1px #D2D2CD;background:#FFFFFF;color:#0E0F11"
+						>Bakkies<span
+							style="font-family:'Geist Mono',monospace;font-size:12px;opacity:0.6"
+							>36</span
+						></span
+					><span
+						style="height:40px;padding:0 16px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;white-space:nowrap;box-shadow:inset 0 0 0 1px #D2D2CD;background:#FFFFFF;color:#0E0F11"
+						>Sedans<span
+							style="font-family:'Geist Mono',monospace;font-size:12px;opacity:0.6"
+							>31</span
+						></span
+					><span
+						style="height:40px;padding:0 16px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;white-space:nowrap;box-shadow:inset 0 0 0 1px #D2D2CD;background:#FFFFFF;color:#0E0F11"
+						>Hatchbacks<span
+							style="font-family:'Geist Mono',monospace;font-size:12px;opacity:0.6"
+							>27</span
+						></span
+					>
+				</div>
+				<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+					<div
+						style="border-radius:20px;background:#EEF1F4;padding:10px;display:flex;flex-direction:column;gap:14px"
+					>
+						<div
+							style="position:relative;overflow:hidden;background:#E2E4E1;height:220px;border-radius:14px"
+						>
+							<img
+								alt=""
+								src="../assets/hiace-road-portrait.webp"
+								style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+							><span
+								style="position:absolute;left:12px;top:12px;height:28px;padding:0 11px;border-radius:999px;background:#FFFFFF;color:#0E0F11;display:flex;align-items:center;font-size:12.5px;font-weight:600;pointer-events:none"
+								>Pre-owned</span
+							>
+						</div>
+						<div
+							style="padding:0 8px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px"
+						>
+							<span
+								style="font-size:18px;font-weight:600;letter-spacing:-0.01em;line-height:1.25"
+								>2019 Toyota HiAce 2.7 Commuter</span
+							><span style="font-size:18px;font-weight:700;white-space:nowrap;"
+								>$31,500</span
+							>
+						</div>
+						<div
+							style="margin:0 8px 6px;padding-top:12px;box-shadow:inset 0 1px 0 rgba(14,15,17,0.1);display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;font-family:'Geist Mono',monospace;font-size:12.5px;color:#3C3F44"
+						>
+							<span
+								style="display:flex;align-items:center;gap:6px;white-space:nowrap;"
+								><svg
+									height="15"
+									style="flex-shrink:0;color:#5F6368"
+									width="15"
+								>
+									<use href="#c-gauge"></use>
+								</svg
+								>112,000 km</span
+							><span
+								style="display:flex;align-items:center;gap:6px;white-space:nowrap;"
+								><svg
+									height="15"
+									style="flex-shrink:0;color:#5F6368"
+									width="15"
+								>
+									<use href="#c-cal"></use>
+								</svg
+								>2019</span
+							><span
+								style="display:flex;align-items:center;gap:6px;white-space:nowrap;"
+								><svg
+									height="15"
+									style="flex-shrink:0;color:#5F6368"
+									width="15"
+								>
+									<use href="#c-fuel"></use>
+								</svg
+								>Petrol</span
+							><span
+								style="display:flex;align-items:center;gap:6px;white-space:nowrap;"
+								><svg
+									height="15"
+									style="flex-shrink:0;color:#5F6368"
+									width="15"
+								>
+									<use href="#c-gear"></use>
+								</svg
+								>Manual</span
+							>
+						</div>
+					</div>
+					<div
+						style="border-radius:20px;background:#F1EFEA;padding:10px;display:flex;flex-direction:column;gap:14px"
+					>
+						<div
+							style="position:relative;overflow:hidden;background:#E2E4E1;height:220px;border-radius:14px"
+						>
+							<img
+								alt=""
+								src="../assets/corolla-cross-white.webp"
+								style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+							><span
+								style="position:absolute;left:12px;top:12px;height:28px;padding:0 11px;border-radius:999px;background:#FFFFFF;color:#0E0F11;display:flex;align-items:center;font-size:12.5px;font-weight:600;pointer-events:none"
+								>Demo</span
+							>
+						</div>
+						<div
+							style="padding:0 8px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px"
+						>
+							<span
+								style="font-size:18px;font-weight:600;letter-spacing:-0.01em;line-height:1.25"
+								>2023 Toyota Corolla Cross Hybrid Z</span
+							><span style="font-size:18px;font-weight:700;white-space:nowrap;"
+								>$36,800</span
+							>
+						</div>
+						<div
+							style="margin:0 8px 6px;padding-top:12px;box-shadow:inset 0 1px 0 rgba(14,15,17,0.1);display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;font-family:'Geist Mono',monospace;font-size:12.5px;color:#3C3F44"
+						>
+							<span
+								style="display:flex;align-items:center;gap:6px;white-space:nowrap;"
+								><svg
+									height="15"
+									style="flex-shrink:0;color:#5F6368"
+									width="15"
+								>
+									<use href="#c-gauge"></use>
+								</svg
+								>9,400 km</span
+							><span
+								style="display:flex;align-items:center;gap:6px;white-space:nowrap;"
+								><svg
+									height="15"
+									style="flex-shrink:0;color:#5F6368"
+									width="15"
+								>
+									<use href="#c-cal"></use>
+								</svg
+								>2023</span
+							><span
+								style="display:flex;align-items:center;gap:6px;white-space:nowrap;"
+								><svg
+									height="15"
+									style="flex-shrink:0;color:#5F6368"
+									width="15"
+								>
+									<use href="#c-fuel"></use>
+								</svg
+								>Hybrid</span
+							><span
+								style="display:flex;align-items:center;gap:6px;white-space:nowrap;"
+								><svg
+									height="15"
+									style="flex-shrink:0;color:#5F6368"
+									width="15"
+								>
+									<use href="#c-gear"></use>
+								</svg
+								>Auto</span
+							>
+						</div>
+					</div>
+					<div
+						style="border-radius:20px;background:#EEF2EE;padding:10px;display:flex;flex-direction:column;gap:14px"
+					>
+						<div
+							style="position:relative;overflow:hidden;background:#E2E4E1;height:220px;border-radius:14px"
+						>
+							<img
+								alt=""
+								src="../assets/mazda3-silver.webp"
+								style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+							><span
+								style="position:absolute;left:12px;top:12px;height:28px;padding:0 11px;border-radius:999px;background:#FFFFFF;color:#0E0F11;display:flex;align-items:center;font-size:12.5px;font-weight:600;pointer-events:none"
+								>Pre-owned</span
+							>
+						</div>
+						<div
+							style="padding:0 8px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px"
+						>
+							<span
+								style="font-size:18px;font-weight:600;letter-spacing:-0.01em;line-height:1.25"
+								>2019 Mazda3 1.5 Hatchback</span
+							><span style="font-size:18px;font-weight:700;white-space:nowrap;"
+								>$17,900</span
+							>
+						</div>
+						<div
+							style="margin:0 8px 6px;padding-top:12px;box-shadow:inset 0 1px 0 rgba(14,15,17,0.1);display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;font-family:'Geist Mono',monospace;font-size:12.5px;color:#3C3F44"
+						>
+							<span
+								style="display:flex;align-items:center;gap:6px;white-space:nowrap;"
+								><svg
+									height="15"
+									style="flex-shrink:0;color:#5F6368"
+									width="15"
+								>
+									<use href="#c-gauge"></use>
+								</svg
+								>46,200 km</span
+							><span
+								style="display:flex;align-items:center;gap:6px;white-space:nowrap;"
+								><svg
+									height="15"
+									style="flex-shrink:0;color:#5F6368"
+									width="15"
+								>
+									<use href="#c-cal"></use>
+								</svg
+								>2019</span
+							><span
+								style="display:flex;align-items:center;gap:6px;white-space:nowrap;"
+								><svg
+									height="15"
+									style="flex-shrink:0;color:#5F6368"
+									width="15"
+								>
+									<use href="#c-fuel"></use>
+								</svg
+								>Petrol</span
+							><span
+								style="display:flex;align-items:center;gap:6px;white-space:nowrap;"
+								><svg
+									height="15"
+									style="flex-shrink:0;color:#5F6368"
+									width="15"
+								>
+									<use href="#c-gear"></use>
+								</svg
+								>Auto</span
+							>
+						</div>
+					</div>
+					<div
+						style="border-radius:20px;background:#F1EFEA;padding:10px;display:flex;flex-direction:column;gap:14px"
+					>
+						<div
+							style="position:relative;overflow:hidden;background:#E2E4E1;height:220px;border-radius:14px"
+						>
+							<img
+								alt=""
+								src="../assets/yaris-white.webp"
+								style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+							><span
+								style="position:absolute;left:12px;top:12px;height:28px;padding:0 11px;border-radius:999px;background:#FF5A1F;color:#0E0F11;display:flex;align-items:center;font-size:12.5px;font-weight:600;pointer-events:none"
+								>Just arrived</span
+							>
+						</div>
+						<div
+							style="padding:0 8px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px"
+						>
+							<span
+								style="font-size:18px;font-weight:600;letter-spacing:-0.01em;line-height:1.25"
+								>2020 Toyota Aqua GR Sport</span
+							><span style="font-size:18px;font-weight:700;white-space:nowrap;"
+								>$14,500</span
+							>
+						</div>
+						<div
+							style="margin:0 8px 6px;padding-top:12px;box-shadow:inset 0 1px 0 rgba(14,15,17,0.1);display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;font-family:'Geist Mono',monospace;font-size:12.5px;color:#3C3F44"
+						>
+							<span
+								style="display:flex;align-items:center;gap:6px;white-space:nowrap;"
+								><svg
+									height="15"
+									style="flex-shrink:0;color:#5F6368"
+									width="15"
+								>
+									<use href="#c-gauge"></use>
+								</svg
+								>38,700 km</span
+							><span
+								style="display:flex;align-items:center;gap:6px;white-space:nowrap;"
+								><svg
+									height="15"
+									style="flex-shrink:0;color:#5F6368"
+									width="15"
+								>
+									<use href="#c-cal"></use>
+								</svg
+								>2020</span
+							><span
+								style="display:flex;align-items:center;gap:6px;white-space:nowrap;"
+								><svg
+									height="15"
+									style="flex-shrink:0;color:#5F6368"
+									width="15"
+								>
+									<use href="#c-fuel"></use>
+								</svg
+								>Hybrid</span
+							><span
+								style="display:flex;align-items:center;gap:6px;white-space:nowrap;"
+								><svg
+									height="15"
+									style="flex-shrink:0;color:#5F6368"
+									width="15"
+								>
+									<use href="#c-gear"></use>
+								</svg
+								>Auto</span
+							>
+						</div>
+					</div>
+					<div
+						style="border-radius:20px;background:#EEF2EE;padding:10px;display:flex;flex-direction:column;gap:14px"
+					>
+						<div
+							style="position:relative;overflow:hidden;background:#E2E4E1;height:220px;border-radius:14px"
+						>
+							<img
+								alt=""
+								src="../assets/honda-fit-blue.webp"
+								style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+							><span
+								style="position:absolute;left:12px;top:12px;height:28px;padding:0 11px;border-radius:999px;background:#FFFFFF;color:#0E0F11;display:flex;align-items:center;font-size:12.5px;font-weight:600;pointer-events:none"
+								>Pre-owned</span
+							>
+						</div>
+						<div
+							style="padding:0 8px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px"
+						>
+							<span
+								style="font-size:18px;font-weight:600;letter-spacing:-0.01em;line-height:1.25"
+								>2015 Honda Fit 1.3 F</span
+							><span style="font-size:18px;font-weight:700;white-space:nowrap;"
+								>$7,900</span
+							>
+						</div>
+						<div
+							style="margin:0 8px 6px;padding-top:12px;box-shadow:inset 0 1px 0 rgba(14,15,17,0.1);display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;font-family:'Geist Mono',monospace;font-size:12.5px;color:#3C3F44"
+						>
+							<span
+								style="display:flex;align-items:center;gap:6px;white-space:nowrap;"
+								><svg
+									height="15"
+									style="flex-shrink:0;color:#5F6368"
+									width="15"
+								>
+									<use href="#c-gauge"></use>
+								</svg
+								>91,000 km</span
+							><span
+								style="display:flex;align-items:center;gap:6px;white-space:nowrap;"
+								><svg
+									height="15"
+									style="flex-shrink:0;color:#5F6368"
+									width="15"
+								>
+									<use href="#c-cal"></use>
+								</svg
+								>2015</span
+							><span
+								style="display:flex;align-items:center;gap:6px;white-space:nowrap;"
+								><svg
+									height="15"
+									style="flex-shrink:0;color:#5F6368"
+									width="15"
+								>
+									<use href="#c-fuel"></use>
+								</svg
+								>Petrol</span
+							><span
+								style="display:flex;align-items:center;gap:6px;white-space:nowrap;"
+								><svg
+									height="15"
+									style="flex-shrink:0;color:#5F6368"
+									width="15"
+								>
+									<use href="#c-gear"></use>
+								</svg
+								>Auto</span
+							>
+						</div>
+					</div>
+					<div
+						style="border-radius:20px;background:#EEF1F4;padding:10px;display:flex;flex-direction:column;gap:14px"
+					>
+						<div
+							style="position:relative;overflow:hidden;background:#E2E4E1;height:220px;border-radius:14px"
+						>
+							<img
+								alt=""
+								src="../assets/xtrail-white.webp"
+								style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+							><span
+								style="position:absolute;left:12px;top:12px;height:28px;padding:0 11px;border-radius:999px;background:#FFFFFF;color:#0E0F11;display:flex;align-items:center;font-size:12.5px;font-weight:600;pointer-events:none"
+								>New</span
+							>
+						</div>
+						<div
+							style="padding:0 8px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px"
+						>
+							<span
+								style="font-size:18px;font-weight:600;letter-spacing:-0.01em;line-height:1.25"
+								>2018 Nissan X-Trail 2.0 Hybrid</span
+							><span style="font-size:18px;font-weight:700;white-space:nowrap;"
+								>$19,800</span
+							>
+						</div>
+						<div
+							style="margin:0 8px 6px;padding-top:12px;box-shadow:inset 0 1px 0 rgba(14,15,17,0.1);display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;font-family:'Geist Mono',monospace;font-size:12.5px;color:#3C3F44"
+						>
+							<span
+								style="display:flex;align-items:center;gap:6px;white-space:nowrap;"
+								><svg
+									height="15"
+									style="flex-shrink:0;color:#5F6368"
+									width="15"
+								>
+									<use href="#c-gauge"></use>
+								</svg
+								>72,500 km</span
+							><span
+								style="display:flex;align-items:center;gap:6px;white-space:nowrap;"
+								><svg
+									height="15"
+									style="flex-shrink:0;color:#5F6368"
+									width="15"
+								>
+									<use href="#c-cal"></use>
+								</svg
+								>2018</span
+							><span
+								style="display:flex;align-items:center;gap:6px;white-space:nowrap;"
+								><svg
+									height="15"
+									style="flex-shrink:0;color:#5F6368"
+									width="15"
+								>
+									<use href="#c-fuel"></use>
+								</svg
+								>Hybrid</span
+							><span
+								style="display:flex;align-items:center;gap:6px;white-space:nowrap;"
+								><svg
+									height="15"
+									style="flex-shrink:0;color:#5F6368"
+									width="15"
+								>
+									<use href="#c-gear"></use>
+								</svg
+								>Auto</span
+							>
+						</div>
+					</div>
+				</div>
+			</section>
+			<section style="padding:0 12px">
+				<div
+					style="border-radius:26px;background:#0E0F11;color:#FFFFFF;padding:96px 44px 44px;display:flex;flex-direction:column;gap:64px"
+				>
+					<div style="display:grid;grid-template-columns:300px 1fr;gap:40px">
+						<span
+							style="font-family:'Geist Mono',monospace;font-size:12.5px;letter-spacing:0.08em;color:#FF5A1F"
+							>/ WHY RIDGELINE</span
+						><span
+							style="font-size:44px;font-weight:600;letter-spacing:-0.03em;line-height:1.14;text-wrap:pretty"
+							>Every car is inspected, priced up front and backed by our own
+							workshop.
+							<span style="color:#7C7F86"
+								>Finance, trade-ins and servicing happen under one roof in
+								Msasa, so you deal with one team from test drive to first
+								service.</span
+							></span
+						>
+					</div>
+					<div
+						style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px"
+					>
+						<div
+							style="border-radius:20px;background:#18191C;box-shadow:inset 0 0 0 1px #26282C;overflow:hidden;display:flex;flex-direction:column"
+						>
+							<div
+								style="position:relative;overflow:hidden;background:#222326;height:200px"
+							>
+								<img
+									alt=""
+									src="../assets/mercedes-interior.webp"
+									style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+								>
+							</div>
+							<div
+								style="padding:22px;display:flex;flex-direction:column;gap:10px"
+							>
+								<span
+									style="width:40px;height:40px;border-radius:12px;background:#FF5A1F;color:#0E0F11;display:flex;align-items:center;justify-content:center"
+									><svg height="19" style="flex-shrink:0;" width="19">
+										<use href="#c-card"></use>
+									</svg></span
+								><span style="font-size:21px;font-weight:600;margin-top:6px"
+									>Finance</span
+								><span style="font-size:15px;line-height:1.55;color:#B4B7BD"
+									>Applications with CABS, Stanbic and CBZ, done at our
+									desk.</span
+								><span
+									style="font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;margin-top:8px"
+									>Learn more<svg height="14" style="flex-shrink:0;" width="14">
+										<use href="#c-arrow"></use>
+									</svg></span
+								>
+							</div>
+						</div>
+						<div
+							style="border-radius:20px;background:#18191C;box-shadow:inset 0 0 0 1px #26282C;overflow:hidden;display:flex;flex-direction:column"
+						>
+							<div
+								style="position:relative;overflow:hidden;background:#222326;height:200px"
+							>
+								<img
+									alt=""
+									src="../assets/collage-sedan-pickup.webp"
+									style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+								>
+							</div>
+							<div
+								style="padding:22px;display:flex;flex-direction:column;gap:10px"
+							>
+								<span
+									style="width:40px;height:40px;border-radius:12px;background:#26282C;color:#FFFFFF;display:flex;align-items:center;justify-content:center"
+									><svg height="19" style="flex-shrink:0;" width="19">
+										<use href="#c-swap"></use>
+									</svg></span
+								><span style="font-size:21px;font-weight:600;margin-top:6px"
+									>Trade-in</span
+								><span style="font-size:15px;line-height:1.55;color:#B4B7BD"
+									>A written valuation of your car in 30 minutes.</span
+								><span
+									style="font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;margin-top:8px"
+									>Learn more<svg height="14" style="flex-shrink:0;" width="14">
+										<use href="#c-arrow"></use>
+									</svg></span
+								>
+							</div>
+						</div>
+						<div
+							style="border-radius:20px;background:#18191C;box-shadow:inset 0 0 0 1px #26282C;overflow:hidden;display:flex;flex-direction:column"
+						>
+							<div
+								style="position:relative;overflow:hidden;background:#222326;height:200px"
+							>
+								<img
+									alt=""
+									src="../assets/ranger-interior.webp"
+									style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+								>
+							</div>
+							<div
+								style="padding:22px;display:flex;flex-direction:column;gap:10px"
+							>
+								<span
+									style="width:40px;height:40px;border-radius:12px;background:#26282C;color:#FFFFFF;display:flex;align-items:center;justify-content:center"
+									><svg height="19" style="flex-shrink:0;" width="19">
+										<use href="#c-wrench"></use>
+									</svg></span
+								><span style="font-size:21px;font-weight:600;margin-top:6px"
+									>Service centre</span
+								><span style="font-size:15px;line-height:1.55;color:#B4B7BD"
+									>Our own workshop, open six days a week.</span
+								><span
+									style="font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;margin-top:8px"
+									>Learn more<svg height="14" style="flex-shrink:0;" width="14">
+										<use href="#c-arrow"></use>
+									</svg></span
+								>
+							</div>
+						</div>
+						<div
+							style="border-radius:20px;background:#18191C;box-shadow:inset 0 0 0 1px #26282C;overflow:hidden;display:flex;flex-direction:column"
+						>
+							<div
+								style="position:relative;overflow:hidden;background:#222326;height:200px"
+							>
+								<img
+									alt=""
+									src="../assets/land-cruiser-hero.webp"
+									style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+								>
+							</div>
+							<div
+								style="padding:22px;display:flex;flex-direction:column;gap:10px"
+							>
+								<span
+									style="width:40px;height:40px;border-radius:12px;background:#26282C;color:#FFFFFF;display:flex;align-items:center;justify-content:center"
+									><svg height="19" style="flex-shrink:0;" width="19">
+										<use href="#c-shield"></use>
+									</svg></span
+								><span style="font-size:21px;font-weight:600;margin-top:6px"
+									>Warranty</span
+								><span style="font-size:15px;line-height:1.55;color:#B4B7BD"
+									>Six months on every pre-owned car we sell.</span
+								><span
+									style="font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;margin-top:8px"
+									>Learn more<svg height="14" style="flex-shrink:0;" width="14">
+										<use href="#c-arrow"></use>
+									</svg></span
+								>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+			<div style="height:104px"></div>
+			<section
+				style="padding:0 56px 104px;display:flex;flex-direction:column;gap:36px"
+			>
+				<div
+					style="display:flex;justify-content:space-between;align-items:flex-end"
+				>
+					<span
+						style="font-weight:600;font-size:48px;letter-spacing:-0.035em;line-height:1.02;text-wrap:balance;max-width:640px"
+						>Finance and trade-ins, before you visit</span
+					><span
+						style="font-size:15.5px;color:#5F6368;max-width:360px;line-height:1.55;text-align:right"
+						>Know your monthly payment and your trade-in value before you come
+						in.</span
+					>
+				</div>
+				<div
+					style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start"
+				>
+					<div
+						style="border-radius:24px;background:#F3F3F1;padding:32px;display:flex;flex-direction:column;gap:22px"
+					>
+						<div style="display:flex;flex-direction:column;gap:6px">
+							<span
+								style="font-family:'Geist Mono',monospace;font-size:12.5px;letter-spacing:0.08em;color:#5F6368"
+								>FINANCE</span
+							><span
+								style="font-size:30px;font-weight:600;letter-spacing:-0.025em"
+								>Estimate your repayments</span
+							>
+						</div>
+						<div style="display:flex;flex-direction:column;gap:7px;min-width:0">
+							<span
+								style="font-size:13.5px;font-weight:600;display:flex;gap:3px"
+								>Car price</span
+							>
+							<div
+								style="height:50px;border-radius:12px;background:#FFFFFF;box-shadow:inset 0 0 0 1px #D2D2CD;display:flex;align-items:center;gap:10px;padding:0 14px;font-size:15px;box-sizing:border-box"
+							>
+								<span style="color:#5F6368">USD</span
+								><span
+									style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#0E0F11"
+									>$42,000</span
+								>
+							</div>
+						</div>
+						<div style="display:flex;flex-direction:column;gap:12px">
+							<div style="display:flex;justify-content:space-between">
+								<span
+									style="font-size:13.5px;font-weight:600;display:flex;gap:3px"
+									>Deposit</span
+								><span style="font-size:14px"
+									><b style="font-weight:700">30%</b>
+									<span style="color:#5F6368">· $12,600</span></span
+								>
+							</div>
+							<div
+								style="position:relative;height:6px;border-radius:3px;background:#D9D9D4"
+							>
+								<div
+									style="position:absolute;left:0;top:0;bottom:0;width:30%;border-radius:3px;background:#0E0F11"
+								></div>
+								<span
+									style="position:absolute;left:30%;top:50%;width:22px;height:22px;border-radius:50%;background:#FFFFFF;box-shadow:0 0 0 1.5px #0E0F11,0 4px 10px -2px rgba(0,0,0,0.25);transform:translate(-50%,-50%)"
+								></span>
+							</div>
+							<div
+								style="display:flex;justify-content:space-between;font-family:'Geist Mono',monospace;font-size:11.5px;color:#5F6368"
+							>
+								<span>10%</span><span>50%</span>
+							</div>
+						</div>
+						<div style="display:flex;flex-direction:column;gap:8px">
+							<span
+								style="font-size:13.5px;font-weight:600;display:flex;gap:3px"
+								>Term</span
+							>
+							<div
+								style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:4px;border-radius:12px;background:#E6E6E1"
+							>
+								<span
+									style="height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:#5F6368"
+									>24 mo</span
+								><span
+									style="height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:#5F6368"
+									>36 mo</span
+								><span
+									style="height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;background:#FFFFFF;box-shadow:0 1px 2px rgba(0,0,0,0.1)"
+									>48 mo</span
+								><span
+									style="height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:#5F6368"
+									>60 mo</span
+								>
+							</div>
+						</div>
+						<div
+							style="border-radius:18px;background:#0E0F11;color:#FFFFFF;padding:22px;display:flex;justify-content:space-between;align-items:flex-end"
+						>
+							<div style="display:flex;flex-direction:column;gap:4px">
+								<span style="font-size:13.5px;color:#B4B7BD"
+									>Estimated monthly</span
+								><span
+									style="font-size:46px;font-weight:700;letter-spacing:-0.035em;line-height:1"
+									>$864</span
+								>
+							</div>
+							<span
+								style="font-size:12.5px;color:#B4B7BD;text-align:right;line-height:1.5"
+								>at 18% a year<br>$29,400 financed</span
+							>
+						</div>
+						<span style="font-size:12.5px;color:#5F6368;line-height:1.5"
+							>Indicative only. Your bank sets the final rate after
+							approval.</span
+						>
+					</div>
+					<div
+						style="border-radius:24px;background:#FFFFFF;box-shadow:0 0 0 1px #E3E3DF,0 30px 60px -40px rgba(14,15,17,0.35);padding:32px;display:flex;flex-direction:column;gap:20px"
+					>
+						<div style="display:flex;flex-direction:column;gap:14px">
+							<div
+								style="display:flex;justify-content:space-between;align-items:baseline"
+							>
+								<span
+									style="font-size:30px;font-weight:600;letter-spacing:-0.025em"
+									>Sell or trade in your car</span
+								><span style="font-size:13px;color:#5F6368;white-space:nowrap;"
+									><b style="color:#0E0F11">Step 1</b>
+									of 2</span
+								>
+							</div>
+							<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+								<div
+									style="height:4px;border-radius:2px;background:#FF5A1F"
+								></div>
+								<div
+									style="height:4px;border-radius:2px;background:#E6E6E1"
+								></div>
+							</div>
+							<span style="font-size:14.5px;color:#5F6368;line-height:1.5"
+								>Tell us about the car. We reply with a valuation on WhatsApp,
+								usually the same day.</span
+							>
+						</div>
+						<div style="height:1px;background:#E3E3DF"></div>
+						<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+							<div
+								style="display:flex;flex-direction:column;gap:7px;min-width:0"
+							>
+								<span
+									style="font-size:13.5px;font-weight:600;display:flex;gap:3px"
+									>Make<span style="color:#D92D20">*</span></span
+								>
+								<div
+									style="height:50px;border-radius:12px;background:#FFFFFF;box-shadow:inset 0 0 0 1px #D2D2CD;display:flex;align-items:center;gap:10px;padding:0 14px;font-size:15px;box-sizing:border-box"
+								>
+									<span
+										style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#0E0F11"
+										>Toyota</span
+									><svg
+										height="16"
+										style="flex-shrink:0;color:#5F6368"
+										width="16"
+									>
+										<use href="#c-down"></use>
+									</svg>
+								</div>
+							</div>
+							<div
+								style="display:flex;flex-direction:column;gap:7px;min-width:0"
+							>
+								<span
+									style="font-size:13.5px;font-weight:600;display:flex;gap:3px"
+									>Model<span style="color:#D92D20">*</span></span
+								>
+								<div
+									style="height:50px;border-radius:12px;background:#FFFFFF;box-shadow:inset 0 0 0 1px #D2D2CD;display:flex;align-items:center;gap:10px;padding:0 14px;font-size:15px;box-sizing:border-box"
+								>
+									<span
+										style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#0E0F11"
+										>Fortuner 2.8 GD-6</span
+									>
+								</div>
+							</div>
+							<div
+								style="display:flex;flex-direction:column;gap:7px;min-width:0"
+							>
+								<span
+									style="font-size:13.5px;font-weight:600;display:flex;gap:3px"
+									>Year<span style="color:#D92D20">*</span></span
+								>
+								<div
+									style="height:50px;border-radius:12px;background:#FFFFFF;box-shadow:inset 0 0 0 1px #D2D2CD;display:flex;align-items:center;gap:10px;padding:0 14px;font-size:15px;box-sizing:border-box"
+								>
+									<span
+										style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#0E0F11"
+										>2018</span
+									><svg
+										height="16"
+										style="flex-shrink:0;color:#5F6368"
+										width="16"
+									>
+										<use href="#c-down"></use>
+									</svg>
+								</div>
+							</div>
+							<div
+								style="display:flex;flex-direction:column;gap:7px;min-width:0"
+							>
+								<span
+									style="font-size:13.5px;font-weight:600;display:flex;gap:3px"
+									>Mileage<span style="color:#D92D20">*</span></span
+								>
+								<div
+									style="height:50px;border-radius:12px;background:#FFFFFF;box-shadow:inset 0 0 0 1.5px #0E0F11,0 0 0 4px rgba(255,90,31,0.18);display:flex;align-items:center;gap:10px;padding:0 14px;font-size:15px;box-sizing:border-box"
+								>
+									<span
+										style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#0E0F11"
+										>96,000 km<span
+											style="display:inline-block;width:1.5px;height:16px;background:#0E0F11;vertical-align:-3px;margin-left:1px"
+										></span></span
+									>
+								</div>
+							</div>
+						</div>
+						<div style="display:flex;flex-direction:column;gap:10px">
+							<span
+								style="font-size:13.5px;font-weight:600;display:flex;gap:3px"
+								>Condition<span style="color:#D92D20">*</span></span
+							>
+							<div style="display:flex;gap:8px;flex-wrap:wrap">
+								<span
+									style="height:40px;padding:0 16px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;white-space:nowrap;box-shadow:inset 0 0 0 1px #D2D2CD;background:#FFFFFF;color:#0E0F11"
+									>Excellent</span
+								><span
+									style="height:40px;padding:0 16px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;white-space:nowrap;background:#0E0F11;color:#FFFFFF"
+									>Good</span
+								><span
+									style="height:40px;padding:0 16px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;white-space:nowrap;box-shadow:inset 0 0 0 1px #D2D2CD;background:#FFFFFF;color:#0E0F11"
+									>Needs work</span
+								>
+							</div>
+						</div>
+						<div style="display:flex;flex-direction:column;gap:7px;min-width:0">
+							<span
+								style="font-size:13.5px;font-weight:600;display:flex;gap:3px"
+								>WhatsApp number<span style="color:#D92D20">*</span></span
+							>
+							<div
+								style="height:50px;border-radius:12px;background:#FFFFFF;box-shadow:inset 0 0 0 1px #D2D2CD;display:flex;align-items:center;gap:10px;padding:0 14px;font-size:15px;box-sizing:border-box"
+							>
+								<span
+									style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#0E0F11"
+									>+263 77 214 5503</span
+								>
+							</div>
+							<span style="font-size:12.5px;color:#5F6368"
+								>We'll only use this to send your valuation.</span
+							>
+						</div>
+						<div style="height:1px;background:#E3E3DF"></div>
+						<div
+							style="display:flex;justify-content:space-between;align-items:center;gap:12px"
+						>
+							<span style="font-size:13.5px;color:#5F6368;"
+								>Next: add 3 to 6 photos</span
+							><span
+								style="height:48px;padding:0 20px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:10px;font-size:15px;font-weight:600;white-space:nowrap;box-sizing:border-box;background:#0E0F11;color:#FFFFFF;border-radius:12px"
+								>Continue</span
+							>
+						</div>
+					</div>
+				</div>
+			</section>
+			<section style="padding:0 12px">
+				<div
+					style="border-radius:26px;background:#F3F3F1;padding:88px 44px;display:grid;grid-template-columns:340px 1fr;gap:56px"
+				>
+					<div style="display:flex;flex-direction:column;gap:20px">
+						<span
+							style="font-family:'Geist Mono',monospace;font-size:12.5px;letter-spacing:0.08em;color:#5F6368"
+							>FROM OUR CUSTOMERS</span
+						>
+						<div
+							style="display:flex;align-items:center;gap:14px;margin-top:10px"
+						>
+							<div
+								style="position:relative;overflow:hidden;background:#D8D8D3;width:56px;height:56px;border-radius:50%"
+							>
+								<div
+									style="position:absolute;inset:0;background:#0E0F11;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-family:'Geist',sans-serif;font-weight:600;font-size:20px"
+								>
+									TM
+								</div>
+							</div>
+							<div style="display:flex;flex-direction:column;gap:2px">
+								<span style="font-size:16px;font-weight:600"
+									>Tawanda Mutasa</span
+								><span style="font-size:13.5px;color:#5F6368"
+									>Bought a 2022 Hilux, June 2026</span
+								>
+							</div>
+						</div>
+						<div
+							style="display:flex;align-items:center;gap:12px;margin-top:auto"
+						>
+							<span
+								style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px #CFCFCA;background:#FFFFFF"
+								><svg
+									height="15"
+									style="flex-shrink:0;transform:rotate(180deg)"
+									width="15"
+								>
+									<use href="#c-right"></use>
+								</svg></span
+							><span
+								style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#0E0F11;color:#FFFFFF"
+								><svg height="15" style="flex-shrink:0;" width="15">
+									<use href="#c-right"></use>
+								</svg></span
+							><span
+								style="font-family:'Geist Mono',monospace;font-size:13px;color:#5F6368"
+								>1 / 6</span
+							>
+						</div>
+					</div>
+					<div style="display:flex;flex-direction:column;gap:34px">
+						<span
+							style="font-size:40px;font-weight:500;letter-spacing:-0.025em;line-height:1.22;text-wrap:pretty"
+							>"They valued my old Fortuner on WhatsApp before I drove in,
+							sorted the CABS finance at their desk, and I left with the Hilux
+							the same afternoon."</span
+						>
+						<div style="display:flex;gap:10px">
+							<div
+								style="position:relative;overflow:hidden;background:#DCDCD7;width:120px;height:84px;border-radius:12px"
+							>
+								<img
+									alt=""
+									src="../assets/hiace-van.webp"
+									style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+								>
+							</div>
+							<div
+								style="position:relative;overflow:hidden;background:#DCDCD7;width:120px;height:84px;border-radius:12px"
+							>
+								<img
+									alt=""
+									src="../assets/orange-trucks-landscape.webp"
+									style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+								>
+							</div>
+							<div
+								style="position:relative;overflow:hidden;background:#DCDCD7;width:120px;height:84px;border-radius:12px"
+							>
+								<img
+									alt=""
+									src="../assets/orange-suvs-banner.webp"
+									style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+								>
+							</div>
+							<div
+								style="position:relative;overflow:hidden;background:#DCDCD7;width:120px;height:84px;border-radius:12px"
+							>
+								<img
+									alt=""
+									src="../assets/honda-fit-blue.webp"
+									style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+								>
+							</div>
+							<span
+								style="width:120px;height:84px;border-radius:12px;background:#E6E6E1;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600"
+								>+18</span
+							>
+						</div>
+					</div>
+				</div>
+			</section>
+			<section
+				style="padding:104px 56px;display:grid;grid-template-columns:1.1fr 1fr;gap:56px;align-items:stretch"
+			>
+				<div
+					style="position:relative;overflow:hidden;background:#E4E6E2;border-radius:24px;min-height:540px"
+				>
+					<div
+						data-map="rm-map"
+						style="position:absolute;inset:0;background:#E9ECE6;overflow:hidden"
+					>
+						<div
+							style="position:absolute;left:-5%;top:8%;width:38%;height:30%;background:#DDE6D6;border-radius:10px"
+						></div>
+						<div
+							style="position:absolute;right:6%;bottom:6%;width:30%;height:26%;background:#DDE6D6;border-radius:10px"
+						></div>
+						<div
+							style="position:absolute;left:52%;top:6%;width:22%;height:18%;background:#E2E0DA;border-radius:6px"
+						></div>
+						<div
+							style="position:absolute;left:14%;top:58%;width:24%;height:22%;background:#E2E0DA;border-radius:6px"
+						></div>
+						<div
+							style="position:absolute;left:-10%;right:-10%;top:47%;height:22px;background:#FFFFFF;box-shadow:0 0 0 1px #D2D5CE;transform:rotate(-8deg)"
+						></div>
+						<div
+							style="position:absolute;top:-10%;bottom:-10%;left:44%;width:12px;background:#FFFFFF;box-shadow:0 0 0 1px #D9DCD6;transform:rotate(14deg)"
+						></div>
+						<div
+							style="position:absolute;top:-10%;bottom:-10%;left:76%;width:10px;background:#FFFFFF;box-shadow:0 0 0 1px #D9DCD6;transform:rotate(-6deg)"
+						></div>
+						<div
+							style="position:absolute;left:-10%;right:-10%;top:22%;height:9px;background:#FFFFFF;box-shadow:0 0 0 1px #D9DCD6;transform:rotate(3deg)"
+						></div>
+						<div
+							style="position:absolute;left:-10%;right:-10%;top:80%;height:9px;background:#FFFFFF;box-shadow:0 0 0 1px #D9DCD6;transform:rotate(-2deg)"
+						></div>
+						<span
+							style="position:absolute;left:8%;top:calc(47% - 20px);font-family:'Geist',sans-serif;font-size:12px;font-weight:600;color:#6B6F66;letter-spacing:0.04em;transform:rotate(-8deg);white-space:nowrap"
+							>MUTARE ROAD</span
+						><span
+							style="position:absolute;left:6%;top:18%;font-family:'Geist',sans-serif;font-size:12px;font-weight:600;color:#6B6F66;letter-spacing:0.04em;transform:rotate(0deg);white-space:nowrap"
+							>MSASA PARK</span
+						><span
+							style="position:absolute;left:47%;top:30%;font-family:'Geist',sans-serif;font-size:12px;font-weight:600;color:#6B6F66;letter-spacing:0.04em;transform:rotate(76deg);white-space:nowrap"
+							>ARDBENNIE RD</span
+						>
+					</div>
+					<div
+						style="position:absolute;left:24px;bottom:24px;border-radius:16px;background:#FFFFFF;box-shadow:0 20px 40px -20px rgba(14,15,17,0.4);padding:16px 18px;display:flex;align-items:center;gap:14px;pointer-events:none"
+					>
+						<span
+							style="width:40px;height:40px;border-radius:12px;background:#FF5A1F;color:#0E0F11;display:flex;align-items:center;justify-content:center"
+							><svg height="19" style="flex-shrink:0;" width="19">
+								<use href="#c-pin"></use>
+							</svg></span
+						>
+						<div style="display:flex;flex-direction:column;gap:2px">
+							<span style="font-size:15px;font-weight:600"
+								>Ridgeline Motors</span
+							><span style="font-size:13.5px;color:#5F6368"
+								>14 Mutare Road, Msasa, Harare</span
+							>
+						</div>
+					</div>
+				</div>
+				<div style="display:flex;flex-direction:column;gap:28px;padding:12px 0">
+					<span
+						style="font-family:'Geist Mono',monospace;font-size:12.5px;letter-spacing:0.08em;color:#5F6368"
+						>VISIT</span
+					><span
+						style="font-weight:600;font-size:48px;letter-spacing:-0.035em;line-height:1.02;text-wrap:balance;margin-top:-12px"
+						>Come and see the cars in person</span
+					>
+					<div
+						style="display:flex;flex-direction:column;box-shadow:inset 0 1px 0 #0E0F11"
+					>
+						<div
+							style="height:58px;display:flex;justify-content:space-between;align-items:center;box-shadow:inset 0 -1px 0 #E3E3DF;font-size:16px"
+						>
+							<span style="display:flex;align-items:center;gap:10px"
+								><span
+									style="width:8px;height:8px;border-radius:50%;background:#12B76A"
+								></span
+								>Monday to Friday</span
+							><span style="font-weight:600;">08:00 – 17:30</span>
+						</div>
+						<div
+							style="height:58px;display:flex;justify-content:space-between;align-items:center;box-shadow:inset 0 -1px 0 #E3E3DF;font-size:16px"
+						>
+							<span style="display:flex;align-items:center;gap:10px"
+								>Saturday</span
+							><span style="font-weight:600;">08:30 – 14:00</span>
+						</div>
+						<div
+							style="height:58px;display:flex;justify-content:space-between;align-items:center;box-shadow:inset 0 -1px 0 #E3E3DF;font-size:16px"
+						>
+							<span style="display:flex;align-items:center;gap:10px"
+								>Sunday and public holidays</span
+							><span style="font-weight:600;color:#5F6368">Closed</span>
+						</div>
+						<div
+							style="height:58px;display:flex;justify-content:space-between;align-items:center;box-shadow:inset 0 -1px 0 #E3E3DF;font-size:16px"
+						>
+							<span style="display:flex;align-items:center;gap:10px"
+								>Service centre</span
+							><span style="font-weight:600;">Mon – Sat from 07:30</span>
+						</div>
+					</div>
+					<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+						<div
+							style="display:flex;gap:12px;align-items:center;padding:14px;border-radius:14px;background:#F3F3F1"
+						>
+							<span
+								style="width:38px;height:38px;border-radius:10px;background:#FFFFFF;display:flex;align-items:center;justify-content:center"
+								><svg height="17" style="flex-shrink:0;" width="17">
+									<use href="#c-phone"></use>
+								</svg></span
+							>
+							<div
+								style="display:flex;flex-direction:column;gap:1px;min-width:0"
+							>
+								<span style="font-size:12.5px;color:#5F6368">Sales</span
+								><span
+									style="font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"
+									>0242 486 110</span
+								>
+							</div>
+						</div>
+						<div
+							style="display:flex;gap:12px;align-items:center;padding:14px;border-radius:14px;background:#F3F3F1"
+						>
+							<span
+								style="width:38px;height:38px;border-radius:10px;background:#FFFFFF;display:flex;align-items:center;justify-content:center"
+								><svg height="17" style="flex-shrink:0;" width="17">
+									<use href="#c-chat"></use>
+								</svg></span
+							>
+							<div
+								style="display:flex;flex-direction:column;gap:1px;min-width:0"
+							>
+								<span style="font-size:12.5px;color:#5F6368">WhatsApp</span
+								><span
+									style="font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"
+									>+263 77 488 2019</span
+								>
+							</div>
+						</div>
+						<div
+							style="display:flex;gap:12px;align-items:center;padding:14px;border-radius:14px;background:#F3F3F1"
+						>
+							<span
+								style="width:38px;height:38px;border-radius:10px;background:#FFFFFF;display:flex;align-items:center;justify-content:center"
+								><svg height="17" style="flex-shrink:0;" width="17">
+									<use href="#c-mail"></use>
+								</svg></span
+							>
+							<div
+								style="display:flex;flex-direction:column;gap:1px;min-width:0"
+							>
+								<span style="font-size:12.5px;color:#5F6368">Email</span
+								><span
+									style="font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"
+									>sales@ridgelinemotors.co.zw</span
+								>
+							</div>
+						</div>
+						<div
+							style="display:flex;gap:12px;align-items:center;padding:14px;border-radius:14px;background:#F3F3F1"
+						>
+							<span
+								style="width:38px;height:38px;border-radius:10px;background:#FFFFFF;display:flex;align-items:center;justify-content:center"
+								><svg height="17" style="flex-shrink:0;" width="17">
+									<use href="#c-wrench"></use>
+								</svg></span
+							>
+							<div
+								style="display:flex;flex-direction:column;gap:1px;min-width:0"
+							>
+								<span style="font-size:12.5px;color:#5F6368"
+									>Service bookings</span
+								><span
+									style="font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"
+									>0242 486 115</span
+								>
+							</div>
+						</div>
+					</div>
+					<div style="display:flex;gap:10px;margin-top:auto">
+						<span
+							style="height:48px;padding:0 6px 0 20px;border-radius:999px;display:inline-flex;align-items:center;gap:14px;font-size:15px;font-weight:600;white-space:nowrap;box-sizing:border-box;background:#0E0F11;color:#FFFFFF;"
+							>Get directions<span
+								style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#FFFFFF;color:#0E0F11"
+								><svg height="15" style="flex-shrink:0;" width="15">
+									<use href="#c-arrow"></use>
+								</svg></span
+							></span
+						><span
+							style="height:48px;padding:0 20px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:10px;font-size:15px;font-weight:600;white-space:nowrap;box-sizing:border-box;box-shadow:inset 0 0 0 1px #CFCFCA;color:#0E0F11;background:#FFFFFF;"
+							><svg height="16" style="flex-shrink:0;" width="16">
+								<use href="#c-chat"></use>
+							</svg
+							>WhatsApp us</span
+						>
+					</div>
+				</div>
+			</section>
+			<footer
+				style="margin:0 12px 12px;border-radius:26px;background:#0E0F11;color:#FFFFFF;padding:72px 48px 0;overflow:hidden;display:flex;flex-direction:column"
+			>
+				<div
+					style="display:grid;grid-template-columns:1.3fr repeat(3,0.55fr) 1fr;gap:40px"
+				>
+					<div style="display:flex;flex-direction:column;gap:18px">
+						<div
+							style="display:flex;flex-direction:column;gap:3.3000000000000003px;color:#FFFFFF"
+						>
+							<span
+								style="font-weight:700;font-size:22px;letter-spacing:0.2em;line-height:1"
+								>RIDGELINE</span
+							><span
+								style="font-family:'Geist Mono',monospace;font-size:10.5px;letter-spacing:0.32em;opacity:0.7"
+								>MOTORS · HARARE</span
+							>
+						</div>
+						<span
+							style="font-size:15px;color:#B4B7BD;line-height:1.6;max-width:320px"
+							>New and pre-owned cars, finance and servicing. Msasa, Harare,
+							since 2009.</span
+						>
+					</div>
+					<div style="display:flex;flex-direction:column;gap:12px">
+						<span style="font-size:13px;color:#7C7F86">Stock</span
+						><span style="font-size:15px">All cars</span
+						><span style="font-size:15px">New cars</span
+						><span style="font-size:15px">Pre-owned</span
+						><span style="font-size:15px">Bakkies</span
+						><span style="font-size:15px">Just arrived</span>
+					</div>
+					<div style="display:flex;flex-direction:column;gap:12px">
+						<span style="font-size:13px;color:#7C7F86">Services</span
+						><span style="font-size:15px">Finance</span
+						><span style="font-size:15px">Sell your car</span
+						><span style="font-size:15px">Service centre</span
+						><span style="font-size:15px">Warranty</span>
+					</div>
+					<div style="display:flex;flex-direction:column;gap:12px">
+						<span style="font-size:13px;color:#7C7F86">Company</span
+						><span style="font-size:15px">About us</span
+						><span style="font-size:15px">Contact</span
+						><span style="font-size:15px">Careers</span
+						><span style="font-size:15px">Privacy</span>
+					</div>
+					<div style="display:flex;flex-direction:column;gap:12px">
+						<span style="font-size:15px;font-weight:600"
+							>New arrivals on WhatsApp</span
+						><span style="font-size:13.5px;color:#B4B7BD;line-height:1.5"
+							>One message when cars you'd like come in.</span
+						>
+						<div
+							style="height:52px;border-radius:999px;background:#1A1B1E;box-shadow:inset 0 0 0 1px #2E3034;display:flex;align-items:center;padding:0 5px 0 18px;gap:10px"
+						>
+							<span style="flex:1;font-size:14.5px;color:#7C7F86"
+								>+263 WhatsApp number</span
+							><span
+								style="width:42px;height:42px;border-radius:50%;background:#FF5A1F;color:#0E0F11;display:flex;align-items:center;justify-content:center"
+								><svg height="16" style="flex-shrink:0;" width="16">
+									<use href="#c-arrow"></use>
+								</svg></span
+							>
+						</div>
+					</div>
+				</div>
+				<span
+					style="margin-top:56px;font-weight:700;font-size:250px;letter-spacing:-0.055em;line-height:0.8;text-align:center;background:linear-gradient(180deg,#3A3C41 0%,#0E0F11 95%);-webkit-background-clip:text;background-clip:text;color:transparent"
+					>RIDGELINE</span
+				>
+				<div
+					style="display:flex;justify-content:space-between;align-items:center;padding:22px 0 26px;box-shadow:inset 0 1px 0 #26282C;font-size:13.5px;color:#7C7F86"
+				>
+					<span>© 2026 Ridgeline Motors (Pvt) Ltd · Privacy · Terms</span>
+					<div
+						style="display:flex;align-items:center;gap:10px;font-size:14px;color:#B4B7BD"
+					>
+						<span
+							style="width:22px;height:22px;border-radius:6px;overflow:hidden;display:inline-flex;flex-shrink:0"
+							><svg height="22" width="22"><use href="#kIcon"></use></svg></span
+						><span
+							>Website made by the team at
+							<b style="color:#FFFFFF;font-weight:600">Where They Are</b></span
+						><span
+							style="color:#FFFFFF;font-weight:600;text-decoration:underline;text-underline-offset:3px;white-space:nowrap;"
+							>Get one like it</span
+						>
+					</div>
+				</div>
+			</footer>
+		</div>
+	</body>
+</html>

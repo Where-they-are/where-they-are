@@ -59,3 +59,6 @@ temp
 
 # Local planning artifacts
 /plans/
+
+# Raw single-file design bundles; commit the extracted design under designs/<name>/ instead
+/designs/*.html
