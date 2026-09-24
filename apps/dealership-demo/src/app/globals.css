@@ -41,16 +41,16 @@
 	}
 
 	body {
-		background: #ffffff;
-		color: var(--color-ink);
 		font-family: var(--font-sans);
 		-webkit-font-smoothing: antialiased;
+		color: var(--color-ink);
+		background: #ffffff;
 		text-rendering: optimizeLegibility;
 	}
 
 	::selection {
-		background: var(--color-accent);
 		color: #ffffff;
+		background: var(--color-accent);
 	}
 
 	:focus-visible {
@@ -66,17 +66,17 @@
 		*,
 		*::before,
 		*::after {
-			animation-duration: 0.01ms !important;
 			transition-duration: 0.01ms !important;
+			animation-duration: 0.01ms !important;
 		}
 	}
 }
 
 @utility container-page {
-	margin-inline: auto;
 	width: 100%;
 	max-width: 88rem;
 	padding-inline: 1.25rem;
+	margin-inline: auto;
 
 	@media (width >= 48rem) {
 		padding-inline: 2rem;
@@ -90,16 +90,16 @@
 @utility eyebrow {
 	font-family: var(--font-mono);
 	font-size: 0.75rem;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
 	color: var(--color-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
 }
 
 @utility text-outline-fade {
+	color: transparent;
 	background: linear-gradient(180deg, #3a3c41 0%, #0e0f11 95%);
 	-webkit-background-clip: text;
 	background-clip: text;
-	color: transparent;
 }
 
 @utility scrollbar-none {
