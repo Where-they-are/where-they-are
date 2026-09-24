@@ -65,14 +65,14 @@ export function SiteHeader({ overlay = false }: { overlay?: boolean }) {
 			className={cn(
 				"relative z-30",
 				overlay
-					? "lg:absolute lg:inset-x-0 lg:top-0 lg:text-white"
+					? "bg-white lg:absolute lg:inset-x-0 lg:top-2 lg:bg-transparent lg:text-white"
 					: "bg-white shadow-[inset_0_-1px_0_var(--color-line)]"
 			)}
 		>
 			<div
 				className={cn(
 					"flex h-[72px] items-center justify-between gap-4 px-5 md:px-8 lg:grid lg:h-[84px] lg:grid-cols-[1fr_auto_1fr]",
-					overlay ? "lg:px-[52px]" : "container-page lg:px-[52px]"
+					overlay ? "lg:px-10" : "container-page lg:px-[52px]"
 				)}
 			>
 				<nav aria-label="Main" className="hidden lg:block">
