@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dealership-demo",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@where-they-are/dealership-demo", "dev"],
+      "port": 3002
+    }
+  ]
+}
