@@ -561,9 +561,13 @@ export const vehicles: Vehicle[] = [
 	},
 ];
 
+/** "2019 Toyota HiAce 2.7"; skips the make when the model already names it ("2019 Mazda3"). */
 export const vehicleTitle = (
 	vehicle: Pick<Vehicle, "make" | "model" | "year">
-): string => `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
+): string =>
+	vehicle.model.startsWith(vehicle.make)
+		? `${vehicle.year} ${vehicle.model}`
+		: `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
 
 export const getVehicle = (id: string): Vehicle | undefined =>
 	vehicles.find((vehicle) => vehicle.id === id);
