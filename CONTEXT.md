@@ -316,3 +316,14 @@ Whenever a feature, migration, architecture decision, or important integration i
 - Any new environment variables or operational commands.
 
 Keep this document factual and concise enough for a new agent to understand the project without reading the entire repository history.
+
+
+## Current strategic phase — 2026-09-24
+
+The project has intentionally shifted from building the full automated multi-vertical platform to validating demand with a **Wizard-of-Oz MVP for Zimbabwean car dealerships**. The active work is now one focused dealership offer, one demo website, Meta Ads, WhatsApp qualification, human-assisted objection handling, and demand measurement.
+
+The active documentation lives in [`docs/`](./docs/). Start with [`docs/plan.md`](./docs/plan.md), then follow [`docs/current_tasks.md`](./docs/current_tasks.md). The broader platform architecture and prior implementation remain documented in this file as retained foundation work. They are not the current backlog.
+
+The dealership design source is under `/designs`. The planned dealership demo is to be implemented later as a separate Next.js application, frontend-only and isolated from the central NestJS backend. That application was not created or changed during this documentation update.
+
+See [`docs/progress.md`](./docs/progress.md) for the current evidence state and [`docs/ultimate mvp.md`](./docs/ultimate%20mvp.md) for the deferred broader platform target.

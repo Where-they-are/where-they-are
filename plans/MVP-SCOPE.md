@@ -3,6 +3,18 @@
 _Last updated: 2026-09-23_  
 _Status: Authoritative scope-control document_
 
+> **Current phase override — 2026-09-24:** The active MVP is now a Wizard-of-Oz demand-validation experiment for Zimbabwean car dealerships. The immediate scope is one dealership offer, one demo website, Meta Ads, a WhatsApp qualification agent, human-assisted follow-up, and evidence-based demand measurement. The broader automated platform described below is retained as the **ultimate MVP after validation**, not as the current implementation backlog. See [`docs/plan.md`](../docs/plan.md), [`docs/current_tasks.md`](../docs/current_tasks.md), and [`docs/ultimate mvp.md`](../docs/ultimate%20mvp.md).
+
+## Current active scope
+
+Until the dealership experiment reaches its documented unlock conditions, agents must work only on the focused validation loop:
+
+```text
+car-dealer Meta ad -> WhatsApp qualification -> dealership demo -> objection handling -> human follow-up -> demand signal
+```
+
+The current active scope does not require the full automated generation, payment, hosting, portal, or multi-vertical platform. Existing code for those capabilities may remain in the repository as dormant foundation work, but it must not pull the active backlog away from demand validation.
+
 > **Scope rule:** The MVP exists to prove that Where They Are can deliver a modern, credible brochure or service website to a Zimbabwean small business in minutes and convert that delivery into recurring hosting revenue. Every feature must directly support that outcome or the minimum operation required to deliver it.
 
 This document is binding guidance for product decisions, implementation tasks, design work, testing, and AI-agent behavior. It supplements `AGENTS.md` and `CONTEXT.md`.
