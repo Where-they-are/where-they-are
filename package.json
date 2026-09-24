@@ -14,6 +14,7 @@
     "dev:dealership-demo": "turbo run dev -F @where-they-are/dealership-demo --",
     "dev:web": "turbo run dev -F web --",
     "docker:build": "docker compose build",
+    "docker:demo": "docker compose up -d --build dealership-demo",
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f",
     "docker:up": "docker compose up -d --build",
