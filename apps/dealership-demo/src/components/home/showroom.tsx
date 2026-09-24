@@ -64,7 +64,7 @@ export function Showroom() {
 					</h2>
 				</div>
 				<Link
-					className={buttonClass({ className: "pr-1.5 max-md:hidden" })}
+					className={buttonClass({ className: "max-md:hidden" })}
 					href="/stock"
 				>
 					View all {vehicles.length} cars

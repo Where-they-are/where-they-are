@@ -3,6 +3,8 @@ import { FinanceAndTrade } from "@/components/home/finance-and-trade";
 import { HomeHero } from "@/components/home/hero";
 import { ShopByMake } from "@/components/home/shop-by-make";
 import { Showroom } from "@/components/home/showroom";
+import { Testimonials } from "@/components/home/testimonials";
+import { Visit } from "@/components/home/visit";
 import { WhyRidgeline } from "@/components/home/why-ridgeline";
 
 export default function HomePage() {
@@ -14,6 +16,8 @@ export default function HomePage() {
 			<Showroom />
 			<WhyRidgeline />
 			<FinanceAndTrade />
+			<Testimonials />
+			<Visit />
 		</main>
 	);
 }

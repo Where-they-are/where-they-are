@@ -50,10 +50,7 @@ export function HomeHero() {
 							{vehicles.length} cars in stock · updated today
 						</p>
 						<div className="hidden gap-2.5 lg:flex">
-							<Link
-								className={buttonClass({ className: "pr-1.5", size: "lg" })}
-								href="/stock"
-							>
+							<Link className={buttonClass({ size: "lg" })} href="/stock">
 								Browse {vehicles.length} cars
 								<ArrowBadge />
 							</Link>
