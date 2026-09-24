@@ -1,4 +1,5 @@
 import { FeaturedCar } from "@/components/home/featured-car";
+import { FinanceAndTrade } from "@/components/home/finance-and-trade";
 import { HomeHero } from "@/components/home/hero";
 import { ShopByMake } from "@/components/home/shop-by-make";
 import { Showroom } from "@/components/home/showroom";
@@ -12,6 +13,7 @@ export default function HomePage() {
 			<FeaturedCar />
 			<Showroom />
 			<WhyRidgeline />
+			<FinanceAndTrade />
 		</main>
 	);
 }

@@ -257,7 +257,7 @@ export function StepHeader({
 	return (
 		<div>
 			<div className="flex items-baseline justify-between gap-4">
-				<h2 className="font-semibold text-[22px] tracking-tight sm:text-[24px]">
+				<h2 className="font-semibold text-[20px] tracking-tight sm:text-[24px]">
 					{title}
 				</h2>
 				<p className="shrink-0 text-[13px] text-muted">
