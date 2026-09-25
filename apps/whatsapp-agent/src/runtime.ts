@@ -51,7 +51,7 @@ export const createRuntime = (
 				earlySlotsUsedOffset: config.DEALERSHIP_EARLY_SLOTS_USED_OFFSET,
 				standardPriceUsd: config.DEALERSHIP_STANDARD_PRICE_USD,
 			},
-			crm.countWonDealerships()
+			crm.countPaidDealerships()
 		);
 	const agent = createAngel({
 		crm,

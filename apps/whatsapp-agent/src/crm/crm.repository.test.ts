@@ -63,15 +63,22 @@ describe("CrmRepository", () => {
 		seed(repo);
 		const id = "263771234567";
 		expect(repo.setStage(id, "qualified", { by: "agent" }).applied).toBe(true);
-		expect(repo.setStage(id, "engaged", { by: "agent" }).applied).toBe(true);
+		expect(repo.setStage(id, "price_discussed", { by: "agent" }).applied).toBe(
+			true
+		);
 		const back = repo.setStage(id, "qualified", { by: "agent" });
 		expect(back).toMatchObject({
 			applied: false,
 			reason: "stages only move forward",
 		});
-		expect(repo.setStage(id, "won", { by: "agent" }).applied).toBe(false);
+		expect(repo.setStage(id, "deposit_paid", { by: "agent" }).applied).toBe(
+			false
+		);
+		expect(repo.setStage(id, "deposit_paid", { by: "system" }).applied).toBe(
+			true
+		);
+		expect(repo.setStage(id, "nurture", { by: "agent" }).applied).toBe(false);
 		expect(repo.setStage(id, "won", { by: "owner" }).applied).toBe(true);
-		expect(repo.setStage(id, "engaged", { by: "agent" }).applied).toBe(false);
 		expect(repo.get(id)?.stage).toBe("won");
 	});
 
@@ -110,20 +117,21 @@ describe("CrmRepository", () => {
 		expect(repo.countRecentReplies(customer.id, 60_000)).toBe(0);
 	});
 
-	it("reports funnel stats, won dealerships and a CSV export", () => {
+	it("reports funnel stats, paid dealerships and a CSV export", () => {
 		repo = crm();
 		seed(repo, "263770000001");
 		seed(repo, "263770000002");
 		repo.updateProfile("263770000001", { businessType: "car_dealership" });
-		repo.setStage("263770000001", "won", { by: "owner" });
+		repo.setStage("263770000001", "deposit_paid", { by: "system" });
 		repo.recordEvent("263770000002", "objection", { kind: "too_small" });
 		repo.markDemoSent("263770000002");
 		const stats = repo.stats();
 		expect(stats.total).toBe(2);
-		expect(stats.byStage).toMatchObject({ demo_sent: 1, won: 1 });
+		expect(stats.byStage).toMatchObject({ demo_sent: 1, deposit_paid: 1 });
+		expect(stats.depositsPaid).toBe(1);
 		expect(stats.objections).toEqual({ too_small: 1 });
 		expect(stats.demosSent).toBe(1);
-		expect(repo.countWonDealerships()).toBe(1);
+		expect(repo.countPaidDealerships()).toBe(1);
 		const csv = repo.toCsv().split("\n");
 		expect(csv[0]).toContain("businessName");
 		expect(csv).toHaveLength(3);
@@ -241,6 +249,58 @@ describe("turn records", () => {
 		migrated.logMessage("263771234567", "in", "hello", null, turnId);
 		expect(migrated.messages("263771234567").at(-1)?.turnId).toBe(turnId);
 		migrated.close();
+		rmSync(dir, { force: true, recursive: true });
+	});
+});
+
+describe("lead scoring, ad source and migrations", () => {
+	it("stores lead signals, the score and the first ad source", () => {
+		repo = crm();
+		const { customer } = seed(repo);
+		repo.setLeadSignals(customer.id, { priceWithinReach: true }, 4);
+		repo.setAdSource(customer.id, {
+			ctwaClid: "clid-1",
+			sourceId: "ad-1",
+			sourceUrl: null,
+			title: "Dealership websites",
+		});
+		repo.setAdSource(customer.id, {
+			ctwaClid: "clid-2",
+			sourceId: "ad-2",
+			sourceUrl: null,
+			title: null,
+		});
+		expect(repo.get(customer.id)).toMatchObject({
+			adSource: { ctwaClid: "clid-1", sourceId: "ad-1" },
+			leadScore: 4,
+			leadSignals: { priceWithinReach: true },
+		});
+	});
+
+	it("finds recorded events by a detail value", () => {
+		repo = crm();
+		const { customer } = seed(repo);
+		repo.recordEvent(customer.id, "meta_event", { event: "QualifiedLead" });
+		expect(
+			repo.hasEvent(customer.id, "meta_event", "event", "QualifiedLead")
+		).toBe(true);
+		expect(repo.hasEvent(customer.id, "meta_event", "event", "Purchase")).toBe(
+			false
+		);
+	});
+
+	it("renames stages from earlier releases", () => {
+		const dir = mkdtempSync(join(tmpdir(), "angel-crm-"));
+		const path = join(dir, "crm.sqlite");
+		const first = new CrmRepository(path, now);
+		seed(first);
+		first.database
+			.prepare("UPDATE customers SET stage = 'commercial_signal'")
+			.run();
+		first.close();
+		const reopened = new CrmRepository(path, now);
+		expect(reopened.get("263771234567")?.stage).toBe("price_discussed");
+		reopened.close();
 		rmSync(dir, { force: true, recursive: true });
 	});
 });

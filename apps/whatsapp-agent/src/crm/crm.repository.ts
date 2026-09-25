@@ -3,6 +3,7 @@ import { dirname } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 
 import {
+	type AdSource,
 	type BusinessType,
 	type CrmEvent,
 	type Customer,
@@ -10,10 +11,13 @@ import {
 	type IgnoreCategory,
 	type IgnoredContact,
 	type IgnoredMessage,
+	LEGACY_STAGES,
+	type LeadSignals,
 	type LeadStage,
 	type LoggedMessage,
 	type MessageDirection,
 	OWNER_ONLY_STAGES,
+	PAID_STAGES,
 	PROGRESS_STAGES,
 	type ProfilePatch,
 	type TriState,
@@ -21,6 +25,7 @@ import {
 	type TurnRecord,
 	type TurnStats,
 } from "./crm.types.js";
+import { PaymentStore } from "./payment.store.js";
 
 type Row = Record<string, unknown>;
 
@@ -123,6 +128,19 @@ const MIGRATIONS: { column: string; sql: string; table: string }[] = [
 		sql: "ALTER TABLE messages ADD COLUMN turn_id INTEGER REFERENCES turns(id)",
 		table: "messages",
 	},
+	...(
+		[
+			["stock_size", "TEXT"],
+			["timing", "TEXT"],
+			["lead_score", "INTEGER NOT NULL DEFAULT 0"],
+			["lead_signals", "TEXT NOT NULL DEFAULT '{}'"],
+			["ad_source", "TEXT"],
+		] as const
+	).map(([column, type]) => ({
+		column,
+		sql: `ALTER TABLE customers ADD COLUMN ${column} ${type}`,
+		table: "customers",
+	})),
 ];
 
 const PROFILE_COLUMNS: Record<keyof ProfilePatch, string> = {
@@ -134,8 +152,19 @@ const PROFILE_COLUMNS: Record<keyof ProfilePatch, string> = {
 	location: "location",
 	name: "name",
 	otherBusinessType: "other_business_type",
+	stockSize: "stock_size",
+	timing: "timing",
 	vehicleTypes: "vehicle_types",
 	websiteUrl: "website_url",
+};
+
+const parseJsonObject = <T>(value: unknown): T | null => {
+	try {
+		const parsed: unknown = JSON.parse(String(value ?? "null"));
+		return typeof parsed === "object" && parsed !== null ? (parsed as T) : null;
+	} catch {
+		return null;
+	}
 };
 
 const MAX_NOTES_LENGTH = 4000;
@@ -146,6 +175,7 @@ const text = (value: unknown): string | null =>
 	typeof value === "string" && value.length > 0 ? value : null;
 
 const toCustomer = (row: Row): Customer => ({
+	adSource: parseJsonObject<AdSource>(row.ad_source),
 	businessName: text(row.business_name),
 	businessType: (row.business_type as BusinessType) ?? "unknown",
 	chatId: String(row.chat_id),
@@ -160,12 +190,16 @@ const toCustomer = (row: Row): Customer => ({
 	isDecisionMaker: (row.is_decision_maker as TriState) ?? "unknown",
 	lastInboundAt: text(row.last_inbound_at),
 	lastOutboundAt: text(row.last_outbound_at),
+	leadScore: Number(row.lead_score ?? 0),
+	leadSignals: parseJsonObject<LeadSignals>(row.lead_signals) ?? {},
 	location: text(row.location),
 	name: text(row.name),
 	notes: text(row.notes),
 	optedOut: Number(row.opted_out) === 1,
 	otherBusinessType: text(row.other_business_type),
 	stage: row.stage as LeadStage,
+	stockSize: text(row.stock_size),
+	timing: text(row.timing),
 	updatedAt: String(row.updated_at),
 	vehicleTypes: text(row.vehicle_types),
 	websiteUrl: text(row.website_url),
@@ -258,6 +292,9 @@ const parseDetail = (value: unknown): Record<string, unknown> => {
 	}
 };
 
+/** Who moved a lead: Angel, the owner, or a confirmed payment. */
+export type StageChanger = "agent" | "owner" | "system";
+
 export type StageChangeResult =
 	| { applied: true; from: LeadStage; to: LeadStage }
 	| { applied: false; current: LeadStage; reason: string };
@@ -281,7 +318,11 @@ export class CrmRepository {
 		this.db.exec(SCHEMA);
 		this.migrate();
 		this.now = now;
+		this.payments = new PaymentStore(this.db, now);
 	}
+
+	/** Paynow deposits and balances, in the same database. */
+	readonly payments: PaymentStore;
 
 	private migrate(): void {
 		for (const migration of MIGRATIONS) {
@@ -295,6 +336,12 @@ export class CrmRepository {
 		this.db.exec(
 			"CREATE INDEX IF NOT EXISTS messages_turn ON messages(turn_id)"
 		);
+		const renameStage = this.db.prepare(
+			"UPDATE customers SET stage = ? WHERE stage = ?"
+		);
+		for (const [legacy, stage] of Object.entries(LEGACY_STAGES)) {
+			renameStage.run(stage, legacy);
+		}
 	}
 
 	close(): void {
@@ -387,13 +434,14 @@ export class CrmRepository {
 
 	/**
 	 * Moves a lead through the funnel. The agent may only move forward along
-	 * the progress stages or mark a lead as not a fit; won, lost and closed are
-	 * owner decisions and are never overwritten by the agent.
+	 * the progress stages or into a side exit (nurture, not a fit, no
+	 * response, human follow-up). Payment stages come from confirmed payments
+	 * ("system") or the owner, and are never overwritten by the agent.
 	 */
 	setStage(
 		id: string,
 		stage: LeadStage,
-		options: { by: "agent" | "owner"; reason?: string }
+		options: { by: StageChanger; reason?: string }
 	): StageChangeResult {
 		const customer = this.get(id);
 		if (!customer) {
@@ -411,7 +459,8 @@ export class CrmRepository {
 				return {
 					applied: false,
 					current: from,
-					reason: "won, lost and closed are set by the owner",
+					reason:
+						"payment stages are set by confirmed payments or the owner, and lost by the owner",
 				};
 			}
 			const fromRank = PROGRESS_STAGES.indexOf(from);
@@ -784,13 +833,48 @@ export class CrmRepository {
 		};
 	}
 
-	countWonDealerships(): number {
+	/** Dealerships that have paid a deposit: each one takes a founding place. */
+	countPaidDealerships(): number {
+		const placeholders = PAID_STAGES.map(() => "?").join(", ");
 		const row = this.db
 			.prepare(
-				"SELECT COUNT(*) AS n FROM customers WHERE stage = 'won' AND business_type = 'car_dealership'"
+				`SELECT COUNT(*) AS n FROM customers WHERE business_type = 'car_dealership' AND stage IN (${placeholders})`
 			)
-			.get() as Row;
+			.get(...PAID_STAGES) as Row;
 		return Number(row.n);
+	}
+
+	/** Stores the lead-score signals and the score computed from them. */
+	setLeadSignals(id: string, signals: LeadSignals, score: number): void {
+		this.db
+			.prepare(
+				"UPDATE customers SET lead_signals = ?, lead_score = ?, updated_at = ? WHERE id = ?"
+			)
+			.run(JSON.stringify(signals), score, this.stamp(), id);
+	}
+
+	/** Remembers the ad a lead came from; the first ad wins. */
+	setAdSource(id: string, source: AdSource): void {
+		this.db
+			.prepare(
+				"UPDATE customers SET ad_source = ? WHERE id = ? AND ad_source IS NULL"
+			)
+			.run(JSON.stringify(source), id);
+	}
+
+	/** Whether an event with this detail value was already recorded. */
+	hasEvent(id: string, type: EventType, key: string, value: string): boolean {
+		const row = this.db
+			.prepare(
+				"SELECT 1 AS found FROM events WHERE customer_id = ? AND type = ? AND json_extract(detail, ?) = ? LIMIT 1"
+			)
+			.get(id, type, `$.${key}`, value) as Row | undefined;
+		return row !== undefined;
+	}
+
+	/** The shared database, for stores that live alongside the CRM. */
+	get database(): DatabaseSync {
+		return this.db;
 	}
 
 	/** Funnel counts for the validation record (docs/plan.md §8). */
@@ -798,6 +882,7 @@ export class CrmRepository {
 		byStage: Record<string, number>;
 		dealerships: number;
 		demosSent: number;
+		depositsPaid: number;
 		ignored: number;
 		objections: Record<string, number>;
 		total: number;
@@ -825,6 +910,7 @@ export class CrmRepository {
 			demosSent: count(
 				"SELECT COUNT(*) AS n FROM customers WHERE demo_sent_at IS NOT NULL"
 			),
+			depositsPaid: this.countPaidDealerships(),
 			ignored: count(
 				"SELECT COUNT(*) AS n FROM ignored_contacts WHERE allowed = 0"
 			),
@@ -843,7 +929,10 @@ export class CrmRepository {
 			"businessType",
 			"otherBusinessType",
 			"vehicleTypes",
+			"stockSize",
+			"timing",
 			"location",
+			"leadScore",
 			"hasWebsite",
 			"websiteUrl",
 			"currentChannels",

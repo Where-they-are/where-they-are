@@ -3,6 +3,7 @@ import {
 	type Customer,
 	LEAD_STAGES,
 	type LeadStage,
+	PAID_STAGES,
 } from "../crm/crm.types.js";
 import { formatCount } from "../format/count.js";
 import type { DealershipPricing } from "../knowledge/pricing.js";
@@ -42,6 +43,16 @@ export interface OwnerCommandDeps {
 
 export const isOwnerCommand = (text: string): boolean =>
 	COMMAND.test(text.trim());
+
+/** The live offer and how many founding places are left. */
+const offerSummary = (pricing: DealershipPricing): string =>
+	[
+		pricing.headline,
+		pricing.isEarlyPrice
+			? `Founding places left: ${pricing.earlySlotsLeft} of ${pricing.earlySlotsTotal}`
+			: "All founding places are taken.",
+		pricing.terms.payment,
+	].join("\n");
 
 const who = (customer: Customer) =>
 	customer.name ?? customer.displayName ?? "Unknown name";
@@ -139,7 +150,7 @@ const showStats: Handler = ({ deps }) => {
 		`Turns: ${formatCount(turns.total)} (${pairs(turns.byOutcome)})`,
 		`Average reply time: ${seconds}s · tokens used: ${formatCount(turns.totalTokens)}`,
 		"",
-		deps.pricing().statement,
+		offerSummary(deps.pricing()),
 	].join("\n");
 };
 
@@ -177,9 +188,9 @@ const setStage = withLead(({ args, command, customer, deps }) => {
 	if (!result.applied) {
 		return `${who(customer)} is already ${result.current}.`;
 	}
-	const wonDealership =
-		stage === "won" && customer.businessType === "car_dealership";
-	return `${who(customer)} moved to ${stage}.${wonDealership ? `\n${deps.pricing().statement}` : ""}`;
+	const paidDealership =
+		PAID_STAGES.includes(stage) && customer.businessType === "car_dealership";
+	return `${who(customer)} moved to ${stage}.${paidDealership ? `\n${offerSummary(deps.pricing())}` : ""}`;
 });
 
 const addNote = withLead(({ args, customer, deps }) => {
@@ -231,7 +242,7 @@ const HANDLERS: Record<string, Handler> = {
 	lost: setStage,
 	note: addNote,
 	pause,
-	price: ({ deps }) => deps.pricing().statement,
+	price: ({ deps }) => offerSummary(deps.pricing()),
 	resume,
 	stage: setStage,
 	stats: showStats,

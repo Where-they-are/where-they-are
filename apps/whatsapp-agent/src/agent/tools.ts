@@ -292,7 +292,7 @@ export const createAngelTools = (deps: AngelToolDeps) => {
 		execute: async (input, context) => {
 			const id = customerIdFrom(context);
 			deps.crm.recordEvent(id, "commercial_signal", { signal: input.signal });
-			deps.crm.setStage(id, "commercial_signal", {
+			deps.crm.setStage(id, "price_discussed", {
 				by: "agent",
 				reason: input.signal,
 			});

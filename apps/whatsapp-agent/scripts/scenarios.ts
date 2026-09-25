@@ -51,7 +51,7 @@ export const scenarios: Scenario[] = [
 		expect: {
 			mentions: [/\$250/, /\$400/],
 			neverMentions: [/\$(?!250\b|400\b)\d/],
-			stages: ["commercial_signal", "human_follow_up"],
+			stages: ["price_discussed", "human_follow_up"],
 		},
 		id: "price_first",
 		turns: ["How much for a website?"],

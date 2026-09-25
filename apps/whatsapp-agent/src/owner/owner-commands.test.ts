@@ -43,7 +43,7 @@ const setup = () => {
 					earlySlotsUsedOffset: 0,
 					standardPriceUsd: 400,
 				},
-				crm.countWonDealerships()
+				crm.countPaidDealerships()
 			),
 		takeoverHours: 12,
 	};
@@ -87,7 +87,7 @@ describe("runOwnerCommand", () => {
 		const deps = setup();
 		const reply = runOwnerCommand(`#won ${ID}`, deps);
 		expect(reply).toContain("moved to won");
-		expect(reply).toContain("4 of those spots");
+		expect(reply).toContain("Founding places left: 4 of 5");
 	});
 
 	it("rejects unknown stages and numbers politely", () => {
