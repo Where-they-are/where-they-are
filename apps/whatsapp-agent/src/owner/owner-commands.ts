@@ -73,6 +73,123 @@ const profile = (crm: CrmRepository, customer: Customer): string => {
 		.join("\n");
 };
 
+interface CommandInput {
+	args: string[];
+	command: string;
+	customer: Customer | undefined;
+	deps: OwnerCommandDeps;
+	now: () => Date;
+	target: string;
+}
+
+type Handler = (input: CommandInput) => string;
+
+const notFound = (target: string) =>
+	`No lead found for "${target}". Send #leads to see numbers.`;
+
+/** Wraps a handler that needs an existing lead. */
+const withLead =
+	(
+		handler: (input: CommandInput & { customer: Customer }) => string
+	): Handler =>
+	(input) =>
+		input.customer
+			? handler({ ...input, customer: input.customer })
+			: notFound(input.target);
+
+const listLeads: Handler = ({ deps, target }) => {
+	const stage = LEAD_STAGES.includes(target as LeadStage)
+		? (target as LeadStage)
+		: undefined;
+	const leads = deps.crm.list({ limit: LIST_LIMIT, stage });
+	if (leads.length === 0) {
+		return "No leads yet.";
+	}
+	return [
+		`*Latest leads${stage ? ` (${stage})` : ""}*`,
+		...leads.map(summaryLine),
+	].join("\n");
+};
+
+const showStats: Handler = ({ deps }) => {
+	const stats = deps.crm.stats();
+	const pairs = (record: Record<string, number>) =>
+		Object.entries(record)
+			.map(([key, count]) => `${key}: ${count}`)
+			.join(", ") || "none";
+	return [
+		"*Funnel*",
+		`Conversations: ${stats.total}`,
+		`Dealerships: ${stats.dealerships}`,
+		`Demos sent: ${stats.demosSent}`,
+		`By stage: ${pairs(stats.byStage)}`,
+		`Objections: ${pairs(stats.objections)}`,
+		deps.pricing().statement,
+	].join("\n");
+};
+
+const pause = withLead(({ args, customer, deps, now }) => {
+	const forever = args[0] === "forever";
+	const requested = forever
+		? FOREVER_HOURS
+		: Number(args[0] ?? deps.takeoverHours);
+	const hours =
+		Number.isFinite(requested) && requested > 0
+			? requested
+			: deps.takeoverHours;
+	deps.crm.setHumanTakeover(
+		customer.id,
+		new Date(now().getTime() + hours * HOUR_MS),
+		"owner"
+	);
+	return `Angel is paused for ${who(customer)} (${forever ? "until you #resume" : `${hours}h`}).`;
+});
+
+const resume = withLead(({ customer, deps }) => {
+	deps.crm.setHumanTakeover(customer.id, null, "owner");
+	return `Angel is back on for ${who(customer)}.`;
+});
+
+const setStage = withLead(({ args, command, customer, deps }) => {
+	const stage = (command === "stage" ? args[0] : command) as LeadStage;
+	if (!LEAD_STAGES.includes(stage)) {
+		return `Unknown stage. Use one of: ${LEAD_STAGES.join(", ")}`;
+	}
+	const result = deps.crm.setStage(customer.id, stage, {
+		by: "owner",
+		reason: "set by owner",
+	});
+	if (!result.applied) {
+		return `${who(customer)} is already ${result.current}.`;
+	}
+	const wonDealership =
+		stage === "won" && customer.businessType === "car_dealership";
+	return `${who(customer)} moved to ${stage}.${wonDealership ? `\n${deps.pricing().statement}` : ""}`;
+});
+
+const addNote = withLead(({ args, customer, deps }) => {
+	const note = args.join(" ").trim();
+	if (!note) {
+		return "Add the note after the number, e.g. #note 263771234567 Wants a call after 5pm.";
+	}
+	deps.crm.appendNote(customer.id, `Owner: ${note}`);
+	return `Note saved for ${who(customer)}.`;
+});
+
+const HANDLERS: Record<string, Handler> = {
+	help: () => OWNER_HELP,
+	lead: withLead(({ customer, deps }) => profile(deps.crm, customer)),
+	leads: listLeads,
+	lost: setStage,
+	note: addNote,
+	pause,
+	price: ({ deps }) => deps.pricing().statement,
+	resume,
+	stage: setStage,
+	stats: showStats,
+	won: setStage,
+};
+
 /**
  * Handles "#command" messages the owner sends to Angel's own number, so the
  * pipeline can be run from WhatsApp without opening a dashboard.
@@ -85,115 +202,19 @@ export const runOwnerCommand = (
 	if (!match) {
 		return OWNER_HELP;
 	}
-	const now = deps.now ?? (() => new Date());
 	const command = (match[1] ?? "").toLowerCase();
-	const rest = (match[2] ?? "").trim();
-	const [target = "", ...args] = rest.split(WHITESPACE);
-	const id = normalizePhone(target);
-	const find = () => (id ? deps.crm.get(id) : undefined);
-	const notFound = `No lead found for "${target}". Send #leads to see numbers.`;
-
-	switch (command) {
-		case "help":
-			return OWNER_HELP;
-		case "price":
-			return deps.pricing().statement;
-		case "leads": {
-			const stage = LEAD_STAGES.includes(target as LeadStage)
-				? (target as LeadStage)
-				: undefined;
-			const leads = deps.crm.list({ limit: LIST_LIMIT, stage });
-			return leads.length === 0
-				? "No leads yet."
-				: [
-						`*Latest leads${stage ? ` (${stage})` : ""}*`,
-						...leads.map(summaryLine),
-					].join("\n");
-		}
-		case "stats": {
-			const stats = deps.crm.stats();
-			const stages = Object.entries(stats.byStage)
-				.map(([stage, count]) => `${stage}: ${count}`)
-				.join(", ");
-			const objections = Object.entries(stats.objections)
-				.map(([kind, count]) => `${kind}: ${count}`)
-				.join(", ");
-			return [
-				"*Funnel*",
-				`Conversations: ${stats.total}`,
-				`Dealerships: ${stats.dealerships}`,
-				`Demos sent: ${stats.demosSent}`,
-				`By stage: ${stages || "none"}`,
-				`Objections: ${objections || "none"}`,
-				deps.pricing().statement,
-			].join("\n");
-		}
-		case "lead": {
-			const customer = find();
-			return customer ? profile(deps.crm, customer) : notFound;
-		}
-		case "pause": {
-			const customer = find();
-			if (!customer) {
-				return notFound;
-			}
-			const hours =
-				args[0] === "forever"
-					? FOREVER_HOURS
-					: Number(args[0] ?? deps.takeoverHours);
-			const safeHours =
-				Number.isFinite(hours) && hours > 0 ? hours : deps.takeoverHours;
-			deps.crm.setHumanTakeover(
-				customer.id,
-				new Date(now().getTime() + safeHours * HOUR_MS),
-				"owner"
-			);
-			return `Angel is paused for ${who(customer)} (${args[0] === "forever" ? "until you #resume" : `${safeHours}h`}).`;
-		}
-		case "resume": {
-			const customer = find();
-			if (!customer) {
-				return notFound;
-			}
-			deps.crm.setHumanTakeover(customer.id, null, "owner");
-			return `Angel is back on for ${who(customer)}.`;
-		}
-		case "won":
-		case "lost":
-		case "stage": {
-			const customer = find();
-			if (!customer) {
-				return notFound;
-			}
-			const stage = (command === "stage" ? args[0] : command) as LeadStage;
-			if (!LEAD_STAGES.includes(stage)) {
-				return `Unknown stage. Use one of: ${LEAD_STAGES.join(", ")}`;
-			}
-			const result = deps.crm.setStage(customer.id, stage, {
-				by: "owner",
-				reason: "set by owner",
-			});
-			const extra =
-				stage === "won" && customer.businessType === "car_dealership"
-					? `\n${deps.pricing().statement}`
-					: "";
-			return result.applied
-				? `${who(customer)} moved to ${stage}.${extra}`
-				: `${who(customer)} is already ${result.current}.`;
-		}
-		case "note": {
-			const customer = find();
-			const note = args.join(" ").trim();
-			if (!customer) {
-				return notFound;
-			}
-			if (!note) {
-				return "Add the note after the number, e.g. #note 263771234567 Wants a call after 5pm.";
-			}
-			deps.crm.appendNote(customer.id, `Owner: ${note}`);
-			return `Note saved for ${who(customer)}.`;
-		}
-		default:
-			return `Unknown command #${command}.\n\n${OWNER_HELP}`;
+	const handler = HANDLERS[command];
+	if (!handler) {
+		return `Unknown command #${command}.\n\n${OWNER_HELP}`;
 	}
+	const [target = "", ...args] = (match[2] ?? "").trim().split(WHITESPACE);
+	const id = normalizePhone(target);
+	return handler({
+		args,
+		command,
+		customer: id ? deps.crm.get(id) : undefined,
+		deps,
+		now: deps.now ?? (() => new Date()),
+		target,
+	});
 };
