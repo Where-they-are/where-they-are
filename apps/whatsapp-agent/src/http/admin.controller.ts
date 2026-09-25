@@ -14,6 +14,7 @@ import {
 
 import { AGENT_CONFIG, type AgentConfig } from "../config.js";
 import { LEAD_STAGES, type LeadStage } from "../crm/crm.types.js";
+import { formatCount, formatCounts } from "../format/count.js";
 import { normalizePhone } from "../owner/phone.js";
 import type { AngelRuntime } from "../runtime.js";
 import { WhatsAppService } from "../whatsapp/whatsapp.service.js";
@@ -21,6 +22,12 @@ import { AdminGuard } from "./admin.guard.js";
 import { ANGEL_RUNTIME } from "./tokens.js";
 
 const HOUR_MS = 60 * 60 * 1000;
+const DEFAULT_LIST_LIMIT = 100;
+const DEFAULT_TURN_LIMIT = 50;
+const MAX_LIMIT = 1000;
+
+const clampLimit = (value: string | undefined, fallback: number): number =>
+	Math.min(Math.max(Math.trunc(Number(value)) || fallback, 1), MAX_LIMIT);
 const isStage = (value: unknown): value is LeadStage =>
 	typeof value === "string" &&
 	(LEAD_STAGES as readonly string[]).includes(value);
@@ -48,9 +55,60 @@ export class AdminController {
 		return this.whatsapp.status();
 	}
 
+	/** Raw numbers for charts plus display strings (1.1K, 1.02K, 10K). */
 	@Get("stats")
 	stats() {
-		return { ...this.runtime.crm.stats(), pricing: this.runtime.pricing() };
+		const { crm } = this.runtime;
+		const funnel = crm.stats();
+		const turns = crm.turnStats();
+		return {
+			...funnel,
+			formatted: {
+				byStage: formatCounts(funnel.byStage),
+				dealerships: formatCount(funnel.dealerships),
+				demosSent: formatCount(funnel.demosSent),
+				ignored: formatCount(funnel.ignored),
+				objections: formatCounts(funnel.objections),
+				total: formatCount(funnel.total),
+				turns: {
+					byOutcome: formatCounts(turns.byOutcome),
+					inputTokens: formatCount(turns.inputTokens),
+					messagesIn: formatCount(turns.messagesIn),
+					messagesOut: formatCount(turns.messagesOut),
+					outputTokens: formatCount(turns.outputTokens),
+					total: formatCount(turns.total),
+					totalTokens: formatCount(turns.totalTokens),
+				},
+			},
+			pricing: this.runtime.pricing(),
+			turns,
+		};
+	}
+
+	@Get("turns")
+	turns(@Query("contact") contact?: string, @Query("limit") limit?: string) {
+		return this.runtime.crm.turns({
+			contactId: contact ? normalizePhone(contact) : undefined,
+			limit: clampLimit(limit, DEFAULT_TURN_LIMIT),
+		});
+	}
+
+	@Get("ignored")
+	ignored(@Query("limit") limit?: string) {
+		return this.runtime.crm.listIgnored(clampLimit(limit, DEFAULT_LIST_LIMIT));
+	}
+
+	@Get("ignored/:id")
+	ignoredContact(@Param("id") id: string) {
+		const contactId = normalizePhone(id);
+		const contact = this.runtime.crm.getIgnored(contactId);
+		if (!contact) {
+			throw new NotFoundException();
+		}
+		return {
+			contact,
+			messages: this.runtime.crm.ignoredMessages(contactId, MAX_LIMIT),
+		};
 	}
 
 	@Get("leads")
@@ -61,7 +119,7 @@ export class AdminController {
 			);
 		}
 		return this.runtime.crm.list({
-			limit: Math.min(Number(limit) || 100, 1000),
+			limit: clampLimit(limit, DEFAULT_LIST_LIMIT),
 			stage,
 		});
 	}
@@ -83,6 +141,10 @@ export class AdminController {
 			customer,
 			events: this.runtime.crm.events(customer.id, 100),
 			messages: this.runtime.crm.messages(customer.id, 200),
+			turns: this.runtime.crm.turns({
+				contactId: customer.id,
+				limit: DEFAULT_TURN_LIMIT,
+			}),
 		};
 	}
 
