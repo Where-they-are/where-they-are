@@ -61,14 +61,20 @@ export class AdminController {
 		const { crm } = this.runtime;
 		const funnel = crm.stats();
 		const turns = crm.turnStats();
+		const payments = crm.payments.totals();
 		return {
 			...funnel,
 			formatted: {
 				byStage: formatCounts(funnel.byStage),
 				dealerships: formatCount(funnel.dealerships),
 				demosSent: formatCount(funnel.demosSent),
+				depositsPaid: formatCount(funnel.depositsPaid),
 				ignored: formatCount(funnel.ignored),
 				objections: formatCounts(funnel.objections),
+				payments: {
+					paidCount: formatCount(payments.paidCount),
+					paidUsd: `$${formatCount(payments.paidUsd)}`,
+				},
 				total: formatCount(funnel.total),
 				turns: {
 					byOutcome: formatCounts(turns.byOutcome),
@@ -80,9 +86,18 @@ export class AdminController {
 					totalTokens: formatCount(turns.totalTokens),
 				},
 			},
+			payments,
+			paynowEnabled: this.runtime.payments.enabled,
 			pricing: this.runtime.pricing(),
 			turns,
 		};
+	}
+
+	@Get("payments")
+	payments(@Query("limit") limit?: string) {
+		return this.runtime.crm.payments.recent(
+			clampLimit(limit, DEFAULT_LIST_LIMIT)
+		);
 	}
 
 	@Get("turns")
@@ -141,6 +156,7 @@ export class AdminController {
 			customer,
 			events: this.runtime.crm.events(customer.id, 100),
 			messages: this.runtime.crm.messages(customer.id, 200),
+			payments: this.runtime.crm.payments.forCustomer(customer.id),
 			turns: this.runtime.crm.turns({
 				contactId: customer.id,
 				limit: DEFAULT_TURN_LIMIT,
