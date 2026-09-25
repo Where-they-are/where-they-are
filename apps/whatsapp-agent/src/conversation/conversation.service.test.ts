@@ -196,3 +196,55 @@ describe("isTransientModelError", () => {
 		expect(isTransientModelError(new Error("Invalid tool schema"))).toBe(false);
 	});
 });
+
+describe("turn records", () => {
+	it("saves every answered turn with its messages, model, usage and tools", async () => {
+		const { send } = setup(() =>
+			Promise.resolve({
+				response: { modelId: "google/gemini-3.8-flash" },
+				steps: [
+					{ toolCalls: [{ payload: { toolName: "save_customer_details" } }] },
+					{ toolCalls: [{ payload: { toolName: "get_pricing" } }] },
+				],
+				text: "It's a once-off $250.",
+				totalUsage: { inputTokens: 1500, outputTokens: 60, totalTokens: 1560 },
+			})
+		);
+		await send("How much?");
+		const [turn] = crm.turns({ contactId: ID });
+		expect(turn).toMatchObject({
+			attempts: 1,
+			inboundCount: 1,
+			model: "google/gemini-3.8-flash",
+			outcome: "replied",
+			replyCount: 1,
+			tools: ["save_customer_details", "get_pricing"],
+			usage: { inputTokens: 1500, outputTokens: 60, totalTokens: 1560 },
+		});
+		expect(turn?.latencyMs).toBeGreaterThanOrEqual(0);
+		expect(crm.messages(ID).map((message) => message.turnId)).toEqual([
+			turn?.id,
+			turn?.id,
+		]);
+	});
+
+	it("saves silent and fallback turns too, with the error", async () => {
+		const { send } = setup(() => Promise.reject(new Error("model exploded")));
+		await send("Hi");
+		await send("stop");
+		await send("hello?");
+		expect(
+			crm
+				.turns({ contactId: ID })
+				.map((turn) => turn.outcome)
+				.reverse()
+		).toEqual(["fallback", "opted_out", "silent_opted_out"]);
+		const fallback = crm.turns({ contactId: ID }).at(-1);
+		expect(fallback?.error).toContain("model exploded");
+		expect(crm.turnStats().byOutcome).toMatchObject({
+			fallback: 1,
+			opted_out: 1,
+			silent_opted_out: 1,
+		});
+	});
+});

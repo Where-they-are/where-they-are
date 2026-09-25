@@ -5,7 +5,12 @@ import { TURN_CONTEXT_KEY } from "../agent/angel.js";
 import type { TurnContext } from "../agent/instructions.js";
 import { CUSTOMER_ID_KEY, IGNORED_KEY } from "../agent/tools.js";
 import type { CrmRepository } from "../crm/crm.repository.js";
-import type { Customer, IgnoreCategory } from "../crm/crm.types.js";
+import type {
+	Customer,
+	IgnoreCategory,
+	TurnGate,
+	TurnUsage,
+} from "../crm/crm.types.js";
 import type { DealershipPricing } from "../knowledge/pricing.js";
 import type { Transcriber } from "../media/transcriber.js";
 import type { OwnerNotifier } from "../notifications/owner-notifier.js";
@@ -50,6 +55,31 @@ export interface TurnResult {
 	outcome: TurnOutcome;
 	replies: string[];
 }
+
+/** What happened inside a turn, saved with it in the CRM. */
+interface TurnTrace {
+	attempts: number;
+	error: string | null;
+	gate: TurnGate | null;
+	model: string | null;
+	tools: string[];
+	turnId: number;
+	usage: Partial<TurnUsage>;
+}
+
+interface GenerateResult {
+	response?: { modelId?: string };
+	steps?: { toolCalls?: { payload?: { toolName?: string } }[] }[];
+	text?: string;
+	totalUsage?: Partial<Record<keyof TurnUsage, number>>;
+}
+
+const toolNames = (result: GenerateResult): string[] =>
+	(result.steps ?? []).flatMap((step) =>
+		(step.toolCalls ?? [])
+			.map((call) => call.payload?.toolName)
+			.filter((name): name is string => typeof name === "string")
+	);
 
 const HOUR_MS = 60 * 60 * 1000;
 const RETRY_DELAY_MS = 1500;
@@ -135,14 +165,54 @@ export class ConversationService {
 		return next;
 	}
 
+	/** Runs one turn and saves it to the CRM, whatever the outcome. */
 	private async run(batch: IncomingBatch): Promise<TurnResult> {
+		const { crm } = this.deps;
+		const trace: TurnTrace = {
+			attempts: 0,
+			error: null,
+			gate: null,
+			model: null,
+			tools: [],
+			turnId: crm.startTurn({
+				chatId: batch.chatId,
+				contactId: batch.customerId,
+				inboundCount: batch.messages.length,
+			}),
+			usage: {},
+		};
+		let outcome = "failed";
+		let replyCount = 0;
+		try {
+			const result = await this.process(batch, trace);
+			({ outcome } = result);
+			replyCount = result.replies.length;
+			return result;
+		} catch (error) {
+			trace.error = errorText(error);
+			throw error;
+		} finally {
+			const { turnId, ...details } = trace;
+			crm.finishTurn(turnId, { ...details, outcome, replyCount });
+		}
+	}
+
+	private async process(
+		batch: IncomingBatch,
+		trace: TurnTrace
+	): Promise<TurnResult> {
 		const { crm } = this.deps;
 		const messages = await this.transcribeVoiceNotes(batch.messages);
 		const combinedText = messages
 			.map((message) => message.text)
 			.filter(Boolean)
 			.join("\n");
-		const ignored = await this.checkRelevance(batch, messages, combinedText);
+		const ignored = await this.checkRelevance(
+			batch,
+			messages,
+			combinedText,
+			trace
+		);
 		if (ignored) {
 			return ignored;
 		}
@@ -157,25 +227,29 @@ export class ConversationService {
 				customer.id,
 				"in",
 				describeMediaForLog(message),
-				message.mediaKind ?? null
+				message.mediaKind ?? null,
+				trace.turnId
 			);
 		}
+		const respond = (outcome: TurnOutcome, replies: string[]) =>
+			this.reply(customer.id, outcome, replies, trace.turnId);
 
-		const stopped = await this.guard(customer, combinedText);
+		const stopped = await this.guard(customer, combinedText, respond);
 		if (stopped) {
 			return stopped;
 		}
 
 		const content = this.buildContent(messages);
 		if (content === null) {
-			return this.reply(customer.id, "replied", [UNSUPPORTED_MEDIA_REPLY]);
+			return respond("replied", [UNSUPPORTED_MEDIA_REPLY]);
 		}
 
 		try {
 			const { ignoredAs, text } = await this.generate(
 				customer,
 				created,
-				content
+				content,
+				trace
 			);
 			if (ignoredAs) {
 				crm.recordEvent(customer.id, "ignored", {
@@ -188,34 +262,36 @@ export class ConversationService {
 			if (replies.length === 0) {
 				throw new Error("Angel returned an empty reply");
 			}
-			return this.reply(customer.id, "replied", replies);
+			return respond("replied", replies);
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error);
+			trace.error = errorText(error);
 			crm.recordEvent(customer.id, "agent_error", { message });
 			await this.alertOwner(
 				customer,
 				`⚠️ Angel hit an error replying to ${customer.displayName ?? customer.id} and sent a holding message. Please check the chat: https://wa.me/${customer.id}\nError: ${message.slice(0, 200)}`
 			);
-			return this.reply(customer.id, "fallback", [FALLBACK_REPLY]);
+			return respond("fallback", [FALLBACK_REPLY]);
 		}
 	}
 
 	/** Opt-outs, human takeover and rate limits that stop Angel before the model runs. */
 	private async guard(
 		customer: Customer,
-		combinedText: string
+		combinedText: string,
+		respond: (outcome: TurnOutcome, replies: string[]) => TurnResult
 	): Promise<TurnResult | null> {
 		const { crm } = this.deps;
 		if (customer.optedOut) {
 			if (isOptIn(combinedText)) {
 				crm.setOptedOut(customer.id, false);
-				return this.reply(customer.id, "opted_in", [OPT_IN_REPLY]);
+				return respond("opted_in", [OPT_IN_REPLY]);
 			}
 			return { outcome: "silent_opted_out", replies: [] };
 		}
 		if (isOptOut(combinedText)) {
 			crm.setOptedOut(customer.id, true);
-			return this.reply(customer.id, "opted_out", [OPT_OUT_REPLY]);
+			return respond("opted_out", [OPT_OUT_REPLY]);
 		}
 		if (crm.isHumanActive(customer)) {
 			return { outcome: "human_active", replies: [] };
@@ -235,7 +311,7 @@ export class ConversationService {
 				customer,
 				`⚠️ Angel paused replies to ${customer.displayName ?? customer.id} after ${this.deps.maxRepliesPerHour} replies in an hour. Chat: https://wa.me/${customer.id}`
 			);
-			return this.reply(customer.id, "rate_limited", [RATE_LIMITED_REPLY]);
+			return respond("rate_limited", [RATE_LIMITED_REPLY]);
 		}
 		return null;
 	}
@@ -273,7 +349,8 @@ export class ConversationService {
 	private async checkRelevance(
 		batch: IncomingBatch,
 		messages: IncomingMessage[],
-		combinedText: string
+		combinedText: string,
+		trace: TurnTrace
 	): Promise<TurnResult | null> {
 		const { crm, relevance } = this.deps;
 		const existing = crm.get(batch.customerId);
@@ -283,26 +360,41 @@ export class ConversationService {
 		if (!(relevance && needsCheck)) {
 			return null;
 		}
+		const describe = (message: IncomingMessage) =>
+			describeMediaForLog(message) || `[${message.mediaKind ?? "message"}]`;
 		const decision = await relevance.decide({
 			contact: {
 				displayName: batch.displayName ?? null,
 				firstContact: !existing,
 				previouslyIgnoredAs: previous?.category ?? null,
 			},
-			messages: messages.map(
-				(message) =>
-					describeMediaForLog(message) || `[${message.mediaKind ?? "message"}]`
-			),
+			messages: messages.map(describe),
 		});
+		trace.gate = {
+			category: decision.category,
+			confidence: decision.confidence,
+			replyProbability: decision.replyProbability,
+			source: decision.source,
+		};
 		if (decision.verdict === "ignore") {
+			const category = decision.category as IgnoreCategory;
 			crm.recordIgnored({
-				category: decision.category as IgnoreCategory,
+				category,
 				chatId: batch.chatId,
 				confidence: decision.confidence,
 				displayName: batch.displayName ?? null,
 				id: batch.customerId,
 				text: combinedText || "[media]",
 			});
+			for (const message of messages) {
+				crm.logIgnoredMessage({
+					body: describe(message),
+					category,
+					contactId: batch.customerId,
+					mediaKind: message.mediaKind ?? null,
+					turnId: trace.turnId,
+				});
+			}
 			return { outcome: "ignored", replies: [] };
 		}
 		if (previous) {
@@ -314,10 +406,11 @@ export class ConversationService {
 	private reply(
 		customerId: string,
 		outcome: TurnOutcome,
-		replies: string[]
+		replies: string[],
+		turnId: number
 	): TurnResult {
 		for (const text of replies) {
-			this.deps.crm.logMessage(customerId, "out", text);
+			this.deps.crm.logMessage(customerId, "out", text, null, turnId);
 		}
 		this.deps.crm.touchOutbound(customerId);
 		return { outcome, replies };
@@ -389,7 +482,8 @@ export class ConversationService {
 	private async generate(
 		customer: Customer,
 		isFirstContact: boolean,
-		content: ContentPart[]
+		content: ContentPart[],
+		trace: TurnTrace
 	): Promise<{ ignoredAs: IgnoreCategory | null; text: string }> {
 		const turn: TurnContext = {
 			customer,
@@ -405,27 +499,47 @@ export class ConversationService {
 
 		// The agent's model list already retries and falls back to a second
 		// provider; reasoning settings live on each model entry.
-		const run = () =>
-			this.deps.agent.generate([{ content, role: "user" }] as never, {
-				maxSteps: MAX_STEPS,
-				memory: { resource: customer.id, thread: `whatsapp-${customer.id}` },
-				modelSettings: { temperature: 0.4 },
-				requestContext,
-			});
-		const finish = (text: string | undefined) => ({
-			ignoredAs:
-				(requestContext.get(IGNORED_KEY) as IgnoreCategory | undefined) ?? null,
-			text: text ?? "",
-		});
+		const run = async (): Promise<GenerateResult> => {
+			trace.attempts += 1;
+			return (await this.deps.agent.generate(
+				[{ content, role: "user" }] as never,
+				{
+					maxSteps: MAX_STEPS,
+					memory: {
+						resource: customer.id,
+						thread: `whatsapp-${customer.id}`,
+					},
+					modelSettings: { temperature: 0.4 },
+					requestContext,
+				}
+			)) as GenerateResult;
+		};
+		const finish = (result: GenerateResult) => {
+			const usage = result.totalUsage ?? {};
+			trace.model = result.response?.modelId ?? null;
+			trace.tools = toolNames(result);
+			trace.usage = {
+				inputTokens: usage.inputTokens ?? null,
+				outputTokens: usage.outputTokens ?? null,
+				reasoningTokens: usage.reasoningTokens ?? null,
+				totalTokens: usage.totalTokens ?? null,
+			};
+			return {
+				ignoredAs:
+					(requestContext.get(IGNORED_KEY) as IgnoreCategory | undefined) ??
+					null,
+				text: result.text ?? "",
+			};
+		};
 		try {
-			return finish((await run()).text);
+			return finish(await run());
 		} catch (error) {
 			if (!isTransientModelError(error)) {
 				throw error;
 			}
 			// One more attempt after a pause, for brief outages on every model.
 			await sleep(RETRY_DELAY_MS);
-			return finish((await run()).text);
+			return finish(await run());
 		}
 	}
 

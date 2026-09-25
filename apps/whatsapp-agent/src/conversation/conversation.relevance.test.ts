@@ -90,6 +90,17 @@ describe("relevance gate in conversations", () => {
 			count: 1,
 			lastMessage: "Win a free iPhone, click here",
 		});
+		expect(crm.ignoredMessages(ID).map((message) => message.body)).toEqual([
+			"Win a free iPhone, click here",
+		]);
+		const [turn] = crm.turns({ contactId: ID });
+		expect(turn).toMatchObject({
+			gate: { category: "spam_or_scam", source: "jev" },
+			model: null,
+			outcome: "ignored",
+			replyCount: 0,
+		});
+		expect(crm.ignoredMessages(ID)[0]?.turnId).toBe(turn?.id);
 	});
 
 	it("re-checks a previously ignored contact and forgets the ignore once they are a lead", async () => {
