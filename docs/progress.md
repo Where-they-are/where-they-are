@@ -1,6 +1,6 @@
 # Current Progress
 
-_Last updated: 2026-09-24_
+_Last updated: 2026-09-25_
 
 ## Current phase
 
@@ -32,11 +32,21 @@ car-dealer Meta ad
 
 The agent must qualify the lead for the dealership offer. It must not pretend that the full automated website-generation platform is already the product being sold.
 
+## Built for the experiment (2026-09-25)
+
+- `apps/dealership-demo`: the Ridgeline Motors sample site (Next.js, Docker), set up for deployment at `https://dealership-demo.wheretheyare.co.zw`. Its vehicle-detail, sell, finance, service and contact pages are still simple placeholders.
+- `apps/whatsapp-agent` ("Angel"): a new NestJS + whatsapp-web.js + Mastra agent that narrows the WhatsApp conversation to dealer qualification. It has these parts:
+  - **Conversation:** it asks about the demo before sharing it, quotes the hard price ($250 for the first 5 dealerships, $400 after), handles objections from approved knowledge only, and hands over to the owner with WhatsApp alerts. Non-dealership businesses are welcomed and handed over.
+  - **Relevance and media:** a Jev relevance gate keeps Angel silent on spam, personal messages, wrong numbers and pitches. Voice notes are transcribed.
+  - **CRM:** a SQLite CRM records every customer, message, turn (model, tokens, latency, outcome), funnel event and ignored message. This is the tracking record Task 6 needs; a dashboard for it stays deferred.
+  - **Evidence:** 21/21 live sales scenarios and 30/30 live relevance cases pass. See `apps/whatsapp-agent/README.md`.
+
 ## What is not yet complete
 
-- The dealership demo has not been confirmed as a deployed, public Next.js app.
+- The deployed demo URL has not been smoke-tested on a phone.
 - The Meta campaign has not been launched for the focused dealership offer.
-- The WhatsApp agent has not yet been narrowed and tested against the dealer qualification script.
+- Angel has not been linked to the live business number, and no human hand-off has been tested end to end on real WhatsApp.
+- The owner has not yet approved Angel's conversation script or the answers it must escalate: the hosting renewal fee, delivery timeline and payment methods are unknown, so Angel hands these to the owner.
 - The exact ad creative, budget, tracking sheet, and validation thresholds still need to be approved.
 - No demand conclusion has been reached.
 

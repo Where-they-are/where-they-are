@@ -1,6 +1,6 @@
 # Current Tasks
 
-_Last updated: 2026-09-24_
+_Last updated: 2026-09-25_
 
 This is the active task board for the Wizard-of-Oz validation MVP. Work must follow this order. Do not start a later task while the current task is unfinished, untested, and unevaluated.
 
@@ -65,6 +65,8 @@ If a task reveals a problem that affects the current validation loop, fix it bef
 - [ ] Provide a clear handoff to the owner when there is an objection, buying signal, unusual request, or uncertainty.
 
 **Completion evidence:** approved conversation script, test transcripts for common paths, and a verified human handoff.
+
+**Current status (2026-09-25):** the qualification flow and escalation paths are implemented in `apps/whatsapp-agent`, with transcripts from `pnpm --filter @where-they-are/whatsapp-agent eval`. Still open: the owner approving the script, and a verified handoff on the real business number.
 
 ### Task 5 - Implement truthful objection handling
 
