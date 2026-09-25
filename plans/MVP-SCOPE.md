@@ -1,6 +1,6 @@
 # Where They Are MVP Scope Charter
 
-_Last updated: 2026-09-23_  
+_Last updated: 2026-09-25_  
 _Status: Authoritative scope-control document_
 
 > **Current phase override — 2026-09-24:** The active MVP is now a Wizard-of-Oz demand-validation experiment for Zimbabwean car dealerships. The immediate scope is one dealership offer, one demo website, Meta Ads, a WhatsApp qualification agent, human-assisted follow-up, and evidence-based demand measurement. The broader automated platform described below is retained as the **ultimate MVP after validation**, not as the current implementation backlog. See [`docs/plan.md`](../docs/plan.md), [`docs/current_tasks.md`](../docs/current_tasks.md), and [`docs/ultimate mvp.md`](../docs/ultimate%20mvp.md).
@@ -13,7 +13,15 @@ Until the dealership experiment reaches its documented unlock conditions, agents
 car-dealer Meta ad -> WhatsApp qualification -> dealership demo -> objection handling -> human follow-up -> demand signal
 ```
 
-The current active scope does not require the full automated generation, payment, hosting, portal, or multi-vertical platform. Existing code for those capabilities may remain in the repository as dormant foundation work, but it must not pull the active backlog away from demand validation.
+> **Scope change — 2026-09-25 (owner approved):** Paynow deposit and balance collection inside the WhatsApp conversation is now part of the active dealership MVP, together with Meta Conversions API feedback on qualified leads and payments. The active loop becomes:
+>
+> ```text
+> car-dealer Meta ad -> WhatsApp qualification (Angel) -> demo link + founding offer -> objection handling -> Paynow $125 deposit -> manual 3-day build -> Paynow $125 balance -> Meta conversion feedback
+> ```
+>
+> **Why:** a paid deposit is the strongest demand signal the experiment can measure, and asking the owner to collect every payment by hand slows the close. **Tradeoff:** Angel's app (`apps/whatsapp-agent`) owns this payment flow directly with its own SQLite records and Paynow mobile checkout; it does not use the dormant `apps/server` payment module, hosted Paynow pages, invoices or renewals. Hosting billing, renewals and refunds stay manual. The offer and the conversation are defined in [`docs/sales-script.md`](../docs/sales-script.md).
+
+The current active scope does not require the full automated generation, hosting, portal, or multi-vertical platform. Existing code for those capabilities may remain in the repository as dormant foundation work, but it must not pull the active backlog away from demand validation.
 
 > **Scope rule:** The MVP exists to prove that Where They Are can deliver a modern, credible brochure or service website to a Zimbabwean small business in minutes and convert that delivery into recurring hosting revenue. Every feature must directly support that outcome or the minimum operation required to deliver it.
 

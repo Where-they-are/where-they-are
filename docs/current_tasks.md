@@ -68,6 +68,17 @@ If a task reveals a problem that affects the current validation loop, fix it bef
 
 **Current status (2026-09-25):** the qualification flow and escalation paths are implemented in `apps/whatsapp-agent`, with transcripts from `pnpm --filter @where-they-are/whatsapp-agent eval`. Still open: the owner approving the script, and a verified handoff on the real business number.
 
+### Task 4b - Close the sale in WhatsApp (added 2026-09-25)
+
+- [ ] Angel follows `docs/sales-script.md`: founding offer and demo link early, one qualification question per message, lead score and stages.
+- [ ] Angel requests the $125 deposit through Paynow mobile checkout (EcoCash or OneMoney) and confirms it only after Paynow reports it paid.
+- [ ] After payment, Angel sends the materials checklist and the 3-day delivery promise; the owner is alerted.
+- [ ] The owner marks delivery with `#delivered`, and the $125 balance is requested through Paynow.
+- [ ] Qualified leads, deposit requests and payments are reported to Meta through the Conversions API.
+- [ ] Verify end to end against Paynow's test mode before live ads.
+
+**Completion evidence:** a paid Paynow test transaction moving a lead from qualified to deposit paid, the customer confirmation, the owner alert, and a Meta test event.
+
 ### Task 5 - Implement truthful objection handling
 
 - [ ] Handle the objection that the dealership is too small or not ready for a website.
@@ -107,7 +118,7 @@ If a task reveals a problem that affects the current validation loop, fix it bef
 - Multi-vertical acquisition.
 - Full automated website generation for every supported business group.
 - Production authentication replacement beyond what the dealer experiment actually needs.
-- Paynow and hosting lifecycle completion if the experiment has not yet produced a credible buying signal.
+- Hosting lifecycle completion (renewals, automated hosting billing). Paynow deposit and balance collection in WhatsApp is no longer deferred: see Task 4b.
 - Full portal workflows.
 - Modular registry expansion across all business groups.
 - Queues, operations consoles, CRM, support tickets, advanced analytics, and broad automation.

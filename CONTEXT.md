@@ -284,7 +284,8 @@ The authoritative MVP scope and feature pushback protocol is [`plans/MVP-SCOPE.m
 - Generation jobs are modeled but are not yet fully queued through BullMQ.
 - File artifacts are still local filesystem artifacts rather than object-storage artifacts.
 - Coolify deployment is currently a typed adapter around deployment triggering; the new deployment record provides a server-owned lifecycle state, while external reconciliation remains pending. Coolify credentials are optional and the Coolify smoke test is skipped unless `COOLIFY_CHECKS_ENABLED=true`; calling deployment without configured Coolify still returns an unavailable-provider error rather than preventing server startup.
-- Paynow hosted-payment creation/callback verification is not yet wired; payment records and status transitions are ready for that provider adapter.
+- Paynow hosted-payment creation/callback verification is not yet wired in `apps/server`; payment records and status transitions are ready for that provider adapter.
+- `apps/whatsapp-agent` (Angel) runs the active dealership experiment. It collects the $125 deposit and balance with Paynow mobile checkout through the shared `packages/paynow` client, keeps its own SQLite CRM and payment records, and reports qualified leads and payments to Meta's Conversions API. See `docs/sales-script.md` and `apps/whatsapp-agent/README.md`.
 - Advanced analytics, support queues, operator consoles, audit systems, teams, invitations, and permission-management UX are intentionally out of scope for this phase.
 - Jev policy decisions are currently synchronous and in-process. Decision audit persistence, route-specific support workflows, and human escalation queues remain out of scope.
 - Public contact submissions currently have validation, idempotency, retention, starring, reading, and archiving primitives; rate limiting and scheduled expiry execution still need to be connected to the runtime.
