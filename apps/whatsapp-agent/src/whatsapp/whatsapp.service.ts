@@ -10,6 +10,7 @@ import whatsappWeb, { type Message } from "whatsapp-web.js";
 import { AGENT_CONFIG, type AgentConfig } from "../config.js";
 import type { IncomingMessage } from "../conversation/conversation.service.js";
 import { typingDelayMs } from "../conversation/reply-format.js";
+import type { AdSource } from "../crm/crm.types.js";
 import type { OwnerNotifier } from "../notifications/owner-notifier.js";
 import {
 	isOwnerCommand,
@@ -17,9 +18,11 @@ import {
 	runOwnerCommand,
 } from "../owner/owner-commands.js";
 import { normalizePhone, phoneFromChatId } from "../owner/phone.js";
+import type { CustomerMessenger } from "../payments/payment.service.js";
 import type { AngelRuntime } from "../runtime.js";
 import { EchoTracker, MessageBatcher } from "./message-batcher.js";
 import {
+	adSourceFrom,
 	isIgnoredChat,
 	isIgnoredType,
 	toIncomingMessage,
@@ -37,6 +40,7 @@ export type WhatsAppState =
 	| "failed";
 
 interface QueuedMessage {
+	adSource: AdSource | null;
 	displayName: string | null;
 	message: IncomingMessage;
 	phone: string;
@@ -54,7 +58,7 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
  */
 @Injectable()
 export class WhatsAppService
-	implements OnModuleInit, OnModuleDestroy, OwnerNotifier
+	implements OnModuleInit, OnModuleDestroy, OwnerNotifier, CustomerMessenger
 {
 	private readonly logger = new Logger("WhatsApp");
 	private readonly config: AgentConfig;
@@ -87,6 +91,15 @@ export class WhatsAppService
 
 	attach(runtime: AngelRuntime): void {
 		this.runtime = runtime;
+		runtime.payments.attachMessenger(this);
+	}
+
+	/** Messages a customer outside a reply turn, e.g. a payment confirmation. */
+	async sendToCustomer(chatId: string, text: string): Promise<void> {
+		if (!this.client || this.state !== "ready") {
+			throw new Error("WhatsApp is not connected");
+		}
+		await this.send(chatId, [text], false);
 	}
 
 	onModuleInit(): void {
@@ -287,7 +300,12 @@ export class WhatsAppService
 		const displayName =
 			(message as unknown as { _data?: { notifyName?: string } })._data
 				?.notifyName ?? null;
-		this.batcher.add(message.from, { displayName, message: incoming, phone });
+		this.batcher.add(message.from, {
+			adSource: adSourceFrom(message),
+			displayName,
+			message: incoming,
+			phone,
+		});
 	}
 
 	private async handleOwner(message: Message): Promise<void> {
@@ -351,6 +369,10 @@ export class WhatsAppService
 				items.findLast((item) => item.displayName)?.displayName ?? null,
 			messages: items.map((item) => item.message),
 		});
+		const adSource = items.find((item) => item.adSource)?.adSource;
+		if (adSource && this.runtime.crm.get(first.phone)) {
+			this.runtime.crm.setAdSource(first.phone, adSource);
+		}
 		await this.send(chatId, result.replies, true);
 	}
 

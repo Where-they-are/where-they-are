@@ -1,9 +1,9 @@
 import type { Message } from "whatsapp-web.js";
-
 import type {
 	IncomingMessage,
 	MediaKind,
 } from "../conversation/conversation.service.js";
+import type { AdSource } from "../crm/crm.types.js";
 
 /** Chats Angel never answers: groups, status updates, channels, broadcasts. */
 const IGNORED_CHAT = /@(g\.us|broadcast|newsletter)$|^status@/;
@@ -87,4 +87,31 @@ export const toIncomingMessage = async (
 			text: `${caption} (Sent a ${message.type} that could not be downloaded)`.trim(),
 		};
 	}
+};
+
+const stringOrNull = (value: unknown): string | null =>
+	typeof value === "string" && value.length > 0 ? value : null;
+
+/**
+ * The Click-to-WhatsApp ad a message came from. WhatsApp Web keeps this in
+ * the message's internal ctwaContext, which whatsapp-web.js does not expose
+ * officially, so every field is optional and read defensively.
+ */
+export const adSourceFrom = (message: Message): AdSource | null => {
+	const context = (
+		message as unknown as { _data?: { ctwaContext?: Record<string, unknown> } }
+	)._data?.ctwaContext;
+	if (!context || typeof context !== "object") {
+		return null;
+	}
+	const source: AdSource = {
+		ctwaClid:
+			stringOrNull(context.ctwaClid) ??
+			stringOrNull(context.ctwa_clid) ??
+			stringOrNull(context.conversionData),
+		sourceId: stringOrNull(context.sourceId),
+		sourceUrl: stringOrNull(context.sourceUrl),
+		title: stringOrNull(context.title),
+	};
+	return Object.values(source).some(Boolean) ? source : null;
 };
