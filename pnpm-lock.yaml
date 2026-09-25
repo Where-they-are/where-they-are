@@ -304,6 +304,9 @@ importers:
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
+      tsx:
+        specifier: ^4.20.6
+        version: 4.23.15
       varlock:
         specifier: 'catalog:'
         version: 1.18.0
@@ -323,9 +326,6 @@ importers:
       '@where-they-are/config':
         specifier: workspace:*
         version: link:../../packages/config
-      tsx:
-        specifier: ^4.20.6
-        version: 4.23.15
       typescript:
         specifier: 'catalog:'
         version: 6.0.3

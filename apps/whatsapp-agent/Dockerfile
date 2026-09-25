@@ -36,4 +36,7 @@ RUN mkdir -p /data && chown node:node /data
 USER node
 VOLUME ["/data"]
 EXPOSE 3104
-CMD ["node", "--import", "varlock/auto-load", "dist/main.js"]
+# The shared workspace packages (jev-router, paynow) ship TypeScript source.
+# pnpm deploy copies them into node_modules, where Node refuses to strip
+# types, so tsx compiles those files at load time.
+CMD ["node", "--import", "tsx", "--import", "varlock/auto-load", "dist/main.js"]

@@ -11,7 +11,7 @@
     "eval": "node --import tsx --import varlock/auto-load scripts/eval.ts",
     "media-check": "node --import tsx --import varlock/auto-load scripts/media-check.ts",
     "relevance-eval": "node --import tsx --import varlock/auto-load scripts/relevance-eval.ts",
-    "start": "node --import varlock/auto-load dist/main.js",
+    "start": "node --import tsx --import varlock/auto-load dist/main.js",
     "test": "vitest run"
   },
   "dependencies": {
@@ -25,6 +25,7 @@
     "@where-they-are/paynow": "workspace:*",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
+    "tsx": "^4.20.6",
     "varlock": "catalog:",
     "whatsapp-web.js": "^1.34.7",
     "zod": "catalog:"
@@ -33,7 +34,6 @@
     "@types/express": "^5.0.3",
     "@types/node": "catalog:",
     "@where-they-are/config": "workspace:*",
-    "tsx": "^4.20.6",
     "typescript": "catalog:",
     "vitest": "^5.0.1"
   }
