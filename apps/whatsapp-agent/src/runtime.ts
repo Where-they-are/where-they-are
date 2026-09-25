@@ -1,6 +1,7 @@
 import { resolve } from "node:path";
 
 import type { Agent } from "@mastra/core/agent";
+import { JevClient } from "@where-they-are/jev-router";
 
 import { createAngel } from "./agent/angel.js";
 import type { AgentConfig } from "./config.js";
@@ -11,18 +12,26 @@ import {
 	type DealershipPricing,
 	dealershipPricing,
 } from "./knowledge/pricing.js";
+import { ModelTranscriber } from "./media/transcriber.js";
 import type { OwnerNotifier } from "./notifications/owner-notifier.js";
+import { RelevanceGate } from "./relevance/relevance-gate.js";
+
+/** TypeSafe's Jev decision model on OpenRouter, used for the relevance gate. */
+const JEV_MODEL = "~typesafe/jev-latest";
+const JEV_TIMEOUT_MS = 6000;
 
 export interface AngelRuntime {
 	agent: Agent;
 	conversation: ConversationService;
 	crm: CrmRepository;
 	pricing: () => DealershipPricing;
+	relevance: RelevanceGate;
 }
 
 /**
- * Wires the CRM, knowledge, pricing, tools, memory and conversation service.
- * Shared by the Nest server, the CLI chat and the eval runner.
+ * Wires the CRM, knowledge, pricing, tools, memory, relevance gate,
+ * transcription and conversation service. Shared by the Nest server, the CLI
+ * chat and the eval runners.
  */
 export const createRuntime = (
 	config: AgentConfig,
@@ -56,6 +65,18 @@ export const createRuntime = (
 		reasoningEffort: config.AGENT_REASONING_EFFORT,
 		takeoverHours: config.HUMAN_TAKEOVER_HOURS,
 	});
+	const relevance = new RelevanceGate(
+		new JevClient({
+			apiKey: config.OPENROUTER_API_KEY,
+			model: JEV_MODEL,
+			siteName: "Where They Are Angel",
+			timeoutMs: JEV_TIMEOUT_MS,
+		})
+	);
+	const transcriber = new ModelTranscriber({
+		model: config.AGENT_MODEL,
+		reasoningEffort: config.AGENT_REASONING_EFFORT,
+	});
 	const conversation = new ConversationService({
 		agent,
 		crm,
@@ -64,6 +85,8 @@ export const createRuntime = (
 		notifier,
 		now: options.now,
 		pricing,
+		relevance,
+		transcriber,
 	});
-	return { agent, conversation, crm, pricing };
+	return { agent, conversation, crm, pricing, relevance };
 };

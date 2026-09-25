@@ -2,7 +2,11 @@ import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
 
 import type { CrmRepository } from "../crm/crm.repository.js";
-import { LEAD_STAGES, type LeadStage } from "../crm/crm.types.js";
+import {
+	IGNORE_CATEGORIES,
+	LEAD_STAGES,
+	type LeadStage,
+} from "../crm/crm.types.js";
 import {
 	type KnowledgeEntry,
 	searchKnowledge,
@@ -12,6 +16,8 @@ import type { OwnerNotifier } from "../notifications/owner-notifier.js";
 
 /** Request-context key holding the digits-only customer id for the turn. */
 export const CUSTOMER_ID_KEY = "customerId";
+/** Request-context key Angel sets when it decides not to answer a turn. */
+export const IGNORED_KEY = "ignoredAs";
 
 export const HANDOFF_REASONS = [
 	"wants_to_proceed",
@@ -352,8 +358,23 @@ export const createAngelTools = (deps: AngelToolDeps) => {
 		}),
 	});
 
+	const ignoreMessage = createTool({
+		description:
+			"Stay silent on this turn. ONLY for spam or scams, personal messages meant for the founder (friends, family, personal favours), wrong numbers, or people pitching their services or asking for jobs. Never for anyone who might want a website for any kind of business.",
+		execute: (input, context) => {
+			context.requestContext?.set(IGNORED_KEY, input.category);
+			return Promise.resolve({
+				ignored: true,
+				instruction: "Do not write a reply. Output nothing.",
+			});
+		},
+		id: "ignore_message",
+		inputSchema: z.object({ category: z.enum(IGNORE_CATEGORIES) }),
+	});
+
 	return {
 		get_pricing: getPricing,
+		ignore_message: ignoreMessage,
 		log_commercial_signal: logCommercialSignal,
 		record_objection: recordObjection,
 		request_human: requestHuman,
