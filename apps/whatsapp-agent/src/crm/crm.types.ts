@@ -138,4 +138,77 @@ export interface LoggedMessage {
 	direction: MessageDirection;
 	id: number;
 	mediaKind: string | null;
+	/** The turn that received or produced this message; null for owner messages. */
+	turnId: number | null;
+}
+
+/** A message Angel stayed silent on, kept apart from the lead transcripts. */
+export interface IgnoredMessage {
+	body: string;
+	category: IgnoreCategory;
+	contactId: string;
+	createdAt: string;
+	id: number;
+	mediaKind: string | null;
+	turnId: number | null;
+}
+
+export interface TurnUsage {
+	inputTokens: number | null;
+	outputTokens: number | null;
+	reasoningTokens: number | null;
+	totalTokens: number | null;
+}
+
+/** How the relevance check decided, stored with the turn it gated. */
+export interface TurnGate {
+	category: string;
+	confidence: number;
+	replyProbability: number;
+	source: string;
+}
+
+/**
+ * One batch of inbound messages and what Angel did with it: the outcome, the
+ * gate decision, the model that answered, token usage, tools and latency.
+ */
+export interface TurnRecord {
+	attempts: number;
+	chatId: string;
+	contactId: string;
+	error: string | null;
+	finishedAt: string | null;
+	gate: TurnGate | null;
+	id: number;
+	inboundCount: number;
+	latencyMs: number | null;
+	model: string | null;
+	/** "in_progress" until the turn finishes; a crash leaves it there. */
+	outcome: string;
+	replyCount: number;
+	startedAt: string;
+	tools: string[];
+	usage: TurnUsage;
+}
+
+export interface TurnFinish {
+	attempts?: number;
+	error?: string | null;
+	gate?: TurnGate | null;
+	model?: string | null;
+	outcome: string;
+	replyCount: number;
+	tools?: string[];
+	usage?: Partial<TurnUsage>;
+}
+
+export interface TurnStats {
+	averageLatencyMs: number;
+	byOutcome: Record<string, number>;
+	inputTokens: number;
+	messagesIn: number;
+	messagesOut: number;
+	outputTokens: number;
+	total: number;
+	totalTokens: number;
 }

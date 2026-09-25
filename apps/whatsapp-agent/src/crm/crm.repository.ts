@@ -9,6 +9,7 @@ import {
 	type EventType,
 	type IgnoreCategory,
 	type IgnoredContact,
+	type IgnoredMessage,
 	type LeadStage,
 	type LoggedMessage,
 	type MessageDirection,
@@ -16,6 +17,9 @@ import {
 	PROGRESS_STAGES,
 	type ProfilePatch,
 	type TriState,
+	type TurnFinish,
+	type TurnRecord,
+	type TurnStats,
 } from "./crm.types.js";
 
 type Row = Record<string, unknown>;
@@ -75,7 +79,51 @@ CREATE TABLE IF NOT EXISTS ignored_contacts (
 	first_at TEXT NOT NULL,
 	last_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS turns (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	contact_id TEXT NOT NULL,
+	chat_id TEXT NOT NULL,
+	outcome TEXT NOT NULL DEFAULT 'in_progress',
+	inbound_count INTEGER NOT NULL,
+	reply_count INTEGER NOT NULL DEFAULT 0,
+	gate_category TEXT,
+	gate_confidence REAL,
+	gate_reply_probability REAL,
+	gate_source TEXT,
+	model TEXT,
+	input_tokens INTEGER,
+	output_tokens INTEGER,
+	reasoning_tokens INTEGER,
+	total_tokens INTEGER,
+	tools TEXT NOT NULL DEFAULT '[]',
+	attempts INTEGER NOT NULL DEFAULT 0,
+	error TEXT,
+	latency_ms INTEGER,
+	started_at TEXT NOT NULL,
+	finished_at TEXT
+);
+CREATE INDEX IF NOT EXISTS turns_contact ON turns(contact_id, id);
+CREATE INDEX IF NOT EXISTS turns_started ON turns(started_at);
+CREATE TABLE IF NOT EXISTS ignored_messages (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	contact_id TEXT NOT NULL,
+	turn_id INTEGER REFERENCES turns(id),
+	category TEXT NOT NULL,
+	body TEXT NOT NULL,
+	media_kind TEXT,
+	created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS ignored_messages_contact ON ignored_messages(contact_id, id);
 `;
+
+/** Columns added after the first release, applied to existing databases. */
+const MIGRATIONS: { column: string; sql: string; table: string }[] = [
+	{
+		column: "turn_id",
+		sql: "ALTER TABLE messages ADD COLUMN turn_id INTEGER REFERENCES turns(id)",
+		table: "messages",
+	},
+];
 
 const PROFILE_COLUMNS: Record<keyof ProfilePatch, string> = {
 	businessName: "business_name",
@@ -136,6 +184,69 @@ const toIgnored = (row: Row): IgnoredContact => ({
 	lastMessage: String(row.last_message),
 });
 
+const numberOrNull = (value: unknown): number | null =>
+	value === null || value === undefined ? null : Number(value);
+
+const toMessage = (row: Row): LoggedMessage => ({
+	body: String(row.body),
+	createdAt: String(row.created_at),
+	customerId: String(row.customer_id),
+	direction: row.direction as MessageDirection,
+	id: Number(row.id),
+	mediaKind: text(row.media_kind),
+	turnId: numberOrNull(row.turn_id),
+});
+
+const toIgnoredMessage = (row: Row): IgnoredMessage => ({
+	body: String(row.body),
+	category: row.category as IgnoreCategory,
+	contactId: String(row.contact_id),
+	createdAt: String(row.created_at),
+	id: Number(row.id),
+	mediaKind: text(row.media_kind),
+	turnId: numberOrNull(row.turn_id),
+});
+
+const parseTools = (value: unknown): string[] => {
+	try {
+		const parsed: unknown = JSON.parse(String(value ?? "[]"));
+		return Array.isArray(parsed) ? parsed.map(String) : [];
+	} catch {
+		return [];
+	}
+};
+
+const toTurn = (row: Row): TurnRecord => ({
+	attempts: Number(row.attempts),
+	chatId: String(row.chat_id),
+	contactId: String(row.contact_id),
+	error: text(row.error),
+	finishedAt: text(row.finished_at),
+	gate:
+		row.gate_category === null || row.gate_category === undefined
+			? null
+			: {
+					category: String(row.gate_category),
+					confidence: Number(row.gate_confidence),
+					replyProbability: Number(row.gate_reply_probability),
+					source: String(row.gate_source),
+				},
+	id: Number(row.id),
+	inboundCount: Number(row.inbound_count),
+	latencyMs: numberOrNull(row.latency_ms),
+	model: text(row.model),
+	outcome: String(row.outcome),
+	replyCount: Number(row.reply_count),
+	startedAt: String(row.started_at),
+	tools: parseTools(row.tools),
+	usage: {
+		inputTokens: numberOrNull(row.input_tokens),
+		outputTokens: numberOrNull(row.output_tokens),
+		reasoningTokens: numberOrNull(row.reasoning_tokens),
+		totalTokens: numberOrNull(row.total_tokens),
+	},
+});
+
 const parseDetail = (value: unknown): Record<string, unknown> => {
 	try {
 		const parsed: unknown = JSON.parse(String(value ?? "{}"));
@@ -168,7 +279,22 @@ export class CrmRepository {
 		this.db.exec("PRAGMA journal_mode = WAL;");
 		this.db.exec("PRAGMA foreign_keys = ON;");
 		this.db.exec(SCHEMA);
+		this.migrate();
 		this.now = now;
+	}
+
+	private migrate(): void {
+		for (const migration of MIGRATIONS) {
+			const columns = this.db
+				.prepare(`PRAGMA table_info(${migration.table})`)
+				.all() as Row[];
+			if (!columns.some((column) => column.name === migration.column)) {
+				this.db.exec(migration.sql);
+			}
+		}
+		this.db.exec(
+			"CREATE INDEX IF NOT EXISTS messages_turn ON messages(turn_id)"
+		);
 	}
 
 	close(): void {
@@ -399,13 +525,14 @@ export class CrmRepository {
 		id: string,
 		direction: MessageDirection,
 		body: string,
-		mediaKind: string | null = null
+		mediaKind: string | null = null,
+		turnId: number | null = null
 	): void {
 		this.db
 			.prepare(
-				"INSERT INTO messages (customer_id, direction, body, media_kind, created_at) VALUES (?, ?, ?, ?, ?)"
+				"INSERT INTO messages (customer_id, direction, body, media_kind, turn_id, created_at) VALUES (?, ?, ?, ?, ?, ?)"
 			)
-			.run(id, direction, body.slice(0, 4000), mediaKind, this.stamp());
+			.run(id, direction, body.slice(0, 4000), mediaKind, turnId, this.stamp());
 	}
 
 	messages(id: string, limit = 30): LoggedMessage[] {
@@ -414,14 +541,7 @@ export class CrmRepository {
 				"SELECT * FROM messages WHERE customer_id = ? ORDER BY id DESC LIMIT ?"
 			)
 			.all(id, limit) as Row[];
-		return rows.reverse().map((row) => ({
-			body: String(row.body),
-			createdAt: String(row.created_at),
-			customerId: String(row.customer_id),
-			direction: row.direction as MessageDirection,
-			id: Number(row.id),
-			mediaKind: text(row.media_kind),
-		}));
+		return rows.reverse().map(toMessage);
 	}
 
 	/** Messages logged after a point in time, e.g. while a human had the chat. */
@@ -431,14 +551,7 @@ export class CrmRepository {
 				"SELECT * FROM messages WHERE customer_id = ? AND created_at > ? ORDER BY id"
 			)
 			.all(id, since) as Row[];
-		return rows.map((row) => ({
-			body: String(row.body),
-			createdAt: String(row.created_at),
-			customerId: String(row.customer_id),
-			direction: row.direction as MessageDirection,
-			id: Number(row.id),
-			mediaKind: text(row.media_kind),
-		}));
+		return rows.map(toMessage);
 	}
 
 	/** Agent replies to this customer within the last `windowMs`. */
@@ -498,6 +611,37 @@ export class CrmRepository {
 			);
 	}
 
+	/** Keeps the full text of every message Angel stayed silent on. */
+	logIgnoredMessage(input: {
+		body: string;
+		category: IgnoreCategory;
+		contactId: string;
+		mediaKind?: string | null;
+		turnId?: number | null;
+	}): void {
+		this.db
+			.prepare(
+				"INSERT INTO ignored_messages (contact_id, turn_id, category, body, media_kind, created_at) VALUES (?, ?, ?, ?, ?, ?)"
+			)
+			.run(
+				input.contactId,
+				input.turnId ?? null,
+				input.category,
+				input.body.slice(0, 4000),
+				input.mediaKind ?? null,
+				this.stamp()
+			);
+	}
+
+	ignoredMessages(contactId: string, limit = 50): IgnoredMessage[] {
+		const rows = this.db
+			.prepare(
+				"SELECT * FROM ignored_messages WHERE contact_id = ? ORDER BY id DESC LIMIT ?"
+			)
+			.all(contactId, limit) as Row[];
+		return rows.reverse().map(toIgnoredMessage);
+	}
+
 	getIgnored(id: string): IgnoredContact | undefined {
 		const row = this.db
 			.prepare("SELECT * FROM ignored_contacts WHERE id = ?")
@@ -524,6 +668,120 @@ export class CrmRepository {
 	/** Forgets an ignore decision once a contact turns out to be a real lead. */
 	clearIgnored(id: string): void {
 		this.db.prepare("DELETE FROM ignored_contacts WHERE id = ?").run(id);
+	}
+
+	/** Opens a turn for a batch of inbound messages; close it with finishTurn. */
+	startTurn(input: {
+		chatId: string;
+		contactId: string;
+		inboundCount: number;
+	}): number {
+		const result = this.db
+			.prepare(
+				"INSERT INTO turns (contact_id, chat_id, inbound_count, started_at) VALUES (?, ?, ?, ?)"
+			)
+			.run(input.contactId, input.chatId, input.inboundCount, this.stamp());
+		return Number(result.lastInsertRowid);
+	}
+
+	finishTurn(id: number, finish: TurnFinish): void {
+		const started = this.db
+			.prepare("SELECT started_at FROM turns WHERE id = ?")
+			.get(id) as Row | undefined;
+		if (!started) {
+			return;
+		}
+		const finishedAt = this.now();
+		const latencyMs = Math.max(
+			0,
+			finishedAt.getTime() - new Date(String(started.started_at)).getTime()
+		);
+		const { gate, usage } = finish;
+		this.db
+			.prepare(
+				`UPDATE turns SET outcome = ?, reply_count = ?, gate_category = ?, gate_confidence = ?,
+					gate_reply_probability = ?, gate_source = ?, model = ?, input_tokens = ?, output_tokens = ?,
+					reasoning_tokens = ?, total_tokens = ?, tools = ?, attempts = ?, error = ?, latency_ms = ?,
+					finished_at = ? WHERE id = ?`
+			)
+			.run(
+				finish.outcome,
+				finish.replyCount,
+				gate?.category ?? null,
+				gate?.confidence ?? null,
+				gate?.replyProbability ?? null,
+				gate?.source ?? null,
+				finish.model ?? null,
+				usage?.inputTokens ?? null,
+				usage?.outputTokens ?? null,
+				usage?.reasoningTokens ?? null,
+				usage?.totalTokens ?? null,
+				JSON.stringify(finish.tools ?? []),
+				finish.attempts ?? 0,
+				finish.error?.slice(0, 1000) ?? null,
+				latencyMs,
+				finishedAt.toISOString(),
+				id
+			);
+	}
+
+	turn(id: number): TurnRecord | undefined {
+		const row = this.db.prepare("SELECT * FROM turns WHERE id = ?").get(id) as
+			| Row
+			| undefined;
+		return row ? toTurn(row) : undefined;
+	}
+
+	/** Most recent turns first, for one contact or across everyone. */
+	turns(options: { contactId?: string; limit?: number } = {}): TurnRecord[] {
+		const limit = options.limit ?? 50;
+		const rows = (
+			options.contactId
+				? this.db
+						.prepare(
+							"SELECT * FROM turns WHERE contact_id = ? ORDER BY id DESC LIMIT ?"
+						)
+						.all(options.contactId, limit)
+				: this.db
+						.prepare("SELECT * FROM turns ORDER BY id DESC LIMIT ?")
+						.all(limit)
+		) as Row[];
+		return rows.map(toTurn);
+	}
+
+	/** Volume, latency and token totals across every turn. */
+	turnStats(): TurnStats {
+		const byOutcome: Record<string, number> = {};
+		for (const row of this.db
+			.prepare("SELECT outcome, COUNT(*) AS n FROM turns GROUP BY outcome")
+			.all() as Row[]) {
+			byOutcome[String(row.outcome)] = Number(row.n);
+		}
+		const totals = this.db
+			.prepare(
+				`SELECT COUNT(*) AS total, COALESCE(AVG(latency_ms), 0) AS latency,
+					COALESCE(SUM(input_tokens), 0) AS input, COALESCE(SUM(output_tokens), 0) AS output,
+					COALESCE(SUM(total_tokens), 0) AS tokens FROM turns`
+			)
+			.get() as Row;
+		const messageCount = (direction: MessageDirection) =>
+			Number(
+				(
+					this.db
+						.prepare("SELECT COUNT(*) AS n FROM messages WHERE direction = ?")
+						.get(direction) as Row
+				).n
+			);
+		return {
+			averageLatencyMs: Math.round(Number(totals.latency)),
+			byOutcome,
+			inputTokens: Number(totals.input),
+			messagesIn: messageCount("in"),
+			messagesOut: messageCount("out"),
+			outputTokens: Number(totals.output),
+			total: Number(totals.total),
+			totalTokens: Number(totals.tokens),
+		};
 	}
 
 	countWonDealerships(): number {
