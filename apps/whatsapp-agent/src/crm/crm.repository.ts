@@ -7,6 +7,8 @@ import {
 	type CrmEvent,
 	type Customer,
 	type EventType,
+	type IgnoreCategory,
+	type IgnoredContact,
 	type LeadStage,
 	type LoggedMessage,
 	type MessageDirection,
@@ -61,6 +63,18 @@ CREATE TABLE IF NOT EXISTS messages (
 	created_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS messages_customer ON messages(customer_id, id);
+CREATE TABLE IF NOT EXISTS ignored_contacts (
+	id TEXT PRIMARY KEY,
+	chat_id TEXT NOT NULL,
+	display_name TEXT,
+	category TEXT NOT NULL,
+	confidence REAL NOT NULL,
+	last_message TEXT NOT NULL,
+	count INTEGER NOT NULL DEFAULT 1,
+	allowed INTEGER NOT NULL DEFAULT 0,
+	first_at TEXT NOT NULL,
+	last_at TEXT NOT NULL
+);
 `;
 
 const PROFILE_COLUMNS: Record<keyof ProfilePatch, string> = {
@@ -107,6 +121,19 @@ const toCustomer = (row: Row): Customer => ({
 	updatedAt: String(row.updated_at),
 	vehicleTypes: text(row.vehicle_types),
 	websiteUrl: text(row.website_url),
+});
+
+const toIgnored = (row: Row): IgnoredContact => ({
+	allowed: Number(row.allowed) === 1,
+	category: row.category as IgnoreCategory,
+	chatId: String(row.chat_id),
+	confidence: Number(row.confidence),
+	count: Number(row.count),
+	displayName: text(row.display_name),
+	firstAt: String(row.first_at),
+	id: String(row.id),
+	lastAt: String(row.last_at),
+	lastMessage: String(row.last_message),
 });
 
 const parseDetail = (value: unknown): Record<string, unknown> => {
@@ -441,6 +468,64 @@ export class CrmRepository {
 		return rows.map(toCustomer);
 	}
 
+	/** Records a message Angel chose not to answer (spam, personal, wrong number). */
+	recordIgnored(input: {
+		category: IgnoreCategory;
+		chatId: string;
+		confidence: number;
+		displayName?: string | null;
+		id: string;
+		text: string;
+	}): void {
+		const at = this.stamp();
+		this.db
+			.prepare(
+				`INSERT INTO ignored_contacts (id, chat_id, display_name, category, confidence, last_message, first_at, last_at)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+				ON CONFLICT(id) DO UPDATE SET category = excluded.category, confidence = excluded.confidence,
+					last_message = excluded.last_message, last_at = excluded.last_at, count = count + 1,
+					display_name = COALESCE(excluded.display_name, display_name)`
+			)
+			.run(
+				input.id,
+				input.chatId,
+				input.displayName ?? null,
+				input.category,
+				input.confidence,
+				input.text.slice(0, 500),
+				at,
+				at
+			);
+	}
+
+	getIgnored(id: string): IgnoredContact | undefined {
+		const row = this.db
+			.prepare("SELECT * FROM ignored_contacts WHERE id = ?")
+			.get(id) as Row | undefined;
+		return row ? toIgnored(row) : undefined;
+	}
+
+	listIgnored(limit = 20): IgnoredContact[] {
+		return (
+			this.db
+				.prepare("SELECT * FROM ignored_contacts ORDER BY last_at DESC LIMIT ?")
+				.all(limit) as Row[]
+		).map(toIgnored);
+	}
+
+	/** Owner override: Angel always replies to this contact from now on. */
+	allowContact(id: string): boolean {
+		const result = this.db
+			.prepare("UPDATE ignored_contacts SET allowed = 1 WHERE id = ?")
+			.run(id);
+		return Number(result.changes) > 0;
+	}
+
+	/** Forgets an ignore decision once a contact turns out to be a real lead. */
+	clearIgnored(id: string): void {
+		this.db.prepare("DELETE FROM ignored_contacts WHERE id = ?").run(id);
+	}
+
 	countWonDealerships(): number {
 		const row = this.db
 			.prepare(
@@ -455,6 +540,7 @@ export class CrmRepository {
 		byStage: Record<string, number>;
 		dealerships: number;
 		demosSent: number;
+		ignored: number;
 		objections: Record<string, number>;
 		total: number;
 	} {
@@ -480,6 +566,9 @@ export class CrmRepository {
 			),
 			demosSent: count(
 				"SELECT COUNT(*) AS n FROM customers WHERE demo_sent_at IS NOT NULL"
+			),
+			ignored: count(
+				"SELECT COUNT(*) AS n FROM ignored_contacts WHERE allowed = 0"
 			),
 			objections,
 			total: count("SELECT COUNT(*) AS n FROM customers"),

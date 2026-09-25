@@ -94,6 +94,7 @@ export const EVENT_TYPES = [
 	"note",
 	"rate_limited",
 	"agent_error",
+	"ignored",
 ] as const;
 export type EventType = (typeof EVENT_TYPES)[number];
 
@@ -103,6 +104,29 @@ export interface CrmEvent {
 	detail: Record<string, unknown>;
 	id: number;
 	type: EventType;
+}
+
+/** Why a message was not answered. Leads of any business type are never ignored. */
+export const IGNORE_CATEGORIES = [
+	"spam_or_scam",
+	"personal_for_owner",
+	"wrong_number",
+	"vendor_or_job_pitch",
+] as const;
+export type IgnoreCategory = (typeof IGNORE_CATEGORIES)[number];
+
+export interface IgnoredContact {
+	/** The owner said to always let Angel reply to this contact. */
+	allowed: boolean;
+	category: IgnoreCategory;
+	chatId: string;
+	confidence: number;
+	count: number;
+	displayName: string | null;
+	firstAt: string;
+	id: string;
+	lastAt: string;
+	lastMessage: string;
 }
 
 export type MessageDirection = "in" | "out" | "owner";
