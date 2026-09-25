@@ -107,3 +107,26 @@ describe("runOwnerCommand", () => {
 		expect(runOwnerCommand("#stats", deps)).toContain("Dealerships: 1");
 	});
 });
+
+describe("ignored contacts", () => {
+	it("lists ignored contacts and lets the owner allow one", () => {
+		const deps = setup();
+		crm.recordIgnored({
+			category: "personal_for_owner",
+			chatId: "263779999999@c.us",
+			confidence: 0.9,
+			displayName: "Mum",
+			id: "263779999999",
+			text: "Call me when you can",
+		});
+		const list = runOwnerCommand("#ignored", deps);
+		expect(list).toContain("Mum · personal");
+		expect(list).toContain("Call me when you can");
+		expect(runOwnerCommand("#allow 0779999999", deps)).toContain("Done");
+		expect(crm.getIgnored("263779999999")?.allowed).toBe(true);
+		expect(runOwnerCommand("#allow 263700000000", deps)).toContain(
+			"isn't on the ignored list"
+		);
+		expect(runOwnerCommand("#stats", deps)).toContain("Ignored contacts: 0");
+	});
+});

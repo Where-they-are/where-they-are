@@ -25,6 +25,8 @@ export const OWNER_HELP = [
 	"#stage <number> <stage> – set any stage",
 	"#note <number> <text> – add a note",
 	"#price – current dealership price",
+	"#ignored – messages Angel stayed silent on (spam, personal, wrong numbers)",
+	"#allow <number> – always let Angel reply to someone it ignored",
 	"",
 	`Stages: ${LEAD_STAGES.join(", ")}`,
 	"Replying by hand in a customer's chat also pauses Angel there.",
@@ -124,6 +126,7 @@ const showStats: Handler = ({ deps }) => {
 		`Demos sent: ${stats.demosSent}`,
 		`By stage: ${pairs(stats.byStage)}`,
 		`Objections: ${pairs(stats.objections)}`,
+		`Ignored contacts: ${stats.ignored}`,
 		deps.pricing().statement,
 	].join("\n");
 };
@@ -176,8 +179,41 @@ const addNote = withLead(({ args, customer, deps }) => {
 	return `Note saved for ${who(customer)}.`;
 });
 
+const CATEGORY_LABELS: Record<string, string> = {
+	personal_for_owner: "personal",
+	spam_or_scam: "spam",
+	vendor_or_job_pitch: "pitch/job",
+	wrong_number: "wrong number",
+};
+
+const listIgnored: Handler = ({ deps }) => {
+	const ignored = deps.crm.listIgnored(LIST_LIMIT);
+	if (ignored.length === 0) {
+		return "Angel hasn't ignored anyone.";
+	}
+	return [
+		"*Ignored by Angel*",
+		...ignored.map(
+			(contact) =>
+				`• ${contact.displayName ?? contact.id} · ${CATEGORY_LABELS[contact.category] ?? contact.category}${contact.allowed ? " · allowed" : ""} · ${contact.count}× · "${contact.lastMessage.slice(0, 60)}" · ${contact.id}`
+		),
+		"",
+		"Send #allow <number> if Angel should reply to someone.",
+	].join("\n");
+};
+
+const allow: Handler = ({ deps, target }) => {
+	const id = normalizePhone(target);
+	if (!(id && deps.crm.allowContact(id))) {
+		return `"${target}" isn't on the ignored list. Send #ignored to see it.`;
+	}
+	return "Done. Angel will reply to them from their next message.";
+};
+
 const HANDLERS: Record<string, Handler> = {
+	allow,
 	help: () => OWNER_HELP,
+	ignored: listIgnored,
 	lead: withLead(({ customer, deps }) => profile(deps.crm, customer)),
 	leads: listLeads,
 	lost: setStage,
