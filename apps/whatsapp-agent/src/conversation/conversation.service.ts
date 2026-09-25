@@ -491,6 +491,7 @@ export class ConversationService {
 			humanHandledTranscript: this.humanTranscript(customer.id),
 			isFirstContact,
 			nowInHarare: harareTime(this.now()),
+			payments: this.deps.crm.payments.forCustomer(customer.id),
 			pricing: this.deps.pricing(),
 		};
 		const requestContext = new RequestContext();

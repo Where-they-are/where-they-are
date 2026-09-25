@@ -1,7 +1,9 @@
+import { OFFER_TERMS } from "./pricing.js";
+
 /**
- * Angel's knowledge base, drawn from docs/plan.md, docs/vision.md and the
- * owner's decisions. Anything not written here is unknown to Angel and must
- * go to a human rather than be guessed.
+ * Angel's knowledge base, drawn from docs/sales-script.md and the owner's
+ * decisions. Prices and terms come from get_offer; anything not written here
+ * or there is unknown to Angel and goes to a human rather than being guessed.
  */
 
 export interface KnowledgeEntry {
@@ -14,10 +16,12 @@ export interface KnowledgeEntry {
 	title: string;
 }
 
+const { deliveryDays, fixHours, maxSections, revisionRounds } = OFFER_TERMS;
+
 export const buildKnowledge = (demoUrl: string): KnowledgeEntry[] => [
 	{
 		answer:
-			"Where They Are is a Zimbabwean team that builds modern, professional websites for businesses. Right now we are focused on car dealerships: we build dealership websites that present the vehicles, location, contact options and credibility of the business clearly, especially on phones. We also build websites for other kinds of businesses.",
+			"Where They Are is a Zimbabwean team that builds modern websites for car dealerships: sites that show the dealership's stock, location and contact details clearly, especially on phones. We also build websites for other kinds of businesses.",
 		id: "about",
 		keywords: [
 			"who",
@@ -31,7 +35,7 @@ export const buildKnowledge = (demoUrl: string): KnowledgeEntry[] => [
 		title: "Who Where They Are is",
 	},
 	{
-		answer: `The demo is a sample dealership website we built called Ridgeline Motors. Ridgeline Motors is a made-up dealership used to show what a dealership's site can look like; its cars, prices and reviews are sample content. Demo link: ${demoUrl} . Encourage the lead to look at how the vehicles, dealership information and WhatsApp/call buttons are presented on their phone.`,
+		answer: `The demo is a sample dealership website called Ridgeline Motors: ${demoUrl} . Ridgeline Motors is made up; its business, cars, prices and reviews are sample content showing the kind of site we build. Share the link once. Do not offer a free preview or mock-up of the lead's own site.`,
 		id: "demo",
 		keywords: [
 			"demo",
@@ -42,12 +46,13 @@ export const buildKnowledge = (demoUrl: string): KnowledgeEntry[] => [
 			"link",
 			"ridgeline",
 			"portfolio",
+			"preview",
+			"mock up",
 		],
 		title: "The dealership demo",
 	},
 	{
-		answer:
-			"A dealership website from us is built around the dealership's own details and stock. Based on the demo it can include: a home page with the dealership's name, location and contact buttons; a stock page listing vehicles with photos, prices, mileage, year, fuel and gearbox, with filters; a page per vehicle; WhatsApp and call buttons on every page so buyers can enquire instantly; location, map directions and opening hours; and optional sections like a finance repayment estimate, a trade-in enquiry and service booking. It is designed mobile-first because most buyers browse on their phones. The exact pages are agreed with the dealership.",
+		answer: `The standard package: one mobile-friendly dealership website with up to ${maxSections} pages or sections; all the dealership's existing stock imported (the team confirms first for unusual volumes, like hundreds of cars, or messy spreadsheets); vehicle listings with photos, price, year, mileage, fuel, gearbox and description, where the dealer supplies them; the dealership's identity, location, opening hours and WhatsApp, call and enquiry buttons; one design direction and ${revisionRounds} consolidated round of changes; a free domain; free fixes within ${fixHours} hours. Anything else is custom work the team quotes separately: more pages, ongoing stock updates by us, online payments, customer logins, live finance approval, booking systems, integrations, multiple branches or languages, extra design rounds, or content we write or photograph.`,
 		id: "whats_included",
 		keywords: [
 			"include",
@@ -60,13 +65,13 @@ export const buildKnowledge = (demoUrl: string): KnowledgeEntry[] => [
 			"inventory",
 			"finance",
 			"trade in",
+			"booking",
 			"mobile",
 		],
 		title: "What a dealership website includes",
 	},
 	{
-		answer:
-			"How it works: we chat here on WhatsApp to understand the dealership (name, location, the cars you deal in, contact details, logo and photos if you have them). Our team then builds the site, you review it, request changes, and it goes live. A team member confirms the exact steps and timeline when we prepare your site.",
+		answer: `How it works: they pay the deposit here on WhatsApp through Paynow (EcoCash or OneMoney), then send their logo, dealership details, stock photos and details, and the domain name they want. The site is ready within ${deliveryDays} days of us receiving the deposit and everything we need. They review it, the balance is paid after delivery, and the site stays live on our hosting.`,
 		id: "process",
 		keywords: [
 			"how does it work",
@@ -83,8 +88,7 @@ export const buildKnowledge = (demoUrl: string): KnowledgeEntry[] => [
 	},
 	{
 		answer:
-			"Pricing is fixed, not negotiable. Always call get_pricing for the current dealership price and quote it exactly. Do not offer discounts, instalments, free trials or custom deals. If someone insists on a discount or a custom deal, stay friendly, restate the price once, and hand over to the team with request_human.",
-		escalate: false,
+			"Prices are fixed. Always call get_offer and quote it. Never offer discounts, other instalment plans, free trials or custom deals. If someone insists on a discount, stay friendly, explain the deposit and balance split once, and hand over with request_human (reason: discount_request).",
 		id: "pricing_rules",
 		keywords: [
 			"price",
@@ -97,15 +101,27 @@ export const buildKnowledge = (demoUrl: string): KnowledgeEntry[] => [
 			"cheaper",
 			"negotiate",
 			"deal",
-			"afford",
-			"expensive",
 		],
 		title: "Pricing rules",
 	},
 	{
 		answer:
-			"Hosting, domain names (for example a .co.zw address) and any monthly costs are confirmed by the team, not by Angel. Say a team member will confirm those details, and hand over with request_human.",
-		escalate: true,
+			"Objection 'it's too expensive': ask whether it's the total or paying it all at once. They pay only the deposit to start and the balance after the site is delivered (amounts from get_offer). The domain, the stock import and the first month of hosting are free. If they still can't afford it, say you don't want it to strain the business, ask whether you can check back when the timing is better, and mark them nurture. Never discount.",
+		id: "objection_price",
+		keywords: [
+			"expensive",
+			"too much",
+			"afford",
+			"budget",
+			"no money",
+			"cheaper",
+			"can't pay",
+		],
+		title: "Objection: too expensive",
+	},
+	{
+		answer:
+			"Hosting is free for the first month, then $15/month. We register the domain (for example yourdealership.co.zw) and keep it renewed free for as long as hosting is paid. Hosting billing after the first month is arranged by the team.",
 		id: "hosting_domain",
 		keywords: [
 			"hosting",
@@ -114,16 +130,15 @@ export const buildKnowledge = (demoUrl: string): KnowledgeEntry[] => [
 			"monthly",
 			"per month",
 			"renewal",
-			"email address",
 			"subscription",
 			"annual",
+			"anything else to pay",
+			"running costs",
 		],
 		title: "Hosting, domains and monthly costs",
 	},
 	{
-		answer:
-			"Delivery timelines are confirmed by the team when they prepare the site. Do not promise a date or a number of days.",
-		escalate: true,
+		answer: `The site is ready within ${deliveryDays} days of us receiving the deposit and everything we need (logo, dealership details, stock photos and details, domain name). If we miss that for a reason within our control, they don't pay the balance (the deposit is not refunded). Mention the balance waiver only when they ask about delivery risk or guarantees.`,
 		id: "timeline",
 		keywords: [
 			"how long",
@@ -141,14 +156,14 @@ export const buildKnowledge = (demoUrl: string): KnowledgeEntry[] => [
 	},
 	{
 		answer:
-			"Payments are handled directly by the team. Angel never shares bank, EcoCash, InnBucks or any payment details, never confirms that a payment was received, and never sends payment links. When someone wants to pay or has paid, thank them and hand over with request_human (reason: payment).",
-		escalate: true,
+			"Payments are taken here in WhatsApp through Paynow: Angel sends a payment prompt (request_payment) to the customer's EcoCash or OneMoney number, and they approve it on their phone with their PIN. The deposit starts the build; the balance is paid after delivery. Never ask for a PIN, card or bank details, and never give out bank or wallet numbers to send money to. Only say a payment went through when check_payment says it's paid.",
 		id: "payment",
 		keywords: [
 			"pay",
 			"payment",
 			"deposit",
 			"ecocash",
+			"onemoney",
 			"bank",
 			"transfer",
 			"account",
@@ -156,12 +171,13 @@ export const buildKnowledge = (demoUrl: string): KnowledgeEntry[] => [
 			"receipt",
 			"proof of payment",
 			"paid",
+			"paynow",
 		],
 		title: "Payments",
 	},
 	{
 		answer:
-			"We absolutely build websites for businesses that are not dealerships too, for example restaurants, salons, clinics, schools, professional services, shops and local services. Right now our ads and demo are about dealerships, so for other businesses a team member follows up personally with options and pricing. Collect the business name, what the business does, where it is, and what they want the website to do, then hand over with request_human (reason: non_dealership_lead). Do not quote the dealership price for other businesses.",
+			"We absolutely build websites for businesses that are not dealerships too, for example restaurants, salons, clinics, schools, professional services, shops and local services. The team quotes those sites separately. Collect the business name, what it does, where it is and what the site should do, then hand over with request_human (reason: non_dealership_lead). Never quote the dealership price or take a payment from them.",
 		escalate: true,
 		id: "other_businesses",
 		keywords: [
@@ -184,7 +200,7 @@ export const buildKnowledge = (demoUrl: string): KnowledgeEntry[] => [
 	},
 	{
 		answer:
-			"We do not sell cars. Ridgeline Motors in the demo is a made-up sample dealership, so its cars are not for sale. If the person is looking to buy a car, kindly explain this and that Where They Are builds websites for dealerships. If they are a dealer themselves, carry on qualifying them.",
+			"We don't sell cars. Ridgeline Motors in the demo is a made-up sample dealership, so its cars aren't for sale. Say so kindly and ask whether they're a dealer themselves; if they are, carry on qualifying them.",
 		id: "car_buyers",
 		keywords: [
 			"buy a car",
@@ -204,7 +220,7 @@ export const buildKnowledge = (demoUrl: string): KnowledgeEntry[] => [
 	},
 	{
 		answer:
-			"Objection 'we are too small for a website': the dealership may not need a large or complicated website. The point is a clear, professional place online where people can understand what you sell, where you are, and how to contact you. The question is not only whether you have a website, but whether your current online presence presents the business strongly enough when a customer or business partner checks it. A stronger online presence may help the dealership look more established, but we cannot promise a number of leads, sales or bigger deals.",
+			"Objection 'we're too small': they don't need a big site. It's about one clear place where buyers can see what they sell, where they are and how to reach them. A clear website may help the dealership look more established, but we can't promise leads, sales or bigger deals.",
 		id: "objection_too_small",
 		keywords: [
 			"too small",
@@ -221,7 +237,7 @@ export const buildKnowledge = (demoUrl: string): KnowledgeEntry[] => [
 	},
 	{
 		answer:
-			"Objection 'we already have a Facebook page': a Facebook page can be useful. The website gives the dealership its own focused place that presents the dealership, its vehicles, location and contact options together, and that it controls. Ask what they use today (Facebook, WhatsApp status, Instagram, classifieds) and whether it shows their stock and details clearly, then let them compare with the demo.",
+			"Objection 'we already use Facebook': Facebook is great for reaching people, so keep it. The website gives buyers one place to browse all their stock and contact them, and they can share the link on their Facebook posts too.",
 		id: "objection_facebook",
 		keywords: [
 			"facebook",
@@ -233,11 +249,28 @@ export const buildKnowledge = (demoUrl: string): KnowledgeEntry[] => [
 			"classifieds",
 			"page already",
 		],
-		title: "Objection: we already have Facebook",
+		title: "Objection: we already use Facebook",
 	},
 	{
 		answer:
-			"Objection 'show me another dealership that has one': there are dealerships that use websites to present their business, and the team can share a verified example if useful. Never name, invent or describe a specific competitor, website, location or claim about another business. The more important question is whether a website would make their own dealership easier to understand and contact. If they insist on a real example, hand over with request_human (reason: competitor_example).",
+			"Objection 'I need to think about it': of course. Ask whether it's the price, what's included, or the timing they'd like to think through, and answer that. If they want information first, send the demo link and the offer headline and ask when would be a good time to check back.",
+		id: "objection_think",
+		keywords: [
+			"think about it",
+			"let me think",
+			"get back to you",
+			"later",
+			"not now",
+			"send information",
+			"send me info",
+			"send details",
+			"brochure",
+		],
+		title: "Objection: I need to think / send me information",
+	},
+	{
+		answer:
+			"Objection 'show me another dealership that has one': never name, invent or describe a competitor, client or another business. The demo is the example of what we build. If they insist on a real reference, hand over with request_human (reason: competitor_example).",
 		escalate: true,
 		id: "objection_competitor",
 		keywords: [
@@ -249,13 +282,11 @@ export const buildKnowledge = (demoUrl: string): KnowledgeEntry[] => [
 			"show me a real",
 			"which dealers",
 			"your customers",
-			"portfolio",
 		],
 		title: "Objection: show me another dealership",
 	},
 	{
-		answer:
-			"Never promise more sales, more leads, bigger deals, search rankings, a number of visitors, credibility or revenue. It is fine to say a clear, professional website may help the dealership look more established and make it easier for buyers to understand and contact them.",
+		answer: `We can't honestly promise more sales, enquiries, bigger deals, rankings or revenue: that depends on their cars, prices and how fast they reply. What we do guarantee: the site within ${deliveryDays} days of getting their deposit and details, or they don't pay the balance; and free fixes within ${fixHours} hours of any agreed technical issue being reported.`,
 		id: "guarantees",
 		keywords: [
 			"guarantee",
@@ -269,12 +300,13 @@ export const buildKnowledge = (demoUrl: string): KnowledgeEntry[] => [
 			"roi",
 			"will it work",
 			"traffic",
+			"refund",
 		],
 		title: "Results and guarantees",
 	},
 	{
 		answer:
-			"Angel is Where They Are's AI assistant. If someone asks whether they are talking to a person or a bot, say so honestly, and add that a member of the team can step in at any time. Never pretend to be human.",
+			"Angel is Where They Are's AI assistant. If someone asks whether they're talking to a person or a bot, say so honestly, and add that a member of the team can step in at any time. Never pretend to be human.",
 		id: "ai_disclosure",
 		keywords: [
 			"bot",
@@ -291,7 +323,7 @@ export const buildKnowledge = (demoUrl: string): KnowledgeEntry[] => [
 	},
 	{
 		answer:
-			"If the dealership already has a website, ask for the link and what they feel is missing. We can build a new, modern dealership site to replace or improve it. Do not criticise their current site in detail or make claims about it.",
+			"If the dealership already has a website, ask for the link and what they feel is missing. We can build a new, modern dealership site to replace it. Don't criticise their current site.",
 		id: "existing_website",
 		keywords: [
 			"already have a website",
@@ -305,8 +337,7 @@ export const buildKnowledge = (demoUrl: string): KnowledgeEntry[] => [
 		title: "Dealers who already have a website",
 	},
 	{
-		answer:
-			"Keeping stock up to date, changes after launch and how the dealership sends new cars are confirmed by the team, who will explain the options for their site. Do not promise a specific process or cost.",
+		answer: `Their current stock is imported free when the site is built. Ongoing stock updates by our team after launch are custom work the team quotes; technical fixes are free within ${fixHours} hours. For how updates would work for them, hand over to the team.`,
 		escalate: true,
 		id: "stock_updates",
 		keywords: [
@@ -325,7 +356,7 @@ export const buildKnowledge = (demoUrl: string): KnowledgeEntry[] => [
 	},
 	{
 		answer:
-			"We only use a customer's details to talk to them about their website. Never ask for ID numbers, passwords, bank or card details. If someone says stop, unsubscribe or asks not to be contacted, confirm politely and stop.",
+			"We only use a customer's details to talk to them about their website. Never ask for ID numbers, PINs, passwords, bank or card details. If someone says stop or asks not to be contacted, confirm politely and stop.",
 		id: "privacy",
 		keywords: [
 			"privacy",
@@ -340,8 +371,7 @@ export const buildKnowledge = (demoUrl: string): KnowledgeEntry[] => [
 	},
 	{
 		answer:
-			"If someone asks whether Where They Are is legit or worries about scams: take the concern seriously and don't be defensive. They can judge the work first by looking at the demo on their own phone. Angel never asks for money or payment details in chat; payment is only arranged directly with a member of the team, and the team can talk them through who we are. Never invent company registrations, addresses, awards, client lists or years in business. Offer to have a team member reach out, and use request_human (reason: other) if they want more reassurance.",
-		escalate: false,
+			"If someone asks whether we're legit: fair question, don't be defensive. They pay only the deposit to start; the balance is due after they've seen their finished site, and if we're late they don't pay it. Payments go through Paynow, never to a personal account. Never invent registrations, addresses, awards, clients or years in business; if they want more reassurance, hand over with request_human (reason: other).",
 		id: "trust",
 		keywords: [
 			"legit",
@@ -359,7 +389,7 @@ export const buildKnowledge = (demoUrl: string): KnowledgeEntry[] => [
 	},
 	{
 		answer:
-			"Angel cannot make or take calls. If someone asks for a call, a meeting or to speak to a person, say a member of the team will get in touch here on WhatsApp to arrange it, and hand over with request_human (reason: call_or_meeting).",
+			"Angel can't make or take calls. If someone asks for a call, a meeting or to speak to a person, say a member of the team will get in touch here on WhatsApp to arrange it, and hand over with request_human (reason: call_or_meeting).",
 		escalate: true,
 		id: "calls",
 		keywords: [
@@ -377,7 +407,7 @@ export const buildKnowledge = (demoUrl: string): KnowledgeEntry[] => [
 	},
 	{
 		answer:
-			"There is one dealership demo right now. Each dealership's website is built around its own name, colours, logo, photos and stock, so it does not have to look exactly like the demo. Specific design requests are confirmed with the team.",
+			"There is one dealership demo. Each dealership's website is built around its own name, colours, logo, photos and stock, with one design direction and one round of changes. Specific design requests are confirmed with the team.",
 		id: "design_options",
 		keywords: [
 			"other designs",

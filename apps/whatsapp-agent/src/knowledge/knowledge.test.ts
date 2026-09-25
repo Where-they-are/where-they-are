@@ -25,3 +25,22 @@ describe("searchKnowledge", () => {
 		expect(searchKnowledge(entries, "zzz qqq")).toEqual([]);
 	});
 });
+
+describe("knowledge matches the sales script", () => {
+	const entries = buildKnowledge("https://dealership-demo.wheretheyare.co.zw");
+	const top = (query: string) => searchKnowledge(entries, query)[0]?.id;
+
+	it("answers the script's objections", () => {
+		expect(top("that's too expensive for me")).toBe("objection_price");
+		expect(top("let me think about it")).toBe("objection_think");
+		expect(top("can you guarantee more sales")).toBe("guarantees");
+	});
+
+	it("states the delivery and hosting terms", () => {
+		const text = (id: string) =>
+			entries.find((entry) => entry.id === id)?.answer ?? "";
+		expect(text("timeline")).toContain("within 3 days");
+		expect(text("hosting_domain")).toContain("then $15/month");
+		expect(text("payment")).toContain("Paynow");
+	});
+});
