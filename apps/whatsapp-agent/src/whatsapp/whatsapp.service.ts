@@ -314,8 +314,9 @@ export class WhatsAppService
 		}
 		const text = message.body;
 		const reply = isOwnerCommand(text)
-			? runOwnerCommand(text, {
+			? await runOwnerCommand(text, {
 					crm: this.runtime.crm,
+					payments: this.runtime.payments,
 					pricing: this.runtime.pricing,
 					takeoverHours: this.config.HUMAN_TAKEOVER_HOURS,
 				})

@@ -148,3 +148,40 @@ describe("ignored contacts", () => {
 		expect(runOwnerCommand("#stats", deps)).toContain("Ignored contacts: 0");
 	});
 });
+
+describe("payment commands", () => {
+	const paidDeposit = (deps: ReturnType<typeof setup>) => {
+		const deposit = deps.crm.payments.create({
+			amountUsd: 125,
+			customerId: ID,
+			kind: "deposit",
+			method: "ecocash",
+			phone: "263771111111",
+		});
+		deps.crm.payments.update(deposit.id, { status: "sent" });
+		deps.crm.payments.update(deposit.id, { status: "paid" });
+		deps.crm.setStage(ID, "deposit_paid", { by: "system" });
+	};
+
+	it("marks delivery and lists payments", () => {
+		const deps = setup();
+		paidDeposit(deps);
+		expect(runOwnerCommand(`#delivered ${ID}`, deps)).toContain(
+			"$125 balance is now due"
+		);
+		expect(crm.get(ID)?.stage).toBe("delivered");
+		const list = runOwnerCommand("#payments", deps);
+		expect(list).toContain("deposit $125 · paid · ecocash 263771111111");
+		expect(list).toContain("Paid in total: 1 payments, $125");
+		expect(runOwnerCommand("#payments 263700000000", deps)).toContain(
+			"No lead found"
+		);
+	});
+
+	it("explains when Paynow isn't set up for #balance", async () => {
+		const deps = setup();
+		expect(await runOwnerCommand(`#balance ${ID}`, deps)).toContain(
+			"Paynow isn't set up"
+		);
+	});
+});

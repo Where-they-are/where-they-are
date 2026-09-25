@@ -6,7 +6,9 @@ import {
 	PAID_STAGES,
 } from "../crm/crm.types.js";
 import { formatCount } from "../format/count.js";
-import type { DealershipPricing } from "../knowledge/pricing.js";
+import { type DealershipPricing, usd } from "../knowledge/pricing.js";
+import type { PaymentService } from "../payments/payment.service.js";
+import { checkWallet } from "../payments/wallet.js";
 import { normalizePhone } from "./phone.js";
 
 const COMMAND = /^#(\w+)\s*(.*)$/s;
@@ -23,6 +25,9 @@ export const OWNER_HELP = [
 	"#stats – funnel counts and Angel's activity",
 	"#pause <number> [hours|forever] – Angel stays quiet in that chat",
 	"#resume <number> – hand the chat back to Angel",
+	"#delivered <number> – the site is live; the balance is now due",
+	"#balance <number> [wallet number] – send the Paynow request for the balance",
+	"#payments [number] – recent payments, or one lead's",
 	"#won <number> / #lost <number> – close a deal",
 	"#stage <number> <stage> – set any stage",
 	"#note <number> <text> – add a note",
@@ -37,6 +42,8 @@ export const OWNER_HELP = [
 export interface OwnerCommandDeps {
 	crm: CrmRepository;
 	now?: () => Date;
+	/** Needed for #balance; without it the command explains what's missing. */
+	payments?: PaymentService;
 	pricing: () => DealershipPricing;
 	takeoverHours: number;
 }
@@ -96,16 +103,15 @@ interface CommandInput {
 	target: string;
 }
 
-type Handler = (input: CommandInput) => string;
+type Reply = string | Promise<string>;
+type Handler = (input: CommandInput) => Reply;
 
 const notFound = (target: string) =>
 	`No lead found for "${target}". Send #leads to see numbers.`;
 
 /** Wraps a handler that needs an existing lead. */
 const withLead =
-	(
-		handler: (input: CommandInput & { customer: Customer }) => string
-	): Handler =>
+	(handler: (input: CommandInput & { customer: Customer }) => Reply): Handler =>
 	(input) =>
 		input.customer
 			? handler({ ...input, customer: input.customer })
@@ -233,8 +239,80 @@ const allow: Handler = ({ deps, target }) => {
 	return "Done. Angel will reply to them from their next message.";
 };
 
+const delivered = withLead(({ customer, deps }) => {
+	const result = deps.crm.setStage(customer.id, "delivered", {
+		by: "owner",
+		reason: "site delivered",
+	});
+	if (!result.applied) {
+		return `${who(customer)} is already ${result.current}.`;
+	}
+	const balance = deps.crm.payments.latest(customer.id, "deposit");
+	return `${who(customer)} moved to delivered. The ${balance ? usd(balance.amountUsd) : "remaining"} balance is now due: send #balance ${customer.id} to send the Paynow request, or Angel will send it when they ask to pay.`;
+});
+
+const requestBalance = withLead(async ({ args, customer, deps }) => {
+	if (!deps.payments?.enabled) {
+		return "Paynow isn't set up in Angel (PAYNOW_* settings), so send them payment details by hand.";
+	}
+	const deposit = deps.crm.payments.latest(customer.id, "deposit");
+	const wallet = checkWallet(
+		args[0] ?? deposit?.phone ?? customer.id,
+		args[0] ? undefined : deposit?.method
+	);
+	if (!wallet.ok) {
+		return "That wallet number doesn't look right. Use an EcoCash (077/078) or OneMoney (071) number: #balance <lead number> <wallet number>";
+	}
+	const result = await deps.payments.request({
+		customerId: customer.id,
+		kind: "balance",
+		method: wallet.method,
+		phone: wallet.phone,
+	});
+	if (!result.ok) {
+		const reasons: Record<typeof result.reason, string> = {
+			already_paid: "The balance is already paid.",
+			deposit_not_paid: "Their deposit isn't paid yet.",
+			not_configured: "Paynow isn't set up in Angel.",
+			not_delivered: `Mark the site delivered first: #delivered ${customer.id}`,
+			provider_error: `Paynow refused the request: ${result.error ?? "unknown error"}`,
+			unknown_customer: notFound(customer.id),
+		};
+		return reasons[result.reason];
+	}
+	await deps.payments.messageCustomer(
+		customer.id,
+		`Your website is live! 🎉 We've sent a Paynow request for the ${usd(result.amountUsd)} balance to ${wallet.phone.replace("263", "0")}. Please approve it on your phone with your PIN.`
+	);
+	return `Sent a ${usd(result.amountUsd)} ${wallet.method} request to ${wallet.phone} (${result.reference}). You'll get an alert when it's paid.`;
+});
+
+const listPayments: Handler = ({ customer, deps, target }) => {
+	if (target && !customer) {
+		return notFound(target);
+	}
+	const payments = customer
+		? deps.crm.payments.forCustomer(customer.id)
+		: deps.crm.payments.recent(LIST_LIMIT);
+	if (payments.length === 0) {
+		return "No payments yet.";
+	}
+	const totals = deps.crm.payments.totals();
+	return [
+		`*Payments${customer ? ` · ${who(customer)}` : ""}*`,
+		...payments.map(
+			(payment) =>
+				`• ${payment.createdAt.slice(0, 16).replace("T", " ")} · ${payment.kind} ${usd(payment.amountUsd)} · ${payment.status} · ${payment.method} ${payment.phone} · ${payment.customerId}`
+		),
+		"",
+		`Paid in total: ${formatCount(totals.paidCount)} payments, ${usd(totals.paidUsd)}`,
+	].join("\n");
+};
+
 const HANDLERS: Record<string, Handler> = {
 	allow,
+	balance: requestBalance,
+	delivered,
 	help: () => OWNER_HELP,
 	ignored: listIgnored,
 	lead: withLead(({ customer, deps }) => profile(deps.crm, customer)),
@@ -242,6 +320,7 @@ const HANDLERS: Record<string, Handler> = {
 	lost: setStage,
 	note: addNote,
 	pause,
+	payments: listPayments,
 	price: ({ deps }) => offerSummary(deps.pricing()),
 	resume,
 	stage: setStage,
@@ -256,7 +335,7 @@ const HANDLERS: Record<string, Handler> = {
 export const runOwnerCommand = (
 	text: string,
 	deps: OwnerCommandDeps
-): string => {
+): Reply => {
 	const match = COMMAND.exec(text.trim());
 	if (!match) {
 		return OWNER_HELP;

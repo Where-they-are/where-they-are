@@ -248,6 +248,16 @@ export class PaymentService {
 		}
 	}
 
+	/** Sends a message into a customer's chat and logs it, e.g. for an owner command. */
+	async messageCustomer(customerId: string, text: string): Promise<boolean> {
+		const customer = this.deps.crm.get(customerId);
+		if (!customer) {
+			return false;
+		}
+		await this.tellCustomer(customer, text);
+		return true;
+	}
+
 	stop(): void {
 		for (const timer of this.timers.values()) {
 			clearTimeout(timer);
