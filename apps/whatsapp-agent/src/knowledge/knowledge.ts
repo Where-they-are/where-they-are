@@ -338,6 +338,62 @@ export const buildKnowledge = (demoUrl: string): KnowledgeEntry[] => [
 		],
 		title: "Privacy and opting out",
 	},
+	{
+		answer:
+			"If someone asks whether Where They Are is legit or worries about scams: take the concern seriously and don't be defensive. They can judge the work first by looking at the demo on their own phone. Angel never asks for money or payment details in chat; payment is only arranged directly with a member of the team, and the team can talk them through who we are. Never invent company registrations, addresses, awards, client lists or years in business. Offer to have a team member reach out, and use request_human (reason: other) if they want more reassurance.",
+		escalate: false,
+		id: "trust",
+		keywords: [
+			"legit",
+			"scam",
+			"trust you",
+			"fake",
+			"real company",
+			"registered",
+			"where are you based",
+			"your office",
+			"who owns",
+			"how do i know",
+		],
+		title: "Is Where They Are legit?",
+	},
+	{
+		answer:
+			"Angel cannot make or take calls. If someone asks for a call, a meeting or to speak to a person, say a member of the team will get in touch here on WhatsApp to arrange it, and hand over with request_human (reason: call_or_meeting).",
+		escalate: true,
+		id: "calls",
+		keywords: [
+			"call me",
+			"phone call",
+			"can we talk",
+			"meeting",
+			"meet",
+			"speak to someone",
+			"speak to a person",
+			"visit you",
+			"zoom",
+		],
+		title: "Calls and meetings",
+	},
+	{
+		answer:
+			"There is one dealership demo right now. Each dealership's website is built around its own name, colours, logo, photos and stock, so it does not have to look exactly like the demo. Specific design requests are confirmed with the team.",
+		id: "design_options",
+		keywords: [
+			"other designs",
+			"another design",
+			"different design",
+			"colours",
+			"colors",
+			"logo",
+			"my branding",
+			"customise",
+			"customize",
+			"templates",
+			"look different",
+		],
+		title: "Design options",
+	},
 ];
 
 const NON_WORD = /[^a-z0-9.\s']/g;
