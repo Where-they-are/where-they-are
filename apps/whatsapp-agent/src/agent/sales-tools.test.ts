@@ -24,9 +24,9 @@ afterEach(() => {
 	vi.restoreAllMocks();
 });
 
-type Executable = {
+interface Executable {
 	execute?: (input: never, context: never) => Promise<unknown>;
-};
+}
 
 const setup = (gateway: PaymentGateway | null = null) => {
 	vi.spyOn(console, "info").mockImplementation(() => undefined);
