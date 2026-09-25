@@ -53,6 +53,7 @@ export const createRuntime = (
 		notifier,
 		now: options.now,
 		pricing,
+		reasoningEffort: config.AGENT_REASONING_EFFORT,
 		takeoverHours: config.HUMAN_TAKEOVER_HOURS,
 	});
 	const conversation = new ConversationService({
@@ -63,7 +64,6 @@ export const createRuntime = (
 		notifier,
 		now: options.now,
 		pricing,
-		reasoningEffort: config.AGENT_REASONING_EFFORT,
 	});
 	return { agent, conversation, crm, pricing };
 };

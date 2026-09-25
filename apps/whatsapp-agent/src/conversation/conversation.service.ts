@@ -53,9 +53,6 @@ const RETRY_DELAY_MS = 1500;
 const TRANSIENT_ERROR =
 	/thought signature|reasoning details|provider returned error|timeout|timed out|aborted|ECONNRESET|fetch failed|\b(429|500|502|503|504)\b|overloaded|rate limit/i;
 
-/** Gemini 3 models require reasoning; "minimal" is the lightest setting. */
-type ReasoningEffort = "minimal" | "low" | "medium" | "high";
-
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const errorText = (error: unknown): string => {
@@ -99,7 +96,6 @@ export interface ConversationDeps {
 	notifier: OwnerNotifier;
 	now?: () => Date;
 	pricing: () => DealershipPricing;
-	reasoningEffort?: ReasoningEffort;
 }
 
 /**
@@ -300,29 +296,24 @@ export class ConversationService {
 		requestContext.set(CUSTOMER_ID_KEY, customer.id);
 		requestContext.set(TURN_CONTEXT_KEY, turn);
 
-		const run = (level: ReasoningEffort) =>
+		// The agent's model list already retries and falls back to a second
+		// provider; reasoning settings live on each model entry.
+		const run = () =>
 			this.deps.agent.generate([{ content, role: "user" }] as never, {
 				maxSteps: MAX_STEPS,
 				memory: { resource: customer.id, thread: `whatsapp-${customer.id}` },
 				modelSettings: { temperature: 0.4 },
-				providerOptions: {
-					openrouter: {
-						reasoning: { effort: level },
-					},
-				},
 				requestContext,
 			});
-		const effort = this.deps.reasoningEffort ?? "low";
 		try {
-			return (await run(effort)).text ?? "";
+			return (await run()).text ?? "";
 		} catch (error) {
 			if (!isTransientModelError(error)) {
 				throw error;
 			}
-			// Retry once with minimal reasoning: a fresh request avoids Gemini
-			// thought-signature failures after an upstream provider fallback.
+			// One more attempt after a pause, for brief outages on every model.
 			await sleep(RETRY_DELAY_MS);
-			return (await run("minimal")).text ?? "";
+			return (await run()).text ?? "";
 		}
 	}
 
