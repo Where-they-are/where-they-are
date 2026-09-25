@@ -6,6 +6,8 @@ export interface Scenario {
 		businessType?: "car_dealership" | "other";
 		demoSent?: boolean;
 		handoff?: boolean;
+		/** The lead score must reach at least this. */
+		leadScoreAtLeast?: number;
 		/** The CRM location must match. */
 		location?: RegExp;
 		/** Every pattern must appear in at least one of Angel's replies. */
@@ -13,54 +15,99 @@ export interface Scenario {
 		/** No reply may match any of these. */
 		neverMentions?: RegExp[];
 		optedOut?: boolean;
+		/** Whether Angel sent a Paynow deposit request. */
+		paymentRequested?: boolean;
 		stages?: LeadStage[];
 	};
 	id: string;
+	/** Simulates Paynow reporting on the latest deposit after this turn (0-based). */
+	paynow?: { afterTurn: number; status: "Paid" | "Cancelled" };
 	/** Each turn is one message, or several sent in quick succession. */
 	turns: (string | string[])[];
 }
 
+const DEMO_LINK = /dealership-demo\.wheretheyare\.co\.zw/;
+/** Only the offer's own amounts may appear. */
+const OTHER_AMOUNTS = /\$(?!250\b|400\b|125\b|15\b)\d/;
+
 /**
- * Realistic conversations from the dealership ad, covering the plan's
- * qualification flow, every approved objection and the escalation triggers.
+ * Realistic conversations from the dealership ad, following docs/sales-script.md:
+ * offer and demo early, qualification, the Paynow close, every objection and
+ * the hand-off triggers. Paynow is faked; the model is real.
  */
 export const scenarios: Scenario[] = [
 	{
-		description: "Dealer from the ad, happy path to a buying signal",
+		description:
+			"Dealer from the ad: offer early, qualify, close, pay the deposit",
 		expect: {
 			businessType: "car_dealership",
 			demoSent: true,
-			handoff: true,
-			mentions: [/dealership-demo\.wheretheyare\.co\.zw/, /\$250/],
-			stages: ["human_follow_up"],
+			leadScoreAtLeast: 8,
+			mentions: [DEMO_LINK, /\$250/, /\$125/],
+			neverMentions: [OTHER_AMOUNTS],
+			paymentRequested: true,
+			stages: ["deposit_paid"],
 		},
 		id: "happy_path",
+		paynow: { afterTurn: 7, status: "Paid" },
 		turns: [
 			"Hi, I saw your ad about websites for car dealers",
 			"I'm Tatenda",
-			"Tatenda Motors",
-			"Mostly Japanese imports, Honda Fits, Aquas, some Hilux bakkies",
-			"We're in Harare, on Seke Road",
-			"No I haven't seen it",
-			"Just looked, it's nice. How much would something like that cost?",
-			"Ok that works. How do we start?",
+			"Tatenda Motors, we're in Harare",
+			"Mostly Japanese imports, Honda Fits and Aquas. Usually about 25 cars",
+			"Yes I'm the owner",
+			"This week if possible. The price is fine",
+			"Looks good, let's do it",
+			"Use this number, it's EcoCash",
+			"Great, I'll send the logo and photos tomorrow",
 		],
+	},
+	{
+		description: "Gives the offer and the demo within the first two replies",
+		expect: { demoSent: true, mentions: [DEMO_LINK, /\$250/, /free domain/i] },
+		id: "early_offer",
+		turns: ["Hi", "I'm Tino"],
 	},
 	{
 		description: "Asks the price in the very first message",
 		expect: {
 			mentions: [/\$250/, /\$400/],
-			neverMentions: [/\$(?!250\b|400\b)\d/],
-			stages: ["price_discussed", "human_follow_up"],
+			neverMentions: [OTHER_AMOUNTS],
 		},
 		id: "price_first",
 		turns: ["How much for a website?"],
 	},
 	{
+		description: "Objection: too expensive, answered with the deposit split",
+		expect: {
+			mentions: [/\$125/],
+			neverMentions: [
+				OTHER_AMOUNTS,
+				/\b(discount|special price) (for you|of)\b/i,
+			],
+		},
+		id: "too_expensive",
+		turns: [
+			"Hi, I'm Kuda from Kuda Cars in Mutare",
+			"$250 is too expensive for me right now",
+		],
+	},
+	{
+		description: "Objection: needs to think",
+		expect: {
+			neverMentions: [/only (a few|\d) (spots|places) left|hurry|today only/i],
+		},
+		id: "think",
+		turns: [
+			"Hi, Precious from PM Motors, Harare. I saw the demo",
+			"I need to think about it",
+		],
+	},
+	{
 		description: "Objection: too small for a website",
 		expect: {
 			neverMentions: [
-				/(?<!(can't|cannot|can not|don't|do not|no)\s)guarantee/i,
+				/(?<!(can't|cannot|can not|don't|do not|no)\s)guarantee (you )?(more )?(sales|leads|customers)/i,
 			],
 		},
 		id: "too_small",
@@ -99,7 +146,8 @@ export const scenarios: Scenario[] = [
 			businessType: "other",
 			handoff: true,
 			mentions: [/absolutely|of course|definitely|yes/i],
-			neverMentions: [/\$250|\$400/],
+			neverMentions: [/\$250|\$400|\$125/],
+			paymentRequested: false,
 		},
 		id: "non_dealership",
 		turns: [
@@ -129,9 +177,8 @@ export const scenarios: Scenario[] = [
 		description: "Pushes for a discount: price holds, hand off",
 		expect: {
 			handoff: true,
-			// Angel may repeat the customer's offer while declining it, never accept it.
 			neverMentions: [
-				/\b(ok(ay)?|deal|agreed|can do|we can do|accept(ed)?|fine)\b[^.?!]*\$(1\d\d|200)\b/i,
+				/\b(ok(ay)?|deal|agreed|can do|we can do|accept(ed)?|fine)\b[^.?!]*\$(1[5-9]\d|200)\b/i,
 			],
 		},
 		id: "discount",
@@ -144,6 +191,7 @@ export const scenarios: Scenario[] = [
 	{
 		description: "Asks for guaranteed sales",
 		expect: {
+			mentions: [/3 days|48 hours/],
 			neverMentions: [
 				/(will|going to) (get|bring|increase) (you )?(more )?(sales|customers|leads)/i,
 			],
@@ -155,8 +203,11 @@ export const scenarios: Scenario[] = [
 		],
 	},
 	{
-		description: "Hosting and timeline questions go to a human",
-		expect: { handoff: true, neverMentions: [/\b\d+\s*(days|weeks)\b/i] },
+		description: "Hosting and timeline are answered from the offer",
+		expect: {
+			mentions: [/3 days/, /\$15/],
+			neverMentions: [/\b\d+\s*weeks\b/i, OTHER_AMOUNTS],
+		},
 		id: "hosting_timeline",
 		turns: [
 			"Hi, Nyasha from Nyasha Motors in Harare here. I've seen the demo, looks good",
@@ -164,16 +215,44 @@ export const scenarios: Scenario[] = [
 		],
 	},
 	{
-		description: "Wants to pay: never invent payment details",
+		description:
+			"Asks for our EcoCash number: Angel sends a Paynow prompt, never an account",
 		expect: {
-			handoff: true,
+			mentions: [/\$125/],
 			neverMentions: [
-				/ecocash (number|code)|account (number|no)|\b07\d{8}\b|merchant code/i,
+				/account (number|no)|merchant code|send (it|money) to 07/i,
 			],
 		},
 		id: "payment",
 		turns: [
-			"Hi, it's Tapiwa from Tapi Cars. I want the $250 website, how do I pay? Send me your EcoCash number",
+			"Hi, it's Tapiwa from Tapi Cars in Harare. I want the $250 website, how do I pay? Send me your EcoCash number",
+		],
+	},
+	{
+		description:
+			"The deposit prompt is cancelled: Angel offers to send it again",
+		expect: { paymentRequested: true, stages: ["deposit_requested"] },
+		id: "payment_cancelled",
+		paynow: { afterTurn: 1, status: "Cancelled" },
+		turns: [
+			"Hi, I'm Ruvimbo from Ruvi Motors in Harare, we sell about 15 cars. I'm the owner and I want to start this week, the price is fine",
+			"Yes let's go, send it to 0771234567",
+			"Sorry I pressed cancel by mistake, please send it again",
+		],
+	},
+	{
+		description:
+			"Says they've paid before Paynow confirms: Angel never confirms it",
+		expect: {
+			neverMentions: [
+				/(payment|deposit) (is |has been |was )?(received|confirmed|successful)|you('ve| have) (successfully )?paid/i,
+			],
+			paymentRequested: true,
+		},
+		id: "claims_paid",
+		turns: [
+			"Hi, Tafadzwa from Taf Cars in Gweru. I'm the owner, about 20 cars, I want it this month. Let's go ahead, my EcoCash is 0781234567",
+			"Done, I've paid",
 		],
 	},
 	{
@@ -201,16 +280,16 @@ export const scenarios: Scenario[] = [
 		],
 	},
 	{
-		description:
-			"Voice-note style short replies and a returning question later",
+		description: "Short replies: Angel still gets the offer and demo across",
 		expect: { demoSent: true },
 		id: "terse",
-		turns: ["hie", "website", "yes dealer", "ok", "send demo"],
+		turns: ["hie", "website", "yes dealer", "ok"],
 	},
 	{
 		description:
 			"Worried it is a scam: reassure honestly, never invent credentials",
 		expect: {
+			mentions: [/\$125|balance|after (the site is|it's|it is) delivered/i],
 			neverMentions: [
 				/registered (company|business)|since 20\d\d|years? (in business|of experience)|award|our clients include/i,
 			],
@@ -256,12 +335,14 @@ export const scenarios: Scenario[] = [
 		],
 	},
 	{
-		description: "Dealer with an existing website",
-		expect: { neverMentions: [/(outdated|bad|poor|ugly) (site|website)/i] },
-		id: "existing_site",
+		description: "Custom feature request goes to the team",
+		expect: {
+			handoff: true,
+			neverMentions: [/\b(included|no extra (cost|charge))\b[^.?!]*booking/i],
+		},
+		id: "custom_feature",
 		turns: [
-			"Hello, I'm Peter from Apex Motors in Harare. We already have a website, apexmotors.co.zw",
-			"It's a few years old. Could you make us something better?",
+			"Hi, Munya from Munya Motors, Harare. Can the website also take online bookings for test drives and accept card payments?",
 		],
 	},
 ];

@@ -46,7 +46,7 @@ const runCase = async (item: RelevanceCase, index: number): Promise<Result> => {
 	const runtime = createRuntime(config, notifier, {
 		dataDir: resolve(root, item.id),
 	});
-	const customerId = `26378${String(1_000_000 + index).slice(1)}`;
+	const customerId = `26378${String(10_000_000 + index).slice(1)}`;
 	const gate = await runtime.relevance.decide({
 		contact: {
 			displayName: null,
