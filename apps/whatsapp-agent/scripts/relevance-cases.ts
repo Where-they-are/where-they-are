@@ -173,6 +173,15 @@ export const relevanceCases: RelevanceCase[] = [
 	},
 	{
 		expect: "respond",
+		id: "test_drive",
+		level: "hard",
+		messages: [
+			"Is the 2024 Land Cruiser Prado still available? Can I come for a test drive on Saturday?",
+		],
+		why: "Sounds like a wrong number, but it came from the demo",
+	},
+	{
+		expect: "respond",
 		id: "instalments",
 		level: "hard",
 		messages: ["Can I pay for the website in instalments?"],

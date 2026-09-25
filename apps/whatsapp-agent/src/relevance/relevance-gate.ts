@@ -41,7 +41,7 @@ export interface DecisionClient {
 }
 
 const BUSINESS_CONTEXT =
-	"Where They Are builds websites for businesses in Zimbabwe. Its Facebook and Instagram ads currently target car dealerships, but it happily builds websites for any kind of business (restaurants, salons, shops, schools, clinics, churches, services and more). Angel is its WhatsApp sales assistant. This WhatsApp number is also the founder's own number, so friends, family, acquaintances, spammers and wrong numbers sometimes message it.";
+	"Where They Are builds websites for businesses in Zimbabwe. Its Facebook and Instagram ads currently target car dealerships, but it happily builds websites for any kind of business (restaurants, salons, shops, schools, clinics, churches, services and more). Angel is its WhatsApp sales assistant. Its demo is a sample dealership website (Ridgeline Motors) that lists cars such as a Land Cruiser Prado, so people sometimes message asking about those cars, prices or test drives: they came from our demo and need a reply explaining it's a sample. This WhatsApp number is also the founder's own number, so friends, family, acquaintances, spammers and wrong numbers sometimes message it.";
 
 const QUESTIONS: Record<string, JevQuestion> = {
 	category: {
@@ -53,7 +53,7 @@ const QUESTIONS: Record<string, JevQuestion> = {
 			personal_for_owner:
 				"A personal message meant for the founder as a friend, family member or acquaintance: family news, plans, favours, money between friends, personal calls, with no website or business enquiry.",
 			question_or_greeting:
-				"A greeting, a short reply, a question about Where They Are, its ad, prices, demo or work, or anything a potential customer could send, including an unclear first message such as 'Hi', 'Hello' or 'Info'.",
+				"A greeting, a short reply, a question about Where They Are, its ad, prices, demo or work, a question about a car, its price or a test drive (these come from the sample dealership demo), or anything a potential customer could send, including an unclear first message such as 'Hi', 'Hello' or 'Info'.",
 			spam_or_scam:
 				"Unsolicited promotions, scams, crypto or forex schemes, loan offers, prize or lottery messages, chain letters, forwarded broadcasts, adult content or suspicious links.",
 			vendor_or_job_pitch:
@@ -69,7 +69,7 @@ const QUESTIONS: Record<string, JevQuestion> = {
 		criteria: {
 			false:
 				"Spam, scams, chain or broadcast messages, promotions, personal messages meant for the founder, wrong numbers, or people pitching services or asking for jobs.",
-			true: "Any possible customer of any business type, anyone asking about websites, the ad, the demo or prices, and any greeting or unclear message that could be from a potential customer.",
+			true: "Any possible customer of any business type, anyone asking about websites, the ad, the demo or prices, anyone asking about a car or a test drive (they came from the sample dealership demo), and any greeting or unclear message that could be from a potential customer.",
 		},
 		instructions:
 			"Should Angel, the sales assistant, reply to these messages? When in doubt, reply: missing a real customer is much worse than answering spam.",
