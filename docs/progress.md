@@ -36,17 +36,19 @@ The agent must qualify the lead for the dealership offer. It must not pretend th
 
 - `apps/dealership-demo`: the Ridgeline Motors sample site (Next.js, Docker), set up for deployment at `https://dealership-demo.wheretheyare.co.zw`. Its vehicle-detail, sell, finance, service and contact pages are still simple placeholders.
 - `apps/whatsapp-agent` ("Angel"): a new NestJS + whatsapp-web.js + Mastra agent that narrows the WhatsApp conversation to dealer qualification. It has these parts:
-  - **Conversation:** it asks about the demo before sharing it, quotes the hard price ($250 for the first 5 dealerships, $400 after), handles objections from approved knowledge only, and hands over to the owner with WhatsApp alerts. Non-dealership businesses are welcomed and handed over.
+  - **Conversation:** it follows `docs/sales-script.md`: the founding offer ($250 instead of $400 for the first five dealerships, with a free domain, free stock import and free fixes within 48 hours) and the demo link early, one qualification question at a time, a 0–10 lead score, and objections from approved knowledge only. Non-dealership businesses are welcomed and handed over.
+  - **Close (added 2026-09-25):** Angel takes the $125 deposit through Paynow mobile checkout (EcoCash or OneMoney) in the chat. When Paynow confirms, the customer gets the materials checklist and the owner gets an alert. The owner marks delivery with `#delivered` and requests the balance with `#balance`.
+  - **Meta:** qualified leads, deposit requests and payments are reported to the Conversions API.
   - **Relevance and media:** a Jev relevance gate keeps Angel silent on spam, personal messages, wrong numbers and pitches. Voice notes are transcribed.
-  - **CRM:** a SQLite CRM records every customer, message, turn (model, tokens, latency, outcome), funnel event and ignored message. This is the tracking record Task 6 needs; a dashboard for it stays deferred.
-  - **Evidence:** 21/21 live sales scenarios and 30/30 live relevance cases pass. See `apps/whatsapp-agent/README.md`.
+  - **CRM:** a SQLite CRM records every customer, message, turn (model, tokens, latency, outcome), funnel event, payment and ignored message. This is the tracking record Task 6 needs; a dashboard for it stays deferred.
+  - **Evidence:** 26/26 live sales scenarios (Paynow faked) and 31/31 live relevance cases pass. See `apps/whatsapp-agent/README.md`.
 
 ## What is not yet complete
 
 - The deployed demo URL has not been smoke-tested on a phone.
 - The Meta campaign has not been launched for the focused dealership offer.
 - Angel has not been linked to the live business number, and no human hand-off has been tested end to end on real WhatsApp.
-- The owner has not yet approved Angel's conversation script or the answers it must escalate: the hosting renewal fee, delivery timeline and payment methods are unknown, so Angel hands these to the owner.
+- Paynow and the Meta Conversions API have not been tested with real credentials: a Paynow test-mode payment and a Meta test event are still needed (Task 4b).
 - The exact ad creative, budget, tracking sheet, and validation thresholds still need to be approved.
 - No demand conclusion has been reached.
 
