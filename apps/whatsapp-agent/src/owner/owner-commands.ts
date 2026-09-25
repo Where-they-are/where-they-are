@@ -4,6 +4,7 @@ import {
 	LEAD_STAGES,
 	type LeadStage,
 } from "../crm/crm.types.js";
+import { formatCount } from "../format/count.js";
 import type { DealershipPricing } from "../knowledge/pricing.js";
 import { normalizePhone } from "./phone.js";
 
@@ -18,7 +19,7 @@ export const OWNER_HELP = [
 	"*Angel owner commands*",
 	"#leads [stage] – latest leads",
 	"#lead <number> – one lead's profile and recent chat",
-	"#stats – funnel counts",
+	"#stats – funnel counts and Angel's activity",
 	"#pause <number> [hours|forever] – Angel stays quiet in that chat",
 	"#resume <number> – hand the chat back to Angel",
 	"#won <number> / #lost <number> – close a deal",
@@ -113,20 +114,31 @@ const listLeads: Handler = ({ deps, target }) => {
 	].join("\n");
 };
 
+const MS_PER_SECOND = 1000;
+
+const pairs = (record: Record<string, number>) =>
+	Object.entries(record)
+		.map(([key, count]) => `${key}: ${formatCount(count)}`)
+		.join(", ") || "none";
+
 const showStats: Handler = ({ deps }) => {
 	const stats = deps.crm.stats();
-	const pairs = (record: Record<string, number>) =>
-		Object.entries(record)
-			.map(([key, count]) => `${key}: ${count}`)
-			.join(", ") || "none";
+	const turns = deps.crm.turnStats();
+	const seconds = (turns.averageLatencyMs / MS_PER_SECOND).toFixed(1);
 	return [
 		"*Funnel*",
-		`Conversations: ${stats.total}`,
-		`Dealerships: ${stats.dealerships}`,
-		`Demos sent: ${stats.demosSent}`,
+		`Conversations: ${formatCount(stats.total)}`,
+		`Dealerships: ${formatCount(stats.dealerships)}`,
+		`Demos sent: ${formatCount(stats.demosSent)}`,
 		`By stage: ${pairs(stats.byStage)}`,
 		`Objections: ${pairs(stats.objections)}`,
-		`Ignored contacts: ${stats.ignored}`,
+		`Ignored contacts: ${formatCount(stats.ignored)}`,
+		"",
+		"*Angel*",
+		`Messages in: ${formatCount(turns.messagesIn)} · replies sent: ${formatCount(turns.messagesOut)}`,
+		`Turns: ${formatCount(turns.total)} (${pairs(turns.byOutcome)})`,
+		`Average reply time: ${seconds}s · tokens used: ${formatCount(turns.totalTokens)}`,
+		"",
 		deps.pricing().statement,
 	].join("\n");
 };
@@ -195,7 +207,7 @@ const listIgnored: Handler = ({ deps }) => {
 		"*Ignored by Angel*",
 		...ignored.map(
 			(contact) =>
-				`• ${contact.displayName ?? contact.id} · ${CATEGORY_LABELS[contact.category] ?? contact.category}${contact.allowed ? " · allowed" : ""} · ${contact.count}× · "${contact.lastMessage.slice(0, 60)}" · ${contact.id}`
+				`• ${contact.displayName ?? contact.id} · ${CATEGORY_LABELS[contact.category] ?? contact.category}${contact.allowed ? " · allowed" : ""} · ${formatCount(contact.count)}× · "${contact.lastMessage.slice(0, 60)}" · ${contact.id}`
 		),
 		"",
 		"Send #allow <number> if Angel should reply to someone.",

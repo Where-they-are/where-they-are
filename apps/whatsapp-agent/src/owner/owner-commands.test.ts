@@ -106,6 +106,24 @@ describe("runOwnerCommand", () => {
 		expect(crm.get(ID)?.notes).toContain("Owner: Call after 5pm");
 		expect(runOwnerCommand("#stats", deps)).toContain("Dealerships: 1");
 	});
+
+	it("formats large figures in stats", () => {
+		const deps = setup();
+		const turnId = crm.startTurn({
+			chatId: `${ID}@c.us`,
+			contactId: ID,
+			inboundCount: 1,
+		});
+		crm.finishTurn(turnId, {
+			outcome: "replied",
+			replyCount: 1,
+			usage: { totalTokens: 10_240 },
+		});
+		const stats = runOwnerCommand("#stats", deps);
+		expect(stats).toContain("Messages in: 1 · replies sent: 1");
+		expect(stats).toContain("Turns: 1 (replied: 1)");
+		expect(stats).toContain("tokens used: 10.2K");
+	});
 });
 
 describe("ignored contacts", () => {
