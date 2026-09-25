@@ -22,6 +22,7 @@
     "@nestjs/core": "^11.1.6",
     "@nestjs/platform-express": "^11.1.6",
     "@where-they-are/jev-router": "workspace:*",
+    "@where-they-are/paynow": "workspace:*",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
     "varlock": "catalog:",

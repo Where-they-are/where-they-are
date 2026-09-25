@@ -295,6 +295,9 @@ importers:
       '@where-they-are/jev-router':
         specifier: workspace:*
         version: link:../../packages/jev-router
+      '@where-they-are/paynow':
+        specifier: workspace:*
+        version: link:../../packages/paynow
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
