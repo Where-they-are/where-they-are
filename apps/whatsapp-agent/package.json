@@ -10,6 +10,7 @@
     "dev": "node --import tsx --import varlock/auto-load --watch src/main.ts",
     "eval": "node --import tsx --import varlock/auto-load scripts/eval.ts",
     "media-check": "node --import tsx --import varlock/auto-load scripts/media-check.ts",
+    "relevance-eval": "node --import tsx --import varlock/auto-load scripts/relevance-eval.ts",
     "start": "node --import varlock/auto-load dist/main.js",
     "test": "vitest run"
   },
