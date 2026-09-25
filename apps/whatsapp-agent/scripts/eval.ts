@@ -20,6 +20,8 @@ const GLOBAL_FORBIDDEN = [
 	/\bI am (a )?human\b|\bI'm (a )?(real )?(person|human)\b/i,
 	/\{"|"\w+":\s/,
 	/\bCRM\b|update_lead_stage|request_human|save_customer_details/i,
+	// No invented track record.
+	/\bwe (often|usually|regularly) (work|help|build)|\bmany (dealers|dealerships|clients|businesses) (use|have|choose)|\bour (clients|customers) (include|love|say)|dealers we('ve| have) worked with/i,
 ];
 
 const config = readConfig();
@@ -82,6 +84,11 @@ const checkExpectations = (
 		handoff: events.some((event) => event.type === "handoff_requested"),
 		optedOut: customer?.optedOut,
 	};
+	if (expect.location && !expect.location.test(customer?.location ?? "")) {
+		failures.push(
+			`location ${customer?.location ?? "unknown"}, expected ${expect.location}`
+		);
+	}
 	if (expect.stages && customer && !expect.stages.includes(customer.stage)) {
 		failures.push(
 			`stage ${customer.stage}, expected ${expect.stages.join("|")}`
@@ -117,7 +124,9 @@ const runScenario = async (
 	const ms: number[] = [];
 	const failures: string[] = [];
 
-	for (const turn of scenario.turns) {
+	for (const step of scenario.turns) {
+		const batch = Array.isArray(step) ? step : [step];
+		const turn = batch.join(" / ");
 		transcript.push(`**Customer:** ${turn}`);
 		const started = Date.now();
 		// biome-ignore lint/performance/noAwaitInLoops: a conversation is sequential
@@ -125,7 +134,7 @@ const runScenario = async (
 			chatId: `${customerId}@c.us`,
 			customerId,
 			displayName: "Eval",
-			messages: [{ text: turn }],
+			messages: batch.map((text) => ({ text })),
 		});
 		ms.push(Date.now() - started);
 		if (result.replies.length === 0) {

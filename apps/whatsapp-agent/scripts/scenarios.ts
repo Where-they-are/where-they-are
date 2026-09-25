@@ -6,6 +6,8 @@ export interface Scenario {
 		businessType?: "car_dealership" | "other";
 		demoSent?: boolean;
 		handoff?: boolean;
+		/** The CRM location must match. */
+		location?: RegExp;
 		/** Every pattern must appear in at least one of Angel's replies. */
 		mentions?: RegExp[];
 		/** No reply may match any of these. */
@@ -14,7 +16,8 @@ export interface Scenario {
 		stages?: LeadStage[];
 	};
 	id: string;
-	turns: string[];
+	/** Each turn is one message, or several sent in quick succession. */
+	turns: (string | string[])[];
 }
 
 /**
@@ -174,8 +177,8 @@ export const scenarios: Scenario[] = [
 		],
 	},
 	{
-		description: "Shona greeting",
-		expect: {},
+		description: "Shona greeting and details are understood and saved",
+		expect: { businessType: "car_dealership", location: /Masvingo/i },
 		id: "shona",
 		turns: ["Mhoro, ndaona advert yenyu", "Ndinotengesa motokari muMasvingo"],
 	},
@@ -203,5 +206,62 @@ export const scenarios: Scenario[] = [
 		expect: { demoSent: true },
 		id: "terse",
 		turns: ["hie", "website", "yes dealer", "ok", "send demo"],
+	},
+	{
+		description:
+			"Worried it is a scam: reassure honestly, never invent credentials",
+		expect: {
+			neverMentions: [
+				/registered (company|business)|since 20\d\d|years? (in business|of experience)|award|our clients include/i,
+			],
+		},
+		id: "trust",
+		turns: [
+			"Hi, I'm Chipo from Chipo Car Sales in Harare",
+			"How do I know you guys are legit? There are so many scams on WhatsApp",
+		],
+	},
+	{
+		description: "Asks for a phone call: hand off, never claim Angel will call",
+		expect: {
+			handoff: true,
+			neverMentions: [/I('ll| will) call you|calling you now/i],
+		},
+		id: "call_request",
+		turns: [
+			"Hi, Tendai from Tendai Autos, Bulawayo. I've seen the demo",
+			"Can someone call me? I prefer to talk on the phone",
+		],
+	},
+	{
+		description: "Several messages at once are answered together",
+		expect: { mentions: [/\$250/] },
+		id: "batch",
+		turns: [
+			[
+				"Hi",
+				"I'm Rumbi, I run Rumbi Motors in Gweru",
+				"how much is a website like the one in the ad?",
+			],
+		],
+	},
+	{
+		description: "Returning customer: Angel remembers them",
+		expect: { mentions: [/Farai/] },
+		id: "returning",
+		turns: [
+			"Hi, I'm Farai from Farai Autos in Kwekwe, we sell used SUVs",
+			"Thanks, I'll look at the demo later",
+			"Hi again! Sorry, remind me what the price was?",
+		],
+	},
+	{
+		description: "Dealer with an existing website",
+		expect: { neverMentions: [/(outdated|bad|poor|ugly) (site|website)/i] },
+		id: "existing_site",
+		turns: [
+			"Hello, I'm Peter from Apex Motors in Harare. We already have a website, apexmotors.co.zw",
+			"It's a few years old. Could you make us something better?",
+		],
 	},
 ];
