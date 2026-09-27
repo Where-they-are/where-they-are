@@ -143,3 +143,41 @@ describe("ignored contacts", () => {
 		expect(runOwnerCommand("#stats", deps)).toContain("Ignored contacts: 0");
 	});
 });
+
+describe("#client", () => {
+	it("marks a paying client on Growth at the launch price and uses a launch place", async () => {
+		const deps = setup();
+		const reply = await runOwnerCommand(`#client ${ID} growth`, deps);
+		expect(reply).toContain("Growth Plan ($48 first payment)");
+		expect(reply).toContain(
+			"Launch places left (50% off the first month of Growth or Pro): 4 of 5"
+		);
+		expect(crm.get(ID)).toMatchObject({
+			plan: "growth",
+			stage: "paying_client",
+		});
+		expect(crm.events(ID).map((event) => event.type)).toContain(
+			"client_signed"
+		);
+	});
+
+	it("takes an explicit amount and never uses a launch place for Starter", async () => {
+		const deps = setup();
+		const reply = await runOwnerCommand(`#client ${ID} starter $32`, deps);
+		expect(reply).toContain("($32 first payment)");
+		expect(reply).toContain("5 of 5");
+	});
+
+	it("explains what's missing", async () => {
+		const deps = setup();
+		expect(await runOwnerCommand(`#client ${ID}`, deps)).toContain(
+			"Say which plan they paid for"
+		);
+		expect(await runOwnerCommand(`#client ${ID} pro abc`, deps)).toContain(
+			"isn't an amount"
+		);
+		expect(await runOwnerCommand("#client 263700000000 pro", deps)).toContain(
+			"No lead found"
+		);
+	});
+});

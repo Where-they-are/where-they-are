@@ -6,11 +6,18 @@ import {
 	PAID_STAGES,
 } from "../crm/crm.types.js";
 import { formatCount } from "../format/count.js";
-import type { SocialMediaOffer } from "../knowledge/offer.js";
+import {
+	PLAN_IDS,
+	type PlanId,
+	type SocialMediaOffer,
+	usd,
+} from "../knowledge/offer.js";
+import type { MetaReporter } from "../meta/meta-reporter.js";
 import { normalizePhone } from "./phone.js";
 
 const COMMAND = /^#(\w+)\s*(.*)$/s;
 const WHITESPACE = /\s+/;
+const DOLLAR = /\$/g;
 const HOUR_MS = 60 * 60 * 1000;
 const LIST_LIMIT = 10;
 const TRANSCRIPT_LIMIT = 8;
@@ -23,6 +30,7 @@ export const OWNER_HELP = [
 	"#stats – funnel counts and Angel's activity",
 	"#pause <number> [hours|forever] – Angel stays quiet in that chat",
 	"#resume <number> – hand the chat back to Angel",
+	"#client <number> <starter|growth|pro> [amount] – they paid: mark them a client",
 	"#lost <number> – they decided not to go ahead",
 	"#stage <number> <stage> – set any stage",
 	"#note <number> <text> – add a note",
@@ -36,6 +44,8 @@ export const OWNER_HELP = [
 
 export interface OwnerCommandDeps {
 	crm: CrmRepository;
+	/** Reports paying clients to Meta; optional in tests. */
+	meta?: MetaReporter;
 	now?: () => Date;
 	offer: () => SocialMediaOffer;
 	takeoverHours: number;
@@ -231,8 +241,47 @@ const allow: Handler = ({ deps, target }) => {
 	return "Done. Angel will reply to them from their next message.";
 };
 
+const signClient = withLead(async ({ args, customer, deps }) => {
+	const plan = args[0]?.toLowerCase();
+	if (!(plan && (PLAN_IDS as readonly string[]).includes(plan))) {
+		return `Say which plan they paid for: #client ${customer.id} starter|growth|pro [amount]`;
+	}
+	const planId = plan as PlanId;
+	// Priced before marking them paid, since they may take a launch place.
+	const quoted = deps.offer().plans[planId];
+	const amount = args[1]
+		? Number(args[1].replace(DOLLAR, ""))
+		: quoted.firstMonthUsd;
+	if (!Number.isFinite(amount) || amount <= 0) {
+		return `"${args[1]}" isn't an amount. Example: #client ${customer.id} ${planId} ${quoted.firstMonthUsd}`;
+	}
+	deps.crm.setPlan(customer.id, "paying", planId);
+	const result = deps.crm.setStage(customer.id, "paying_client", {
+		by: "owner",
+		reason: `paid ${usd(amount)} for ${planId}`,
+	});
+	deps.crm.recordEvent(customer.id, "client_signed", {
+		amountUsd: amount,
+		plan: planId,
+	});
+	await deps.meta?.report({
+		customerId: customer.id,
+		eventName: "Purchase",
+		key: `${planId}-1`,
+		valueUsd: amount,
+	});
+	const stage = result.applied
+		? "Now a paying client"
+		: `Stage stays ${result.current}`;
+	return [
+		`${who(customer)} is on ${quoted.name} (${usd(amount)} first payment). ${stage}.`,
+		offerSummary(deps.offer()),
+	].join("\n");
+});
+
 const HANDLERS: Record<string, Handler> = {
 	allow,
+	client: signClient,
 	help: () => OWNER_HELP,
 	ignored: listIgnored,
 	lead: withLead(({ customer, deps }) => profile(deps.crm, customer)),

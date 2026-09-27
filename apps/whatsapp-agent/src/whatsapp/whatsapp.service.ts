@@ -306,6 +306,7 @@ export class WhatsAppService
 		const reply = isOwnerCommand(text)
 			? await runOwnerCommand(text, {
 					crm: this.runtime.crm,
+					meta: this.runtime.meta,
 					offer: this.runtime.offer,
 					takeoverHours: this.config.HUMAN_TAKEOVER_HOURS,
 				})
