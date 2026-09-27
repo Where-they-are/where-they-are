@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 
 import { CrmRepository } from "../crm/crm.repository.js";
-import { dealershipPricing } from "../knowledge/pricing.js";
+import { socialMediaOffer } from "../knowledge/offer.js";
 import {
 	isOwnerCommand,
 	OWNER_HELP,
@@ -35,15 +35,10 @@ const setup = () => {
 	crm.logMessage(ID, "out", "Hi! I'm Angel.");
 	return {
 		crm,
-		pricing: () =>
-			dealershipPricing(
-				{
-					earlyPriceUsd: 250,
-					earlySlots: 5,
-					earlySlotsUsedOffset: 0,
-					standardPriceUsd: 400,
-				},
-				crm.countPaidDealerships()
+		offer: () =>
+			socialMediaOffer(
+				{ launchPlaces: 5, launchPlacesUsedOffset: 0 },
+				crm.countLaunchClients()
 			),
 		takeoverHours: 12,
 	};
@@ -83,11 +78,11 @@ describe("runOwnerCommand", () => {
 		expect(crm.isHumanActive(crm.get(ID) as never)).toBe(false);
 	});
 
-	it("marks a dealership as won, which uses up an early-price slot", () => {
+	it("shows the launch places left when a dealership becomes a client", () => {
 		const deps = setup();
-		const reply = runOwnerCommand(`#won ${ID}`, deps);
-		expect(reply).toContain("moved to won");
-		expect(reply).toContain("Founding places left: 4 of 5");
+		const reply = runOwnerCommand(`#stage ${ID} paying_client`, deps);
+		expect(reply).toContain("moved to paying_client");
+		expect(reply).toContain("Launch places left");
 	});
 
 	it("rejects unknown stages and numbers politely", () => {

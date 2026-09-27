@@ -6,7 +6,7 @@ import {
 	PAID_STAGES,
 } from "../crm/crm.types.js";
 import { formatCount } from "../format/count.js";
-import type { DealershipPricing } from "../knowledge/pricing.js";
+import type { SocialMediaOffer } from "../knowledge/offer.js";
 import { normalizePhone } from "./phone.js";
 
 const COMMAND = /^#(\w+)\s*(.*)$/s;
@@ -23,10 +23,10 @@ export const OWNER_HELP = [
 	"#stats – funnel counts and Angel's activity",
 	"#pause <number> [hours|forever] – Angel stays quiet in that chat",
 	"#resume <number> – hand the chat back to Angel",
-	"#won <number> / #lost <number> – close a deal",
+	"#lost <number> – they decided not to go ahead",
 	"#stage <number> <stage> – set any stage",
 	"#note <number> <text> – add a note",
-	"#price – current dealership price",
+	"#price – the plans and launch places left",
 	"#ignored – messages Angel stayed silent on (spam, personal, wrong numbers)",
 	"#allow <number> – always let Angel reply to someone it ignored",
 	"",
@@ -37,21 +37,20 @@ export const OWNER_HELP = [
 export interface OwnerCommandDeps {
 	crm: CrmRepository;
 	now?: () => Date;
-	pricing: () => DealershipPricing;
+	offer: () => SocialMediaOffer;
 	takeoverHours: number;
 }
 
 export const isOwnerCommand = (text: string): boolean =>
 	COMMAND.test(text.trim());
 
-/** The live offer and how many founding places are left. */
-const offerSummary = (pricing: DealershipPricing): string =>
+/** The plans and how many launch places are left. */
+const offerSummary = (offer: SocialMediaOffer): string =>
 	[
-		pricing.headline,
-		pricing.isEarlyPrice
-			? `Founding places left: ${pricing.earlySlotsLeft} of ${pricing.earlySlotsTotal}`
-			: "All founding places are taken.",
-		pricing.terms.payment,
+		offer.summary,
+		offer.launchOfferOpen
+			? `Launch places left (50% off the first month of Growth or Pro): ${offer.launchPlacesLeft} of ${offer.launchPlacesTotal}`
+			: "All launch places are taken: normal prices only.",
 	].join("\n");
 
 const who = (customer: Customer) =>
@@ -149,7 +148,7 @@ const showStats: Handler = ({ deps }) => {
 		`Turns: ${formatCount(turns.total)} (${pairs(turns.byOutcome)})`,
 		`Average reply time: ${seconds}s · tokens used: ${formatCount(turns.totalTokens)}`,
 		"",
-		offerSummary(deps.pricing()),
+		offerSummary(deps.offer()),
 	].join("\n");
 };
 
@@ -189,7 +188,7 @@ const setStage = withLead(({ args, command, customer, deps }) => {
 	}
 	const paidDealership =
 		PAID_STAGES.includes(stage) && customer.businessType === "car_dealership";
-	return `${who(customer)} moved to ${stage}.${paidDealership ? `\n${offerSummary(deps.pricing())}` : ""}`;
+	return `${who(customer)} moved to ${stage}.${paidDealership ? `\n${offerSummary(deps.offer())}` : ""}`;
 });
 
 const addNote = withLead(({ args, customer, deps }) => {
@@ -241,11 +240,10 @@ const HANDLERS: Record<string, Handler> = {
 	lost: setStage,
 	note: addNote,
 	pause,
-	price: ({ deps }) => offerSummary(deps.pricing()),
+	price: ({ deps }) => offerSummary(deps.offer()),
 	resume,
 	stage: setStage,
 	stats: showStats,
-	won: setStage,
 };
 
 /**

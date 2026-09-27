@@ -63,7 +63,7 @@ describe("CrmRepository", () => {
 		seed(repo);
 		const id = "263771234567";
 		expect(repo.setStage(id, "qualified", { by: "agent" }).applied).toBe(true);
-		expect(repo.setStage(id, "price_discussed", { by: "agent" }).applied).toBe(
+		expect(repo.setStage(id, "plan_recommended", { by: "agent" }).applied).toBe(
 			true
 		);
 		const back = repo.setStage(id, "qualified", { by: "agent" });
@@ -71,26 +71,26 @@ describe("CrmRepository", () => {
 			applied: false,
 			reason: "stages only move forward",
 		});
-		expect(repo.setStage(id, "deposit_paid", { by: "agent" }).applied).toBe(
+		expect(repo.setStage(id, "paying_client", { by: "agent" }).applied).toBe(
 			false
 		);
-		expect(repo.setStage(id, "deposit_paid", { by: "system" }).applied).toBe(
+		expect(repo.setStage(id, "paying_client", { by: "owner" }).applied).toBe(
 			true
 		);
 		expect(repo.setStage(id, "nurture", { by: "agent" }).applied).toBe(false);
-		expect(repo.setStage(id, "won", { by: "owner" }).applied).toBe(true);
-		expect(repo.get(id)?.stage).toBe("won");
+		expect(repo.setStage(id, "renewed", { by: "owner" }).applied).toBe(true);
+		expect(repo.get(id)?.stage).toBe("renewed");
 	});
 
-	it("marks the demo as sent and moves new leads to demo_sent", () => {
+	it("records the recommended plan and the plan a client pays for", () => {
 		repo = crm();
 		seed(repo);
-		repo.markDemoSent("263771234567");
-		const customer = repo.get("263771234567");
-		expect(customer?.demoSentAt).not.toBeNull();
-		expect(customer?.stage).toBe("demo_sent");
-		const types = repo.events("263771234567").map((event) => event.type);
-		expect(types).toContain("demo_sent");
+		repo.setPlan("263771234567", "recommended", "growth");
+		repo.setPlan("263771234567", "paying", "pro");
+		expect(repo.get("263771234567")).toMatchObject({
+			plan: "pro",
+			recommendedPlan: "growth",
+		});
 	});
 
 	it("tracks human takeover windows", () => {
@@ -117,24 +117,29 @@ describe("CrmRepository", () => {
 		expect(repo.countRecentReplies(customer.id, 60_000)).toBe(0);
 	});
 
-	it("reports funnel stats, paid dealerships and a CSV export", () => {
+	it("counts paying clients and launch places used by Growth and Pro dealerships", () => {
 		repo = crm();
-		seed(repo, "263770000001");
-		seed(repo, "263770000002");
-		repo.updateProfile("263770000001", { businessType: "car_dealership" });
-		repo.setStage("263770000001", "deposit_paid", { by: "system" });
-		repo.recordEvent("263770000002", "objection", { kind: "too_small" });
-		repo.markDemoSent("263770000002");
+		for (const [id, plan] of [
+			["263770000001", "growth"],
+			["263770000002", "starter"],
+			["263770000003", "pro"],
+		] as const) {
+			seed(repo, id);
+			repo.updateProfile(id, { businessType: "car_dealership" });
+			repo.setPlan(id, "paying", plan);
+			repo.setStage(id, "paying_client", { by: "owner" });
+		}
+		seed(repo, "263770000004");
+		repo.recordEvent("263770000004", "objection", { kind: "price" });
 		const stats = repo.stats();
-		expect(stats.total).toBe(2);
-		expect(stats.byStage).toMatchObject({ demo_sent: 1, deposit_paid: 1 });
-		expect(stats.depositsPaid).toBe(1);
-		expect(stats.objections).toEqual({ too_small: 1 });
-		expect(stats.demosSent).toBe(1);
-		expect(repo.countPaidDealerships()).toBe(1);
+		expect(stats.total).toBe(4);
+		expect(stats.byStage).toMatchObject({ new: 1, paying_client: 3 });
+		expect(stats.payingClients).toBe(3);
+		expect(stats.objections).toEqual({ price: 1 });
+		expect(repo.countLaunchClients()).toBe(2);
 		const csv = repo.toCsv().split("\n");
-		expect(csv[0]).toContain("businessName");
-		expect(csv).toHaveLength(3);
+		expect(csv[0]).toContain("recommendedPlan");
+		expect(csv).toHaveLength(5);
 	});
 });
 
@@ -295,11 +300,11 @@ describe("lead scoring, ad source and migrations", () => {
 		const first = new CrmRepository(path, now);
 		seed(first);
 		first.database
-			.prepare("UPDATE customers SET stage = 'commercial_signal'")
+			.prepare("UPDATE customers SET stage = 'deposit_requested'")
 			.run();
 		first.close();
 		const reopened = new CrmRepository(path, now);
-		expect(reopened.get("263771234567")?.stage).toBe("price_discussed");
+		expect(reopened.get("263771234567")?.stage).toBe("ready_to_start");
 		reopened.close();
 		rmSync(dir, { force: true, recursive: true });
 	});

@@ -29,14 +29,14 @@ const RULES: {
 		reason: "real dealership",
 	},
 	{
+		applies: (lead) => lead.leadSignals.clearNeed === true,
+		points: 2,
+		reason: "posts irregularly or wants to appear more often",
+	},
+	{
 		applies: (lead) => lead.leadSignals.priceWithinReach === true,
 		points: 2,
 		reason: "price within reach",
-	},
-	{
-		applies: (lead) => lead.leadSignals.wantsLiveWithin30Days === true,
-		points: 2,
-		reason: "wants it live within 30 days",
 	},
 	{
 		applies: (lead) => lead.isDecisionMaker === "yes",
@@ -44,20 +44,20 @@ const RULES: {
 		reason: "decision-maker",
 	},
 	{
-		applies: (lead) => lead.leadSignals.stockReady === true,
+		applies: (lead) => lead.leadSignals.activeFacebookPage === true,
 		points: 1,
-		reason: "stock photos and details ready",
+		reason: "active Facebook page",
 	},
 	{
-		applies: (lead) => lead.leadSignals.engagedWithDemo === true,
+		applies: (lead) => lead.leadSignals.photosReady === true,
 		points: 1,
-		reason: "engaged with the demo",
+		reason: "vehicle photos and details ready",
 	},
 ];
 
 /**
- * The internal 0–10 lead score from docs/sales-script.md §6. Never shown to
- * the lead. 8–10: close or alert the owner now; 5–7: nurture; 0–4: low.
+ * The internal 0–10 lead score from docs/sales-script.md §7. Never shown to
+ * the lead. 8–10: hand to the owner now; 5–7: keep the conversation going; 0–4: low.
  */
 export const scoreLead = (lead: ScoredFields): LeadScore => {
 	const earned = RULES.filter((rule) => rule.applies(lead));

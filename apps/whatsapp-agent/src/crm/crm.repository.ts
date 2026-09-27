@@ -1,7 +1,7 @@
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { DatabaseSync } from "node:sqlite";
-
+import { PLAN_IDS, type PlanId } from "../knowledge/offer.js";
 import {
 	type AdSource,
 	type BusinessType,
@@ -135,6 +135,12 @@ const MIGRATIONS: { column: string; sql: string; table: string }[] = [
 			["lead_score", "INTEGER NOT NULL DEFAULT 0"],
 			["lead_signals", "TEXT NOT NULL DEFAULT '{}'"],
 			["ad_source", "TEXT"],
+			["posting_habit", "TEXT"],
+			["desired_frequency", "TEXT"],
+			["facebook_url", "TEXT"],
+			["instagram_url", "TEXT"],
+			["recommended_plan", "TEXT"],
+			["plan", "TEXT"],
 		] as const
 	).map(([column, type]) => ({
 		column,
@@ -147,11 +153,15 @@ const PROFILE_COLUMNS: Record<keyof ProfilePatch, string> = {
 	businessName: "business_name",
 	businessType: "business_type",
 	currentChannels: "current_channels",
+	desiredFrequency: "desired_frequency",
+	facebookUrl: "facebook_url",
 	hasWebsite: "has_website",
+	instagramUrl: "instagram_url",
 	isDecisionMaker: "is_decision_maker",
 	location: "location",
 	name: "name",
 	otherBusinessType: "other_business_type",
+	postingHabit: "posting_habit",
 	stockSize: "stock_size",
 	timing: "timing",
 	vehicleTypes: "vehicle_types",
@@ -174,6 +184,9 @@ const DOUBLE_QUOTE = /"/g;
 const text = (value: unknown): string | null =>
 	typeof value === "string" && value.length > 0 ? value : null;
 
+const planOrNull = (value: unknown): PlanId | null =>
+	(PLAN_IDS as readonly unknown[]).includes(value) ? (value as PlanId) : null;
+
 const toCustomer = (row: Row): Customer => ({
 	adSource: parseJsonObject<AdSource>(row.ad_source),
 	businessName: text(row.business_name),
@@ -182,11 +195,14 @@ const toCustomer = (row: Row): Customer => ({
 	createdAt: String(row.created_at),
 	currentChannels: text(row.current_channels),
 	demoSentAt: text(row.demo_sent_at),
+	desiredFrequency: text(row.desired_frequency),
 	displayName: text(row.display_name),
+	facebookUrl: text(row.facebook_url),
 	firstMessage: text(row.first_message),
 	hasWebsite: (row.has_website as TriState) ?? "unknown",
 	humanTakeoverUntil: text(row.human_takeover_until),
 	id: String(row.id),
+	instagramUrl: text(row.instagram_url),
 	isDecisionMaker: (row.is_decision_maker as TriState) ?? "unknown",
 	lastInboundAt: text(row.last_inbound_at),
 	lastOutboundAt: text(row.last_outbound_at),
@@ -197,6 +213,9 @@ const toCustomer = (row: Row): Customer => ({
 	notes: text(row.notes),
 	optedOut: Number(row.opted_out) === 1,
 	otherBusinessType: text(row.other_business_type),
+	plan: planOrNull(row.plan),
+	postingHabit: text(row.posting_habit),
+	recommendedPlan: planOrNull(row.recommended_plan),
 	stage: row.stage as LeadStage,
 	stockSize: text(row.stock_size),
 	timing: text(row.timing),
@@ -479,11 +498,6 @@ export class CrmRepository {
 		this.db
 			.prepare("UPDATE customers SET stage = ?, updated_at = ? WHERE id = ?")
 			.run(stage, at, id);
-		if (stage === "demo_sent" && !customer.demoSentAt) {
-			this.db
-				.prepare("UPDATE customers SET demo_sent_at = ? WHERE id = ?")
-				.run(at, id);
-		}
 		this.recordEvent(id, "stage_changed", {
 			by: options.by,
 			from,
@@ -491,28 +505,6 @@ export class CrmRepository {
 			to: stage,
 		});
 		return { applied: true, from, to: stage };
-	}
-
-	markDemoSent(id: string): void {
-		const customer = this.get(id);
-		if (!customer) {
-			return;
-		}
-		if (!customer.demoSentAt) {
-			this.db
-				.prepare(
-					"UPDATE customers SET demo_sent_at = ?, updated_at = ? WHERE id = ?"
-				)
-				.run(this.stamp(), this.stamp(), id);
-		}
-		this.recordEvent(id, "demo_sent", {});
-		const rank = PROGRESS_STAGES.indexOf(customer.stage);
-		if (rank >= 0 && rank < PROGRESS_STAGES.indexOf("demo_sent")) {
-			this.setStage(id, "demo_sent", {
-				by: "agent",
-				reason: "demo link shared",
-			});
-		}
 	}
 
 	setOptedOut(id: string, optedOut: boolean): void {
@@ -833,15 +825,39 @@ export class CrmRepository {
 		};
 	}
 
-	/** Dealerships that have paid a deposit: each one takes a founding place. */
-	countPaidDealerships(): number {
+	/** Clients who have paid, on any plan. */
+	countPayingClients(): number {
 		const placeholders = PAID_STAGES.map(() => "?").join(", ");
 		const row = this.db
 			.prepare(
-				`SELECT COUNT(*) AS n FROM customers WHERE business_type = 'car_dealership' AND stage IN (${placeholders})`
+				`SELECT COUNT(*) AS n FROM customers WHERE stage IN (${placeholders})`
 			)
 			.get(...PAID_STAGES) as Row;
 		return Number(row.n);
+	}
+
+	/**
+	 * Paying dealerships on Growth or Pro: each one used a launch place
+	 * (the first-month offer is for the first five dealerships).
+	 */
+	countLaunchClients(): number {
+		const placeholders = PAID_STAGES.map(() => "?").join(", ");
+		const row = this.db
+			.prepare(
+				`SELECT COUNT(*) AS n FROM customers WHERE business_type = 'car_dealership' AND plan IN ('growth', 'pro') AND stage IN (${placeholders})`
+			)
+			.get(...PAID_STAGES) as Row;
+		return Number(row.n);
+	}
+
+	/** Records the plan Angel recommended, or the plan the client pays for. */
+	setPlan(id: string, which: "recommended" | "paying", plan: PlanId): void {
+		const column = which === "recommended" ? "recommended_plan" : "plan";
+		this.db
+			.prepare(
+				`UPDATE customers SET ${column} = ?, updated_at = ? WHERE id = ?`
+			)
+			.run(plan, this.stamp(), id);
 	}
 
 	/** Stores the lead-score signals and the score computed from them. */
@@ -882,7 +898,7 @@ export class CrmRepository {
 		byStage: Record<string, number>;
 		dealerships: number;
 		demosSent: number;
-		depositsPaid: number;
+		payingClients: number;
 		ignored: number;
 		objections: Record<string, number>;
 		total: number;
@@ -910,11 +926,11 @@ export class CrmRepository {
 			demosSent: count(
 				"SELECT COUNT(*) AS n FROM customers WHERE demo_sent_at IS NOT NULL"
 			),
-			depositsPaid: this.countPaidDealerships(),
 			ignored: count(
 				"SELECT COUNT(*) AS n FROM ignored_contacts WHERE allowed = 0"
 			),
 			objections,
+			payingClients: this.countPayingClients(),
 			total: count("SELECT COUNT(*) AS n FROM customers"),
 		};
 	}
@@ -931,6 +947,12 @@ export class CrmRepository {
 			"vehicleTypes",
 			"stockSize",
 			"timing",
+			"postingHabit",
+			"desiredFrequency",
+			"recommendedPlan",
+			"plan",
+			"facebookUrl",
+			"instagramUrl",
 			"location",
 			"leadScore",
 			"hasWebsite",

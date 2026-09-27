@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import type { CrmRepository } from "../crm/crm.repository.js";
 import {
+	CLOSE_CATEGORIES,
 	type Customer,
 	IGNORE_CATEGORIES,
 	LEAD_STAGES,
@@ -12,7 +13,6 @@ import {
 	type KnowledgeEntry,
 	searchKnowledge,
 } from "../knowledge/knowledge.js";
-import type { DealershipPricing } from "../knowledge/pricing.js";
 import type { OwnerNotifier } from "../notifications/owner-notifier.js";
 import { createSalesTools, type SalesToolDeps } from "./sales-tools.js";
 
@@ -21,17 +21,17 @@ export const CUSTOMER_ID_KEY = "customerId";
 /** Request-context key Angel sets when it decides not to answer a turn. */
 export const IGNORED_KEY = "ignoredAs";
 
+/** Why Angel hands a chat to the owner (docs/sales-script.md §6). */
 export const HANDOFF_REASONS = [
-	"wants_to_proceed",
-	"quote_or_proposal",
-	"payment",
-	"hosting_domain_or_timeline",
-	"discount_request",
-	"competitor_example",
+	"ready_to_start",
+	"qualified_prospect",
+	"custom_package_or_discount",
+	"other_service",
+	"payment_or_terms",
+	"examples",
 	"call_or_meeting",
-	"custom_feature",
 	"complaint_or_sensitive",
-	"non_dealership_lead",
+	"other_business",
 	"unsure",
 	"other",
 ] as const;
@@ -39,42 +39,40 @@ export type HandoffReason = (typeof HANDOFF_REASONS)[number];
 
 const REASON_LABELS: Record<HandoffReason, string> = {
 	call_or_meeting: "Wants a call or meeting",
-	competitor_example: "Wants a real client or competitor example",
-	complaint_or_sensitive: "Complaint or sensitive matter",
-	custom_feature: "Custom feature request",
-	discount_request: "Pushing for a discount",
-	hosting_domain_or_timeline:
-		"Hosting, domain, monthly cost or timeline question",
-	non_dealership_lead: "Non-dealership business lead",
+	complaint_or_sensitive: "Upset, complaint or sensitive matter",
+	custom_package_or_discount: "Wants a custom package or discount",
+	examples: "Wants to see examples of our posts",
 	other: "Needs a person",
-	payment: "Payment question or payment made",
-	quote_or_proposal: "Wants a quote or proposal",
+	other_business: "Not a dealership (future market)",
+	other_service:
+		"Wants another service (website, ads, photography, branding...)",
+	payment_or_terms: "Question about payment, contract or terms",
+	qualified_prospect: "Serious qualified prospect",
+	ready_to_start: "Ready to start: confirm and take payment",
 	unsure: "Angel was unsure",
-	wants_to_proceed: "Ready to go ahead",
 };
 
 /** One alert per customer per reason within this window, to avoid spamming the owner. */
 const ALERT_DEDUP_MS = 30 * 60 * 1000;
 
 const OBJECTION_KINDS = [
-	"too_small",
-	"has_social_media",
 	"price",
+	"already_posts_themselves",
+	"doubts_results",
+	"needs_time",
+	"no_good_photos",
 	"trust_or_scam_concern",
-	"timing",
-	"competitor_example",
-	"already_has_website",
+	"no_instagram",
 	"not_decision_maker",
 	"other",
 ] as const;
 
 const COMMERCIAL_SIGNALS = [
 	"asked_price",
-	"asked_timeline",
-	"asked_next_steps",
-	"asked_proposal",
-	"wants_to_proceed",
-	"asked_payment",
+	"asked_how_to_start",
+	"asked_payment_or_terms",
+	"wants_to_start",
+	"asked_other_services",
 ] as const;
 
 const optionalText = z
@@ -87,11 +85,9 @@ const optionalText = z
 
 export interface AngelToolDeps extends SalesToolDeps {
 	crm: CrmRepository;
-	demoUrl: string;
 	knowledge: KnowledgeEntry[];
 	notifier: OwnerNotifier;
 	now?: () => Date;
-	pricing: () => DealershipPricing;
 	takeoverHours: number;
 }
 
@@ -105,22 +101,24 @@ const customerIdFrom = (context: {
 	return id;
 };
 
-/** The owner alert from docs/sales-script.md §5. */
+/** The owner alert from docs/sales-script.md §6. */
 export const formatHandoffAlert = (input: {
 	customer: Pick<
 		Customer,
 		| "businessName"
 		| "businessType"
+		| "desiredFrequency"
 		| "displayName"
+		| "facebookUrl"
 		| "id"
+		| "instagramUrl"
 		| "isDecisionMaker"
 		| "leadScore"
 		| "location"
 		| "name"
+		| "postingHabit"
+		| "recommendedPlan"
 		| "stage"
-		| "stockSize"
-		| "timing"
-		| "vehicleTypes"
 	>;
 	reason: HandoffReason;
 	summary: string;
@@ -132,20 +130,22 @@ export const formatHandoffAlert = (input: {
 		? `${customer.businessName} (${customer.businessType.replace("_", " ")})`
 		: customer.businessType.replace("_", " ");
 	const known = [
-		customer.vehicleTypes && `Sells: ${customer.vehicleTypes}`,
-		customer.stockSize && `Stock: ${customer.stockSize}`,
-		customer.timing && `Wants it: ${customer.timing}`,
+		customer.postingHabit && `Posts now: ${customer.postingHabit}`,
+		customer.desiredFrequency && `Wants: ${customer.desiredFrequency}`,
+		customer.recommendedPlan && `Recommended: ${customer.recommendedPlan}`,
 		customer.isDecisionMaker !== "unknown" &&
 			`Decision-maker: ${customer.isDecisionMaker}`,
 	].filter(Boolean);
+	const pages = [customer.facebookUrl, customer.instagramUrl].filter(Boolean);
 	return [
 		`🔔 *Angel hand-off: ${REASON_LABELS[input.reason]}*`,
 		`${who} · ${business}${customer.location ? ` · ${customer.location}` : ""}`,
 		...(known.length > 0 ? [known.join(" · ")] : []),
+		...(pages.length > 0 ? [`Pages: ${pages.join(" · ")}`] : []),
 		`Stage: ${customer.stage} · Score: ${customer.leadScore}/10`,
 		`Summary: ${input.summary}`,
 		`Chat: https://wa.me/${customer.id}`,
-		`Reply in their chat to take over (Angel stays quiet for ${input.takeoverHours}h). Send #resume ${customer.id} to hand back.`,
+		`Reply in their chat to take over (Angel stays quiet for ${input.takeoverHours}h). Send #resume ${customer.id} to hand back, or #client ${customer.id} <plan> once they've paid.`,
 	].join("\n");
 };
 
@@ -177,13 +177,18 @@ export const createAngelTools = (deps: AngelToolDeps) => {
 			businessType: z
 				.enum(["car_dealership", "other"])
 				.optional()
-				.describe("car_dealership if they sell or broker vehicles"),
-			currentChannels: optionalText.describe(
-				"How customers find or contact them today, e.g. Facebook, WhatsApp, walk-ins"
+				.describe(
+					"car_dealership if they sell, import or trade vehicles; other for any other business"
+				),
+			desiredFrequency: optionalText.describe(
+				"How often they want to appear in front of buyers, in their words"
 			),
-			hasWebsite: z.enum(["yes", "no"]).optional(),
+			facebookUrl: optionalText.describe("Their Facebook page link or name"),
+			instagramUrl: optionalText.describe(
+				"Their Instagram page link or handle"
+			),
 			isDecisionMaker: z.enum(["yes", "no"]).optional(),
-			location: optionalText.describe("Town and area, e.g. Msasa, Harare"),
+			location: optionalText.describe("City or town, e.g. Mutare"),
 			name: optionalText.describe("The person's own name"),
 			note: optionalText.describe(
 				"A short useful note for the team, e.g. a preference or concern"
@@ -191,64 +196,42 @@ export const createAngelTools = (deps: AngelToolDeps) => {
 			otherBusinessType: optionalText.describe(
 				"For non-dealerships: what the business does"
 			),
+			postingHabit: optionalText.describe(
+				"How they post on Facebook and Instagram today, e.g. only when new stock arrives"
+			),
 			stockSize: optionalText.describe(
-				"Roughly how many vehicles they usually have, in their words, e.g. about 30"
+				"Roughly how many vehicles they usually have, in their words"
 			),
 			timing: optionalText.describe(
-				"When they want the site live, in their words, e.g. this week"
+				"When they want to start, in their words, e.g. next week"
 			),
 			vehicleTypes: optionalText.describe(
-				"Kinds of vehicles they deal in, e.g. used Japanese imports, bakkies"
+				"Kinds of vehicles they sell, e.g. Japanese imports, bakkies"
 			),
-			websiteUrl: optionalText.describe("Their current website address"),
 		}),
 	});
 
 	const updateLeadStage = createTool({
 		description:
-			"Move the lead in the funnel: qualified (a real dealership with its name known), price_discussed (you've given the offer and they reacted), nurture (interested but not ready now), not_a_fit (clearly not a potential customer, e.g. a car buyer), no_response (they stopped replying after follow-up). Payment stages are set automatically.",
+			"Move the lead in the funnel: qualified (a real dealership, name and city known), nurture (interested but not ready now), not_a_fit (clearly not a potential client, e.g. someone looking to buy a car), no_response (stopped replying). Plan and hand-off stages are set by the other tools.",
 		// biome-ignore lint/suspicious/useAwait: Mastra tool executors return promises
 		execute: async (input, context) => {
 			const id = customerIdFrom(context);
-			const result = deps.crm.setStage(id, input.stage as LeadStage, {
+			return deps.crm.setStage(id, input.stage as LeadStage, {
 				by: "agent",
 				reason: input.reason,
 			});
-			return result;
 		},
 		id: "update_lead_stage",
 		inputSchema: z.object({
 			reason: z.string().trim().min(1).max(200),
-			stage: z.enum([
-				"qualified",
-				"price_discussed",
-				"nurture",
-				"not_a_fit",
-				"no_response",
-			]),
+			stage: z.enum(["qualified", "nurture", "not_a_fit", "no_response"]),
 		}),
-	});
-
-	const shareDemoLink = createTool({
-		description:
-			"Get the dealership demo link to send to the customer. Records that the demo was shared.",
-		// biome-ignore lint/suspicious/useAwait: Mastra tool executors return promises
-		execute: async (_input, context) => {
-			const id = customerIdFrom(context);
-			deps.crm.markDemoSent(id);
-			return {
-				about:
-					"Ridgeline Motors is a made-up sample dealership we built to show what a dealership website can look like.",
-				url: deps.demoUrl,
-			};
-		},
-		id: "share_demo_link",
-		inputSchema: z.object({}),
 	});
 
 	const searchKnowledgeTool = createTool({
 		description:
-			"Look up approved facts and answers about Where They Are, the demo, what a site includes, the process, objections, guarantees, hosting, timelines, payments and non-dealership businesses.",
+			"Look up approved answers about Where They Are, the plans, what's included, how we work, objections, guarantees, other services and other businesses.",
 		// biome-ignore lint/suspicious/useAwait: Mastra tool executors return promises
 		execute: async (input) => {
 			const results = searchKnowledge(deps.knowledge, input.query);
@@ -256,7 +239,7 @@ export const createAngelTools = (deps: AngelToolDeps) => {
 				return {
 					found: false,
 					guidance:
-						"No approved answer. Do not guess: say a team member will confirm and call request_human.",
+						"No approved answer. Do not guess: say the team will confirm and call request_human.",
 				};
 			}
 			return {
@@ -305,16 +288,11 @@ export const createAngelTools = (deps: AngelToolDeps) => {
 
 	const logCommercialSignal = createTool({
 		description:
-			"Record a buying signal: the customer asked about price, timeline, next steps or a proposal, wants to proceed, or asked how to pay.",
+			"Record a buying signal: they asked the price, how to start, about payment or terms, said they want to start, or asked about other services.",
 		// biome-ignore lint/suspicious/useAwait: Mastra tool executors return promises
 		execute: async (input, context) => {
 			const id = customerIdFrom(context);
 			deps.crm.recordEvent(id, "commercial_signal", { signal: input.signal });
-			// Stages only move forward, so a lead past this point stays where it is.
-			deps.crm.setStage(id, "price_discussed", {
-				by: "agent",
-				reason: input.signal,
-			});
 			return { recorded: true };
 		},
 		id: "log_commercial_signal",
@@ -323,15 +301,20 @@ export const createAngelTools = (deps: AngelToolDeps) => {
 
 	const requestHuman = createTool({
 		description:
-			"Hand the conversation to a person on the team and alert them. Use for custom work, discounts, payment problems, calls or meetings, anything you cannot answer from approved facts, and non-dealership leads.",
+			"Hand the conversation to the owner and alert them. Use ready_to_start when they want to begin (after collecting their dealership, city, Facebook page, Instagram if any, and the plan); also for custom packages or discounts, other services, payment or terms questions, examples when none are approved, calls, complaints, serious prospects, other businesses, and anything you can't answer.",
 		execute: async (input, context) => {
 			const id = customerIdFrom(context);
 			deps.crm.recordEvent(id, "handoff_requested", {
 				reason: input.reason,
 				summary: input.summary,
 			});
-			// Dealership leads keep their funnel stage; the event marks the hand-off.
-			if (input.reason === "non_dealership_lead") {
+			if (input.reason === "ready_to_start") {
+				deps.crm.setStage(id, "ready_to_start", {
+					by: "agent",
+					reason: input.summary,
+				});
+			}
+			if (input.reason === "other_business") {
 				deps.crm.setStage(id, "human_follow_up", {
 					by: "agent",
 					reason: input.reason,
@@ -363,7 +346,9 @@ export const createAngelTools = (deps: AngelToolDeps) => {
 			return {
 				alerted,
 				tellCustomer:
-					"A member of the team will pick this up here on WhatsApp shortly.",
+					input.reason === "ready_to_start"
+						? "Thank them and say you'll pass this to the team now to confirm their start and how to pay; once that's done, we'll ask for their vehicle photos and details."
+						: "Say a member of the team will pick this up here on WhatsApp shortly.",
 			};
 		},
 		id: "request_human",
@@ -375,14 +360,14 @@ export const createAngelTools = (deps: AngelToolDeps) => {
 				.min(5)
 				.max(400)
 				.describe(
-					"One or two sentences for the team: who they are and exactly what they want"
+					"One or two sentences for the owner: who they are and exactly what they want"
 				),
 		}),
 	});
 
 	const ignoreMessage = createTool({
 		description:
-			"Stay silent on this turn. ONLY for spam or scams, personal messages meant for the founder (friends, family, personal favours), wrong numbers, or people pitching their services or asking for jobs. Never for anyone who might want a website for any kind of business.",
+			"Stay silent on this turn. For spam or scams, personal messages meant for the founder, wrong numbers, people pitching services or asking for jobs, and in an ongoing chat: a firm 'not interested' or 'stop messaging me' (not_interested), a firm 'I'll think about it and get back to you' with no question (will_get_back), a closing message that needs nothing more (conversation_over), or meaningless or low-quality messages (low_quality). Never for a lead with a question, or anyone who might want our service.",
 		execute: (input, context) => {
 			context.requestContext?.set(IGNORED_KEY, input.category);
 			return Promise.resolve({
@@ -391,7 +376,9 @@ export const createAngelTools = (deps: AngelToolDeps) => {
 			});
 		},
 		id: "ignore_message",
-		inputSchema: z.object({ category: z.enum(IGNORE_CATEGORIES) }),
+		inputSchema: z.object({
+			category: z.enum([...IGNORE_CATEGORIES, ...CLOSE_CATEGORIES]),
+		}),
 	});
 
 	return {
@@ -402,7 +389,6 @@ export const createAngelTools = (deps: AngelToolDeps) => {
 		request_human: requestHuman,
 		save_customer_details: saveCustomerDetails,
 		search_knowledge: searchKnowledgeTool,
-		share_demo_link: shareDemoLink,
 		update_lead_stage: updateLeadStage,
 	};
 };

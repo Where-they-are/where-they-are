@@ -8,10 +8,7 @@ import type { AgentConfig } from "./config.js";
 import { ConversationService } from "./conversation/conversation.service.js";
 import { CrmRepository } from "./crm/crm.repository.js";
 import { buildKnowledge } from "./knowledge/knowledge.js";
-import {
-	type DealershipPricing,
-	dealershipPricing,
-} from "./knowledge/pricing.js";
+import { type SocialMediaOffer, socialMediaOffer } from "./knowledge/offer.js";
 import { ModelTranscriber } from "./media/transcriber.js";
 import { MetaConversionsClient } from "./meta/conversions.js";
 import { MetaReporter } from "./meta/meta-reporter.js";
@@ -28,7 +25,7 @@ export interface AngelRuntime {
 	conversation: ConversationService;
 	crm: CrmRepository;
 	meta: MetaReporter;
-	pricing: () => DealershipPricing;
+	offer: () => SocialMediaOffer;
 	relevance: RelevanceGate;
 }
 
@@ -69,27 +66,25 @@ export const createRuntime = (
 
 	const dataDir = resolve(options.dataDir ?? config.AGENT_DATA_DIR);
 	const crm = new CrmRepository(resolve(dataDir, "crm.sqlite"), options.now);
-	const pricing = () =>
-		dealershipPricing(
+	const offer = () =>
+		socialMediaOffer(
 			{
-				earlyPriceUsd: config.DEALERSHIP_EARLY_PRICE_USD,
-				earlySlots: config.DEALERSHIP_EARLY_PRICE_SLOTS,
-				earlySlotsUsedOffset: config.DEALERSHIP_EARLY_SLOTS_USED_OFFSET,
-				standardPriceUsd: config.DEALERSHIP_STANDARD_PRICE_USD,
+				launchPlaces: config.LAUNCH_OFFER_PLACES,
+				launchPlacesUsedOffset: config.LAUNCH_PLACES_USED_OFFSET,
 			},
-			crm.countPaidDealerships()
+			crm.countLaunchClients()
 		);
 	const meta = new MetaReporter(metaFromConfig(config), crm, options.now);
 	const agent = createAngel({
 		crm,
-		demoUrl: config.DEMO_SITE_URL,
-		knowledge: buildKnowledge(config.DEMO_SITE_URL),
+		examplesUrl: config.EXAMPLES_URL,
+		knowledge: buildKnowledge(),
 		memoryUrl: `file:${resolve(dataDir, "memory.db").replace(/\\/g, "/")}`,
 		meta,
 		model: config.AGENT_MODEL,
 		notifier,
 		now: options.now,
-		pricing,
+		offer,
 		reasoningEffort: config.AGENT_REASONING_EFFORT,
 		takeoverHours: config.HUMAN_TAKEOVER_HOURS,
 	});
@@ -108,13 +103,13 @@ export const createRuntime = (
 	const conversation = new ConversationService({
 		agent,
 		crm,
-		demoUrl: config.DEMO_SITE_URL,
+		examplesUrl: config.EXAMPLES_URL,
 		maxRepliesPerHour: config.MAX_REPLIES_PER_HOUR,
 		notifier,
 		now: options.now,
-		pricing,
+		offer,
 		relevance,
 		transcriber,
 	});
-	return { agent, config, conversation, crm, meta, pricing, relevance };
+	return { agent, config, conversation, crm, meta, offer, relevance };
 };

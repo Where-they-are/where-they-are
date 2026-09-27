@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { TURN_CONTEXT_KEY } from "../agent/angel.js";
 import type { TurnContext } from "../agent/instructions.js";
 import { CrmRepository } from "../crm/crm.repository.js";
-import { dealershipPricing } from "../knowledge/pricing.js";
+import { socialMediaOffer } from "../knowledge/offer.js";
 import { ConsoleOwnerNotifier } from "../notifications/owner-notifier.js";
 import {
 	ConversationService,
@@ -13,16 +13,8 @@ import {
 import { FALLBACK_REPLY, OPT_OUT_REPLY } from "./intents.js";
 
 const ID = "263771234567";
-const pricing = () =>
-	dealershipPricing(
-		{
-			earlyPriceUsd: 250,
-			earlySlots: 5,
-			earlySlotsUsedOffset: 0,
-			standardPriceUsd: 400,
-		},
-		0
-	);
+const offer = () =>
+	socialMediaOffer({ launchPlaces: 5, launchPlacesUsedOffset: 0 }, 0);
 
 let crm: CrmRepository;
 const opened: CrmRepository[] = [];
@@ -45,10 +37,10 @@ const setup = (
 	const service = new ConversationService({
 		agent: { generate: spy } as unknown as Agent,
 		crm,
-		demoUrl: "https://dealership-demo.wheretheyare.co.zw",
+		examplesUrl: "",
 		maxRepliesPerHour,
 		notifier,
-		pricing,
+		offer,
 	});
 	const send = (text: string) =>
 		service.handle({
@@ -76,7 +68,7 @@ describe("ConversationService", () => {
 		]);
 	});
 
-	it("passes first contact, pricing and the customer id to the agent", async () => {
+	it("passes first contact, the offer and the customer id to the agent", async () => {
 		const { send, spy } = setup(async () => ({ text: "ok" }));
 		await send("Hi");
 		const options = spy.mock.calls[0]?.[1] as {
@@ -85,7 +77,7 @@ describe("ConversationService", () => {
 		};
 		const turn = options.requestContext.get(TURN_CONTEXT_KEY) as TurnContext;
 		expect(turn.isFirstContact).toBe(true);
-		expect(turn.pricing.currentPriceUsd).toBe(250);
+		expect(turn.offer.plans.growth.firstMonthUsd).toBe(48);
 		expect(options.requestContext.get("customerId")).toBe(ID);
 		expect(options.memory).toEqual({ resource: ID, thread: `whatsapp-${ID}` });
 	});
@@ -204,7 +196,7 @@ describe("turn records", () => {
 				response: { modelId: "google/gemini-3.8-flash" },
 				steps: [
 					{ toolCalls: [{ payload: { toolName: "save_customer_details" } }] },
-					{ toolCalls: [{ payload: { toolName: "get_pricing" } }] },
+					{ toolCalls: [{ payload: { toolName: "get_offer" } }] },
 				],
 				text: "It's a once-off $250.",
 				totalUsage: { inputTokens: 1500, outputTokens: 60, totalTokens: 1560 },
@@ -218,7 +210,7 @@ describe("turn records", () => {
 			model: "google/gemini-3.8-flash",
 			outcome: "replied",
 			replyCount: 1,
-			tools: ["save_customer_details", "get_pricing"],
+			tools: ["save_customer_details", "get_offer"],
 			usage: { inputTokens: 1500, outputTokens: 60, totalTokens: 1560 },
 		});
 		expect(turn?.latencyMs).toBeGreaterThanOrEqual(0);

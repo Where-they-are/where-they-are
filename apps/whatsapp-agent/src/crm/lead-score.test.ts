@@ -3,37 +3,37 @@ import { describe, expect, it } from "vitest";
 import { scoreLead } from "./lead-score.js";
 
 describe("scoreLead", () => {
-	it("scores a hot dealership as close now", () => {
+	it("scores a ready dealership as close now", () => {
 		expect(
 			scoreLead({
 				businessType: "car_dealership",
 				isDecisionMaker: "yes",
 				leadSignals: {
-					engagedWithDemo: true,
+					activeFacebookPage: true,
+					clearNeed: true,
+					photosReady: true,
 					priceWithinReach: true,
-					stockReady: true,
-					wantsLiveWithin30Days: true,
 				},
 			})
 		).toEqual({
 			band: "close_now",
 			reasons: [
 				"real dealership",
+				"posts irregularly or wants to appear more often",
 				"price within reach",
-				"wants it live within 30 days",
 				"decision-maker",
-				"stock photos and details ready",
-				"engaged with the demo",
+				"active Facebook page",
+				"vehicle photos and details ready",
 			],
 			score: 10,
 		});
 	});
 
-	it("nurtures a dealership that is not ready yet", () => {
+	it("keeps talking to a dealership with a need but no decision yet", () => {
 		const lead = scoreLead({
 			businessType: "car_dealership",
-			isDecisionMaker: "yes",
-			leadSignals: { engagedWithDemo: true },
+			isDecisionMaker: "unknown",
+			leadSignals: { activeFacebookPage: true, clearNeed: true },
 		});
 		expect(lead).toMatchObject({ band: "nurture", score: 5 });
 	});

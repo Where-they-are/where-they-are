@@ -1,64 +1,77 @@
-/** Lead stages from docs/sales-script.md §6: the funnel, then the side exits. */
+import type { PlanId } from "../knowledge/offer.js";
+
+/** Lead stages from docs/sales-script.md §7: the funnel, then the side exits. */
 export const LEAD_STAGES = [
 	"new",
 	"qualified",
-	"demo_sent",
-	"price_discussed",
-	"deposit_requested",
-	"deposit_paid",
-	"building",
-	"delivered",
-	"won",
+	"plan_recommended",
+	"ready_to_start",
+	"paying_client",
+	"onboarded",
+	"active",
+	"renewed",
 	"human_follow_up",
 	"nurture",
 	"not_a_fit",
 	"no_response",
 	"lost",
+	"churned",
 ] as const;
 export type LeadStage = (typeof LEAD_STAGES)[number];
 
-/** Forward progress Angel may make before any money has moved. */
+/** Forward progress Angel may make before the owner takes over. */
 export const PROGRESS_STAGES: readonly LeadStage[] = [
 	"new",
 	"qualified",
-	"demo_sent",
-	"price_discussed",
-	"deposit_requested",
+	"plan_recommended",
+	"ready_to_start",
 ];
 
 /**
- * Stages set only by a confirmed payment or by the owner. Once a lead is
- * here, Angel can no longer change its stage.
+ * Stages set only by the owner, or by the system when a lead firmly says no.
+ * Once a lead is here, Angel can no longer change its stage.
  */
 export const OWNER_ONLY_STAGES: readonly LeadStage[] = [
-	"deposit_paid",
-	"building",
-	"delivered",
-	"won",
+	"paying_client",
+	"onboarded",
+	"active",
+	"renewed",
 	"lost",
+	"churned",
 ];
 
-/** A founding place is taken once the deposit is paid. */
+/** A client who has paid; on Growth or Pro they use a launch place. */
 export const PAID_STAGES: readonly LeadStage[] = [
-	"deposit_paid",
-	"building",
-	"delivered",
-	"won",
+	"paying_client",
+	"onboarded",
+	"active",
+	"renewed",
 ];
 
 /** Stages from earlier releases and what they became. */
 export const LEGACY_STAGES: Record<string, LeadStage> = {
-	closed: "lost",
-	commercial_signal: "price_discussed",
-	engaged: "demo_sent",
+	building: "paying_client",
+	closed: "no_response",
+	commercial_signal: "plan_recommended",
+	delivered: "paying_client",
+	demo_sent: "qualified",
+	deposit_paid: "paying_client",
+	deposit_requested: "ready_to_start",
+	engaged: "qualified",
+	price_discussed: "plan_recommended",
+	won: "paying_client",
 };
 
-/** What Angel has learned that feeds the lead score (sales script §6). */
+/** What Angel has learned that feeds the lead score (sales script §7). */
 export interface LeadSignals {
-	engagedWithDemo?: boolean;
+	/** Has a Facebook page with recent activity. */
+	activeFacebookPage?: boolean;
+	/** Posts irregularly, or wants to appear more often. */
+	clearNeed?: boolean;
+	/** Has vehicle photos and details ready to send. */
+	photosReady?: boolean;
+	/** Said the recommended plan's price works for them. */
 	priceWithinReach?: boolean;
-	stockReady?: boolean;
-	wantsLiveWithin30Days?: boolean;
 }
 
 /** The Click-to-WhatsApp ad a lead came from, when WhatsApp tells us. */
@@ -83,12 +96,16 @@ export interface Customer {
 	createdAt: string;
 	currentChannels: string | null;
 	demoSentAt: string | null;
+	/** How often they want to appear in front of buyers, in their words. */
+	desiredFrequency: string | null;
 	displayName: string | null;
+	facebookUrl: string | null;
 	firstMessage: string | null;
 	hasWebsite: TriState;
 	humanTakeoverUntil: string | null;
 	/** Digits-only phone number; also the Mastra memory resource id. */
 	id: string;
+	instagramUrl: string | null;
 	isDecisionMaker: TriState;
 	lastInboundAt: string | null;
 	lastOutboundAt: string | null;
@@ -100,10 +117,16 @@ export interface Customer {
 	notes: string | null;
 	optedOut: boolean;
 	otherBusinessType: string | null;
+	/** The plan they pay for, set by the owner. */
+	plan: PlanId | null;
+	/** How they post on Facebook and Instagram today, in their words. */
+	postingHabit: string | null;
+	/** The plan Angel recommended. */
+	recommendedPlan: PlanId | null;
 	stage: LeadStage;
 	/** Roughly how many vehicles they usually have, in their words. */
 	stockSize: string | null;
-	/** When they want the site live, in their words. */
+	/** When they want to start, in their words. */
 	timing: string | null;
 	updatedAt: string;
 	vehicleTypes: string | null;
@@ -116,11 +139,15 @@ export type ProfilePatch = Partial<
 		| "businessName"
 		| "businessType"
 		| "currentChannels"
+		| "desiredFrequency"
+		| "facebookUrl"
 		| "hasWebsite"
+		| "instagramUrl"
 		| "isDecisionMaker"
 		| "location"
 		| "name"
 		| "otherBusinessType"
+		| "postingHabit"
 		| "stockSize"
 		| "timing"
 		| "vehicleTypes"
@@ -193,6 +220,9 @@ export const EVENT_TYPES = [
 	"agent_error",
 	"ignored",
 	"score_changed",
+	"plan_recommended",
+	"examples_shared",
+	"client_signed",
 	"payment_requested",
 	"payment_paid",
 	"payment_failed",
@@ -216,6 +246,22 @@ export const IGNORE_CATEGORIES = [
 	"vendor_or_job_pitch",
 ] as const;
 export type IgnoreCategory = (typeof IGNORE_CATEGORIES)[number];
+
+/**
+ * Why Angel stays silent in an ongoing conversation: the lead firmly said no
+ * or that they will come back, the chat has naturally ended, or the message
+ * is meaningless. Leads with a question are never silenced.
+ */
+export const CLOSE_CATEGORIES = [
+	"not_interested",
+	"will_get_back",
+	"conversation_over",
+	"low_quality",
+] as const;
+export type CloseCategory = (typeof CLOSE_CATEGORIES)[number];
+
+/** Every reason Angel may stay silent on a turn. */
+export type SilenceCategory = IgnoreCategory | CloseCategory;
 
 export interface IgnoredContact {
 	/** The owner said to always let Angel reply to this contact. */

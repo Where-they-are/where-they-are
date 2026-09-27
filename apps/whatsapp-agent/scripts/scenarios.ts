@@ -46,7 +46,7 @@ export const scenarios: Scenario[] = [
 			mentions: [DEMO_LINK, /\$250/, /\$125/],
 			neverMentions: [OTHER_AMOUNTS],
 			paymentRequested: true,
-			stages: ["deposit_paid"],
+			stages: ["paying_client"],
 		},
 		id: "happy_path",
 		paynow: { afterTurn: 7, status: "Paid" },
@@ -231,7 +231,7 @@ export const scenarios: Scenario[] = [
 	{
 		description:
 			"The deposit prompt is cancelled: Angel offers to send it again",
-		expect: { paymentRequested: true, stages: ["deposit_requested"] },
+		expect: { paymentRequested: true, stages: ["ready_to_start"] },
 		id: "payment_cancelled",
 		paynow: { afterTurn: 1, status: "Cancelled" },
 		turns: [

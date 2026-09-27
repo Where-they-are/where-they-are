@@ -16,15 +16,10 @@ const configSchema = z.object({
 		.enum(["minimal", "low", "medium", "high"])
 		.default("low"),
 	CHROME_EXECUTABLE_PATH: z.string().optional().default(""),
-	DEALERSHIP_EARLY_PRICE_SLOTS: z.coerce.number().int().min(0).default(5),
-	DEALERSHIP_EARLY_PRICE_USD: z.coerce.number().positive().default(250),
-	DEALERSHIP_EARLY_SLOTS_USED_OFFSET: z.coerce.number().int().min(0).default(0),
-	DEALERSHIP_STANDARD_PRICE_USD: z.coerce.number().positive().default(400),
-	DEMO_SITE_URL: z
-		.string()
-		.url()
-		.default("https://dealership-demo.wheretheyare.co.zw"),
+	EXAMPLES_URL: z.string().url().optional().or(z.literal("")).default(""),
 	HUMAN_TAKEOVER_HOURS: z.coerce.number().positive().default(12),
+	LAUNCH_OFFER_PLACES: z.coerce.number().int().min(0).default(5),
+	LAUNCH_PLACES_USED_OFFSET: z.coerce.number().int().min(0).default(0),
 	MAX_REPLIES_PER_HOUR: z.coerce.number().int().positive().default(30),
 	META_CAPI_TOKEN: z.string().optional().default(""),
 	META_DATASET_ID: z.string().optional().default(""),

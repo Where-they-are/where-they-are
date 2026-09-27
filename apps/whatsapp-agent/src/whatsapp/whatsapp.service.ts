@@ -306,7 +306,7 @@ export class WhatsAppService
 		const reply = isOwnerCommand(text)
 			? await runOwnerCommand(text, {
 					crm: this.runtime.crm,
-					pricing: this.runtime.pricing,
+					offer: this.runtime.offer,
 					takeoverHours: this.config.HUMAN_TAKEOVER_HOURS,
 				})
 			: `Hi! I'm Angel. You're the owner, so I won't treat you as a lead.\n\n${OWNER_HELP}`;

@@ -11,7 +11,7 @@ import type {
 	TurnGate,
 	TurnUsage,
 } from "../crm/crm.types.js";
-import type { DealershipPricing } from "../knowledge/pricing.js";
+import type { SocialMediaOffer } from "../knowledge/offer.js";
 import type { Transcriber } from "../media/transcriber.js";
 import type { OwnerNotifier } from "../notifications/owner-notifier.js";
 import type { RelevanceGate } from "../relevance/relevance-gate.js";
@@ -124,11 +124,12 @@ const describeMediaForLog = (message: IncomingMessage): string =>
 export interface ConversationDeps {
 	agent: Agent;
 	crm: CrmRepository;
-	demoUrl: string;
+	/** Approved example posts Angel may share; empty when there are none. */
+	examplesUrl: string;
 	maxRepliesPerHour: number;
 	notifier: OwnerNotifier;
 	now?: () => Date;
-	pricing: () => DealershipPricing;
+	offer: () => SocialMediaOffer;
 	/** Jev check that keeps Angel quiet for spam, personal messages and wrong numbers. */
 	relevance?: RelevanceGate;
 	/** Turns voice notes into text before anything else sees them. */
@@ -487,12 +488,11 @@ export class ConversationService {
 	): Promise<{ ignoredAs: IgnoreCategory | null; text: string }> {
 		const turn: TurnContext = {
 			customer,
-			demoUrl: this.deps.demoUrl,
+			examplesAvailable: this.deps.examplesUrl.length > 0,
 			humanHandledTranscript: this.humanTranscript(customer.id),
 			isFirstContact,
 			nowInHarare: harareTime(this.now()),
-			payments: this.deps.crm.payments.forCustomer(customer.id),
-			pricing: this.deps.pricing(),
+			offer: this.deps.offer(),
 		};
 		const requestContext = new RequestContext();
 		requestContext.set(CUSTOMER_ID_KEY, customer.id);

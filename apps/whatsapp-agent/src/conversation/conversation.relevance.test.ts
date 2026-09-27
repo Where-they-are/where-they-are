@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { IGNORED_KEY } from "../agent/tools.js";
 import { CrmRepository } from "../crm/crm.repository.js";
-import { dealershipPricing } from "../knowledge/pricing.js";
+import { socialMediaOffer } from "../knowledge/offer.js";
 import type { Transcriber } from "../media/transcriber.js";
 import { ConsoleOwnerNotifier } from "../notifications/owner-notifier.js";
 import type {
@@ -50,19 +50,11 @@ const setup = (options: {
 	const service = new ConversationService({
 		agent: { generate } as unknown as Agent,
 		crm,
-		demoUrl: "https://dealership-demo.wheretheyare.co.zw",
+		examplesUrl: "",
 		maxRepliesPerHour: 30,
 		notifier: new ConsoleOwnerNotifier(),
-		pricing: () =>
-			dealershipPricing(
-				{
-					earlyPriceUsd: 250,
-					earlySlots: 5,
-					earlySlotsUsedOffset: 0,
-					standardPriceUsd: 400,
-				},
-				0
-			),
+		offer: () =>
+			socialMediaOffer({ launchPlaces: 5, launchPlacesUsedOffset: 0 }, 0),
 		relevance: { decide } as unknown as RelevanceGate,
 		...(options.transcriber ? { transcriber: options.transcriber } : {}),
 	});

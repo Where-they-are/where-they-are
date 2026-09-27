@@ -68,9 +68,9 @@ export class AdminController {
 				byStage: formatCounts(funnel.byStage),
 				dealerships: formatCount(funnel.dealerships),
 				demosSent: formatCount(funnel.demosSent),
-				depositsPaid: formatCount(funnel.depositsPaid),
 				ignored: formatCount(funnel.ignored),
 				objections: formatCounts(funnel.objections),
+				payingClients: formatCount(funnel.payingClients),
 				payments: {
 					paidCount: formatCount(payments.paidCount),
 					paidUsd: `$${formatCount(payments.paidUsd)}`,
@@ -86,8 +86,8 @@ export class AdminController {
 					totalTokens: formatCount(turns.totalTokens),
 				},
 			},
+			offer: this.runtime.offer(),
 			payments,
-			pricing: this.runtime.pricing(),
 			turns,
 		};
 	}
