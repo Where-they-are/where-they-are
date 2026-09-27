@@ -1,45 +1,49 @@
-﻿# Where They Are ÔÇö Project Context
+﻿# Where They Are: Project Context
 
-_Last updated: 2026-09-23_
+_Last updated: 2026-09-27_
 
 ## Project identity
 
 **Project:** `wheretheyare.co.zw`
 
-Where They Are is a Zimbabwe-focused service that helps small businesses get modern brochure websites quickly and affordably. The core promise is:
+Where They Are is a **social media management agency for car dealerships** in Zimbabwe. We create and publish consistent, professional Facebook and Instagram content for dealership pages. The core promise is:
 
-> Meet your customers where they are.
+> We help car dealerships get more attention, enquiries and viewing opportunities by keeping their social media active, professional and worth following.
 
-The initial target customers include event organizers, small restaurants, salons, barbers, lawyers, professional services, private schools, and other small and medium-sized businesses in Zimbabwe.
+The primary market is car dealerships, vehicle importers, motor traders and used-car businesses, starting with Mutare and Harare. Lodges, Airbnbs, guesthouses and restaurants may follow later through separate campaigns.
 
 ## Business model
 
-The service offers three website plans with different design depth, included features, revision limits, and support levels:
+Monthly plans, each covering Facebook and Instagram:
 
-- **Starter:** $50 website fee, $5/month hosting, $5/year domain.
-- **Growth:** $150 website fee, $10/month hosting, $5/year domain.
-- **Premium:** $450 website fee, $20/month hosting, $5/year domain.
+- **Starter: Page Alive:** 4 posts/month, $32/month.
+- **Growth:** 12 posts/month, $96/month.
+- **Pro:** 30 posts/month, $240/month.
 
-The initial business objective is to prove that a high-quality site can be delivered in minutes and to build recurring monthly revenue through hosting.
+Launch offer: Growth and Pro are 50% off for the first month only ($48 and $120), for the first five dealerships. Starter stays $32/month.
 
-Domain registration is initially manual because a suitable Zimbabwean domain-registration API is not currently available. The first domain scope is `.co.zw`.
+Websites, Brand Perfection, paid advertising, photography, WhatsApp enquiry handling, marketplace and Google Business Profile management, review collection and catalogue sites are **upsells**, quoted separately. The full scope, pricing and pushback rules are in [`plans/MVP-SCOPE.md`](./plans/MVP-SCOPE.md); the sales flow is in [`docs/sales-script.md`](./docs/sales-script.md).
 
 ## Customer acquisition and delivery flow
 
-The intended sales flow is:
-
 ```text
-Meta advertisement
-  -> WhatsApp conversation
-  -> Validated customer intake
-  -> AI-generated private/watermarked preview
-  -> Paynow payment
-  -> Customer approval or requested changes
-  -> Site publication
-  -> Hosting/domain lifecycle management
+Dealership-specific Meta ad (Leads, WhatsApp conversion location)
+  -> WhatsApp qualification and one recommended plan
+  -> owner confirms and takes payment
+  -> onboarding: page access, branding, vehicle photos and details
+  -> client design system
+  -> monthly content plan
+  -> Claude-assisted production from locked Figma templates and supplied facts
+  -> quality checklist and approval
+  -> scheduling and publishing to Facebook and Instagram
+  -> renewal, retention and upsells
 ```
 
-The system should be approximately 80% automated. WhatsApp is the primary customer interface for the MVP. Customers can send text, English voice notes, and images. Contact-form submissions are retained in the client area for up to one month unless starred.
+Delivery is human-led and Claude-assisted. Publishing uses Meta's own tools; no custom scheduling platform, portal or full CRM is in scope. Posts use only facts the client supplies.
+
+## Retained website platform
+
+Everything below this point records the **earlier automated website platform** (2026-09-23 to 2026-09-25). It is retained as dormant foundation for the website upsell, not the current backlog. Its former business model was website plans (Starter $50, Growth $150, Premium $450, plus hosting and `.co.zw` domains) delivered through a WhatsApp intake → AI preview → Paynow → publication → hosting flow.
 
 ## Architecture
 
@@ -285,7 +289,7 @@ The authoritative MVP scope and feature pushback protocol is [`plans/MVP-SCOPE.m
 - File artifacts are still local filesystem artifacts rather than object-storage artifacts.
 - Coolify deployment is currently a typed adapter around deployment triggering; the new deployment record provides a server-owned lifecycle state, while external reconciliation remains pending. Coolify credentials are optional and the Coolify smoke test is skipped unless `COOLIFY_CHECKS_ENABLED=true`; calling deployment without configured Coolify still returns an unavailable-provider error rather than preventing server startup.
 - Paynow hosted-payment creation/callback verification is not yet wired in `apps/server`; payment records and status transitions are ready for that provider adapter.
-- `apps/whatsapp-agent` (Angel) runs the active dealership experiment. It collects the $125 deposit and balance with Paynow mobile checkout through the shared `packages/paynow` client, keeps its own SQLite CRM and payment records, and reports qualified leads and payments to Meta's Conversions API. See `docs/sales-script.md` and `apps/whatsapp-agent/README.md`.
+- `apps/whatsapp-agent` (Angel) was built for the retired website experiment. It still collects a $125 website deposit and balance with Paynow mobile checkout through the shared `packages/paynow` client, keeps its own SQLite CRM and payment records, and reports qualified leads and payments to Meta's Conversions API. Its prompt must be moved to the social media script in `docs/sales-script.md` before it is used again. See `apps/whatsapp-agent/README.md`.
 - Advanced analytics, support queues, operator consoles, audit systems, teams, invitations, and permission-management UX are intentionally out of scope for this phase.
 - Jev policy decisions are currently synchronous and in-process. Decision audit persistence, route-specific support workflows, and human escalation queues remain out of scope.
 - Public contact submissions currently have validation, idempotency, retention, starring, reading, and archiving primitives; rate limiting and scheduled expiry execution still need to be connected to the runtime.
@@ -318,13 +322,27 @@ Whenever a feature, migration, architecture decision, or important integration i
 
 Keep this document factual and concise enough for a new agent to understand the project without reading the entire repository history.
 
+## Current strategic phase: 2026-09-27
 
-## Current strategic phase — 2026-09-24
+Where They Are changed from website-led dealership services to a focused **social media management agency for car dealerships**. The history:
 
-The project has intentionally shifted from building the full automated multi-vertical platform to validating demand with a **Wizard-of-Oz MVP for Zimbabwean car dealerships**. The active work is now one focused dealership offer, one demo website, Meta Ads, WhatsApp qualification, human-assisted objection handling, and demand measurement.
+- **2026-09-23:** automated website platform.
+- **2026-09-24:** Wizard-of-Oz website validation for car dealerships.
+- **2026-09-25:** Paynow website deposit in WhatsApp.
+- **2026-09-27:** social media management agency.
 
-The active documentation lives in [`docs/`](./docs/). Start with [`docs/plan.md`](./docs/plan.md), then follow [`docs/current_tasks.md`](./docs/current_tasks.md). The broader platform architecture and prior implementation remain documented in this file as retained foundation work. They are not the current backlog.
+The active documentation:
 
-The dealership design source is under `/designs`. The planned dealership demo is to be implemented later as a separate Next.js application, frontend-only and isolated from the central NestJS backend. That application was not created or changed during this documentation update.
+- [`plans/MVP-SCOPE.md`](./plans/MVP-SCOPE.md): scope, plans and pricing.
+- [`docs/plan.md`](./docs/plan.md): the execution plan.
+- [`docs/current_tasks.md`](./docs/current_tasks.md): the ordered task board.
+- [`docs/sales-script.md`](./docs/sales-script.md): the WhatsApp sales flow.
+- [`docs/progress.md`](./docs/progress.md): decisions and evidence.
 
-See [`docs/progress.md`](./docs/progress.md) for the current evidence state and [`docs/ultimate mvp.md`](./docs/ultimate%20mvp.md) for the deferred broader platform target.
+What the existing code means now:
+
+- **`apps/whatsapp-agent` (Angel)** still runs the retired website sales script and the $125 Paynow website deposit.
+  - Update it to the social media script (no in-chat payment), or switch it off, before any new ad points to its number.
+  - Its WhatsApp handling, Jev spam filter, transcription, CRM, owner alerts, Meta Conversions API reporting and eval harness are reusable.
+- **`apps/dealership-demo`** (the Ridgeline Motors sample site) is only relevant to the website upsell.
+- **The website platform** (`apps/server`, `apps/web`, `apps/site-origin`, `apps/worker-whatsapp`, `packages/db`) is dormant foundation for the website upsell. Its deferred charter is Appendix A of `plans/MVP-SCOPE.md`; the broader target is [`docs/ultimate mvp.md`](./docs/ultimate%20mvp.md).
