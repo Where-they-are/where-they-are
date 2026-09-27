@@ -20,21 +20,21 @@ export const relevanceCases: RelevanceCase[] = [
 		expect: "respond",
 		id: "ad_reply",
 		level: "easy",
-		messages: ["Hi, I saw your ad about websites for car dealers"],
+		messages: ["Hi, I saw your ad for car dealership owners"],
 		why: "Direct reply to the ad",
 	},
 	{
 		expect: "respond",
 		id: "price",
 		level: "easy",
-		messages: ["How much is a website?"],
+		messages: ["How much do you charge for the posts?"],
 		why: "Price question",
 	},
 	{
 		expect: "respond",
 		id: "restaurant",
 		level: "easy",
-		messages: ["Do you make websites for restaurants?"],
+		messages: ["Do you do social media for restaurants?"],
 		why: "Non-dealership lead",
 	},
 	{
@@ -140,7 +140,7 @@ export const relevanceCases: RelevanceCase[] = [
 		id: "job",
 		level: "medium",
 		messages: [
-			"Hello, I am looking for a job as a web developer, do you have any vacancies?",
+			"Hello, I am looking for a job as a graphic designer, do you have any vacancies?",
 		],
 		why: "Job seeker",
 	},
@@ -151,7 +151,7 @@ export const relevanceCases: RelevanceCase[] = [
 		id: "church_referral",
 		level: "hard",
 		messages: [
-			"Kin, it's Farai from church. My brother has a car yard in Mutare and wants a website, can you help him?",
+			"Kin, it's Farai from church. My brother has a car yard in Mutare and needs help with his Facebook page, can you help him?",
 		],
 		why: "Personal tone, but a real referral",
 	},
@@ -160,7 +160,7 @@ export const relevanceCases: RelevanceCase[] = [
 		id: "friend_restaurant",
 		level: "hard",
 		messages: [
-			"Hey bro, long time! I've just opened a restaurant in Avondale and would love a website like the ones you guys do",
+			"Hey bro, long time! I've just opened a restaurant in Avondale and my Facebook page is dead, can you guys help?",
 		],
 		why: "Friend who is also a lead",
 	},
@@ -168,8 +168,8 @@ export const relevanceCases: RelevanceCase[] = [
 		expect: "respond",
 		id: "prado_buyer",
 		level: "hard",
-		messages: ["Is the Prado on your website still available?"],
-		why: "Came from the demo; Angel should explain it is a sample",
+		messages: ["Is the Prado in your ad still available?"],
+		why: "Came from an ad showing a vehicle post; Angel explains we don't sell cars",
 	},
 	{
 		expect: "respond",
@@ -178,13 +178,13 @@ export const relevanceCases: RelevanceCase[] = [
 		messages: [
 			"Is the 2024 Land Cruiser Prado still available? Can I come for a test drive on Saturday?",
 		],
-		why: "Sounds like a wrong number, but it came from the demo",
+		why: "Sounds like a wrong number, but it came from our ad",
 	},
 	{
 		expect: "respond",
 		id: "instalments",
 		level: "hard",
-		messages: ["Can I pay for the website in instalments?"],
+		messages: ["Can I pay monthly with EcoCash?"],
 		why: "Buying signal",
 	},
 	{
@@ -208,7 +208,7 @@ export const relevanceCases: RelevanceCase[] = [
 		id: "association",
 		level: "hard",
 		messages: [
-			"Hello, I'm with a motor dealers association. We have 40 members who might need websites",
+			"Hello, I'm with a motor dealers association. We have 40 members who might need help with their pages",
 		],
 		why: "Partnership that is really a lead",
 	},
@@ -216,14 +216,14 @@ export const relevanceCases: RelevanceCase[] = [
 		expect: "respond",
 		id: "online_store",
 		level: "hard",
-		messages: ["Can you build me an online store to sell clothes?"],
+		messages: ["Can you run Facebook ads for my clothing shop?"],
 		why: "Out-of-scope request, still a lead to hand over",
 	},
 	{
 		expect: "respond",
 		id: "batched_garage",
 		level: "hard",
-		messages: ["Hi", "I'm Tino", "I need a website for my garage"],
+		messages: ["Hi", "I'm Tino", "I need someone to post my cars"],
 		why: "Batched messages form a lead",
 	},
 	{
@@ -252,7 +252,7 @@ export const relevanceCases: RelevanceCase[] = [
 		id: "agency_pitch",
 		level: "hard",
 		messages: [
-			"We offer SEO and Google Ads packages for web design agencies, starting from $99/month. Interested?",
+			"We are a digital marketing agency. We can run Facebook ads and grow your followers from $99/month. Interested?",
 		],
 		why: "Vendor pitch aimed at us",
 	},
@@ -264,5 +264,30 @@ export const relevanceCases: RelevanceCase[] = [
 			"Your EcoCash account has been suspended. Click https://ecocash-verify.co to restore it within 24 hours",
 		],
 		why: "Phishing",
+	},
+	{
+		expect: "respond",
+		id: "followers_dealer",
+		level: "hard",
+		messages: [
+			"I have a car sales in Harare, can you help me get more followers and people asking about my cars?",
+		],
+		why: "Mentions followers like a vendor would, but it's a dealer asking for our service",
+	},
+	{
+		expect: "respond",
+		id: "lodge",
+		level: "medium",
+		messages: ["We have a lodge in Nyanga, do you manage Facebook pages?"],
+		why: "Future market: still gets a reply and a hand-off",
+	},
+	{
+		expect: "ignore",
+		id: "followers_seller",
+		level: "hard",
+		messages: [
+			"Buy 5000 real Facebook followers for your business page, only $15! DM me",
+		],
+		why: "Followers-selling spam aimed at us",
 	},
 ];
