@@ -1,82 +1,129 @@
 # Current Progress
 
-_Last updated: 2026-09-25_
+_Last updated: 2026-09-27_
 
 ## Current phase
 
-Where They Are has deliberately changed direction. The immediate objective is no longer to complete the automated multi-vertical website platform. The immediate objective is to test demand with a **Wizard-of-Oz MVP for Zimbabwean car dealerships**.
+**Direction change (2026-09-27):** Where They Are changed from website-led dealership services to a focused **social media management agency for car dealerships**. We create and publish consistent, professional Facebook and Instagram content for dealership pages. Websites, branding, paid advertising, photography, WhatsApp handling and other services are upsells, not the initial offer.
 
-A Wizard-of-Oz MVP means that the customer sees a focused, credible product and receives a useful sales experience, while some delivery work remains manual behind the scenes. This is intentional. The purpose of this phase is to learn whether car dealers will respond to the offer, engage with the agent, review a dealership website demo, and pay for a site before investing in deeper automation.
+The strategic summary:
 
-## What exists
+> We help car dealerships get more attention, enquiries and viewing opportunities by keeping their social media active, professional and worth following.
 
-The repository already contains a broader monorepo and central NestJS architecture. It also contains earlier work for WhatsApp intake, Jev/OpenRouter routing, structured AI extraction, site generation, tenant data, releases, payments, domains, hosting, contact submissions, approvals, and publication metadata.
+## What has been decided
 
-That code is retained as a foundation. It is **not the active delivery target for this validation phase**. Agents must not expand or polish those deeper features unless a task in `docs/current_tasks.md` explicitly requires it for the dealer experiment.
+### Target market
 
-The dealership design work is available under `/designs`. It is the source material for the single demo website. A separate Next.js application for the demo website is planned, but it has not been requested for implementation in this documentation task.
+- **Primary:** car dealerships, vehicle importers, motor traders and used-car businesses in Zimbabwe, starting with Mutare and Harare.
+- **Later:** lodges, Airbnbs, guesthouses and restaurants, through separate campaigns and creative.
 
-## Current active outcome
+### Pricing and launch offer
 
-The active outcome is a working validation loop:
+| Plan | Posts per month | Price | Launch first month |
+|---|---:|---:|---:|
+| Starter: Page Alive | 4 (about one every 7 days) | $32/month | none: $32 |
+| Growth | 12 (about three a week) | $96/month | $48 |
+| Pro | 30 (about one a day) | $240/month | $120 |
 
-```text
-car-dealer Meta ad
-  -> WhatsApp conversation
-  -> dealership-specific qualification
-  -> demo link
-  -> objection handling
-  -> human-assisted follow-up
-  -> demand and payment signal
-```
+The 50% first-month offer applies to Growth and Pro only, for the first five dealerships. Every plan covers Facebook and Instagram. The discount is an introduction, not a guarantee of sales.
 
-The agent must qualify the lead for the dealership offer. It must not pretend that the full automated website-generation platform is already the product being sold.
+### Ad direction
 
-## Built for the experiment (2026-09-25)
+Sell the transformation, not the mechanism ("This could be your dealership.", "Which dealership would you trust?", "Get more people asking about your cars."). The campaign setup:
 
-- `apps/dealership-demo`: the Ridgeline Motors sample site (Next.js, Docker), set up for deployment at `https://dealership-demo.wheretheyare.co.zw`. Its vehicle-detail, sell, finance, service and contact pages are still simple placeholders.
-- `apps/whatsapp-agent` ("Angel"): a new NestJS + whatsapp-web.js + Mastra agent that narrows the WhatsApp conversation to dealer qualification. It has these parts:
-  - **Conversation:** it follows `docs/sales-script.md`: the founding offer ($250 instead of $400 for the first five dealerships, with a free domain, free stock import and free fixes within 48 hours) and the demo link early, one qualification question at a time, a 0–10 lead score, and objections from approved knowledge only. Non-dealership businesses are welcomed and handed over.
-  - **Close (added 2026-09-25):** Angel takes the $125 deposit through Paynow mobile checkout (EcoCash or OneMoney) in the chat. When Paynow confirms, the customer gets the materials checklist and the owner gets an alert. The owner marks delivery with `#delivered` and requests the balance with `#balance`.
-  - **Meta:** qualified leads, deposit requests and payments are reported to the Conversions API.
-  - **Relevance and media:** a Jev relevance gate keeps Angel silent on spam, personal messages, wrong numbers and pitches. Voice notes are transcribed.
-  - **CRM:** a SQLite CRM records every customer, message, turn (model, tokens, latency, outcome), funnel event, payment and ignored message. This is the tracking record Task 6 needs; a dashboard for it stays deferred.
-  - **Evidence:** 26/26 live sales scenarios (Paynow faked) and 31/31 live relevance cases pass. See `apps/whatsapp-agent/README.md`.
+- Leads objective, with WhatsApp (+263 77 510 1506) as the conversion location.
+- Mutare and Harare, ages 25 to 65+.
+- Advantage+ audience and placements.
+- $7/day for a 7-day test, with the three creatives in one ad set.
 
-## What is not yet complete
+Fictional mockups must be labelled.
 
-- The deployed demo URL has not been smoke-tested on a phone.
-- The Meta campaign has not been launched for the focused dealership offer.
-- Angel has not been linked to the live business number, and no human hand-off has been tested end to end on real WhatsApp.
-- Paynow and the Meta Conversions API have not been tested with real credentials: a Paynow test-mode payment and a Meta test event are still needed (Task 4b).
-- The exact ad creative, budget, tracking sheet, and validation thresholds still need to be approved.
-- No demand conclusion has been reached.
+### Sales flow
 
-## Evidence required before expansion
+The steps:
 
-The team must collect enough evidence to decide whether car dealerships show real interest. Evidence includes qualified conversations, demo views, replies after the demo, objection patterns, requests for pricing or next steps, deposits or payments, and the amount of manual effort required to move a lead forward.
+1. A short opening.
+2. The dealership name and city.
+3. How they post today.
+4. How often they want to appear in front of buyers.
+5. One recommended plan with the correct price.
+6. A hand-off to the owner, who confirms the start and collects payment.
 
-A large number of clicks without qualified conversations is not proof of demand. A positive conversation without a commercial commitment is interest, not validation. The decision to expand the product should be based on observed behavior and recorded evidence.
+See [`sales-script.md`](./sales-script.md).
 
-## Documentation authority during this phase
+### Upsell roadmap
 
-- `docs/plan.md` defines the immediate execution plan.
-- `docs/current_tasks.md` defines the active task list.
-- `docs/vision.md` defines the current focused vision.
-- `docs/ultimate mvp.md` defines the later platform target and is not the current sprint backlog.
-- `plans/MVP-SCOPE.md` defines the current validation scope boundary.
-- `CONTEXT.md` remains the broader technical context and architecture record.
+- **Brand Perfection:** a one-time visual upgrade, with catalogue images sold in defined batches.
+- **Content and advertising:** vehicle photography and walkaround videos; paid Facebook and Instagram ads.
+- **Channel management:** WhatsApp enquiry handling, marketplace listing management, Google Business Profile management and review collection.
+- **Websites:** vehicle catalogue or inventory websites, and full dealership websites.
+
+### Staffing assumptions
+
+- The CEO's time should go mostly to acquisition and sales (60% to 70%), then retention (15% to 20%), quality and creative direction (10% to 15%), and systems (5% to 10%).
+- **Example month:** 5 Starter, 10 Growth and 3 Pro clients give $1,840/month revenue and 230 posts. At 15 minutes per post, that is about 57.5 production hours.
+- **First assistant:** a part-time assistant taking 50% of production would save the CEO about 28.75 hours a month, at about $300/month ($200 salary + $100 AI subscription). Hire when recurring revenue is reliable and the recovered time goes to acquiring clients.
+- The founder reviews every post until an assistant proves consistent quality.
+
+## What exists in the repository
+
+Built for the earlier website direction, now dormant or needing changes:
+
+- **`apps/whatsapp-agent` ("Angel"):** the WhatsApp agent. It still runs the retired website sales script, with the $125 Paynow website deposit.
+  - It must be updated to the social media script, or switched off, before any new ad points to its number.
+  - Its reusable parts still fit the new flow: WhatsApp handling, the Jev spam filter, voice-note transcription, the CRM and lead tracking, owner hand-off alerts, Meta Conversions API reporting and the live eval harness.
+- **`apps/dealership-demo`:** the Ridgeline Motors sample website, now only relevant to the website upsell.
+- **The automated website platform** (`apps/server`, `apps/web`, `apps/site-origin`, `apps/worker-whatsapp`): retained as the foundation for the website upsell (see `plans/MVP-SCOPE.md` Appendix A and [`ultimate mvp.md`](./ultimate%20mvp.md)).
+
+## What is not yet done
+
+- The open commercial terms in [`plan.md`](./plan.md) section 12 are unanswered: payment method and timing, minimum term, how launch places are counted, missing photos, approval rhythm, Facebook-only clients and upsell prices.
+- **Nothing for delivery exists yet:** the organisation design system, Figma templates, client design-system template, intake form and quality checklist.
+- The three ad creatives do not exist yet.
+- The WhatsApp sales flow is not yet live for the new offer, and Angel has not been updated.
+- No campaign has run, no dealership has paid, and no renewal data exists yet.
+
+## Evidence required
+
+Measure:
+
+- qualified dealership conversations and what they cost;
+- paying clients by plan;
+- posts delivered against posts promised;
+- production minutes per post;
+- quality errors caught before publishing;
+- renewals and reasons for churn.
+
+Do not judge the business on impressions, clicks, likes or conversation volume alone.
+
+## Documentation authority
+
+- `plans/MVP-SCOPE.md`: the scope boundary, plans and pricing.
+- `MVP.md`: a short statement of the MVP.
+- `docs/plan.md`: the execution plan.
+- `docs/current_tasks.md`: the ordered task board.
+- `docs/sales-script.md`: the WhatsApp sales flow.
+- `docs/vision.md`: the product vision.
+- `CONTEXT.md`: the technical and architecture record.
+- `docs/ultimate mvp.md`: the deferred website platform.
+
+## History
+
+- **2026-09-23:** automated website platform for Zimbabwean SMEs.
+- **2026-09-24:** Wizard-of-Oz website validation for car dealerships.
+  - Built the Ridgeline Motors demo site.
+  - Built Angel: qualification, the Jev spam filter, transcription, the CRM, and 26/26 live sales scenarios and 31/31 relevance cases passing.
+- **2026-09-25:** added the Paynow $125 website deposit and balance in WhatsApp, and Meta Conversions API reporting.
+- **2026-09-27:** changed to a social media management agency for car dealerships. Websites became an upsell.
 
 ## References
 
-[1]: ./plan.md "Current car-dealership validation plan"
+[1]: ./plan.md "Current execution plan"
 
-[2]: ./current_tasks.md "Current validation tasks"
+[2]: ./current_tasks.md "Current tasks"
 
-[3]: ./ultimate%20mvp.md "Ultimate MVP after demand validation"
+[3]: ./sales-script.md "Dealership social media sales script"
 
-[4]: ../plans/MVP-SCOPE.md "Current validation scope charter"
+[4]: ../plans/MVP-SCOPE.md "MVP scope charter"
 
-[5]: ../CONTEXT.md "Broader project context"
-
-[6]: ../designs/ "Dealership design source material"
+[5]: ../CONTEXT.md "Project context"

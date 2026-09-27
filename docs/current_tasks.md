@@ -1,132 +1,127 @@
 # Current Tasks
 
-_Last updated: 2026-09-25_
+_Last updated: 2026-09-27_
 
-This is the active task board for the Wizard-of-Oz validation MVP. Work must follow this order. Do not start a later task while the current task is unfinished, untested, and unevaluated.
+This is the active task board for the dealership social media management MVP. Work in this order. Do not start a later task while the current one is unfinished, unchecked or unevaluated, unless it is independent and the owner agrees.
 
 ## Task rules
 
-Every task must be broken into small todos before implementation. Each todo must be completed end to end, including the user-visible behavior, the manual operating step where applicable, tests or verification, documentation, and a logical review of what could go wrong.
+Break every task into small todos before starting. Finish each todo end to end: the customer-visible result, the manual operating step, the checks, the documentation and a review of what could go wrong. Every feature or fix gets its own commit. Do not install packages automatically; give the owner the exact command if a package is genuinely needed.
 
-Agents must not move to the next task because the code compiles or because a happy-path mock works. They must run the relevant checks, fix defects, test the real handoff, and record evidence. Every feature or fix requires its own commit. Do not install packages automatically; provide the user with an exact command if a package is genuinely required.
+If a task reveals a problem that affects winning, delivering or keeping clients, fix it before moving on. Otherwise record it as deferred.
 
-If a task reveals a problem that affects the current validation loop, fix it before moving on. If it is unrelated, record it as deferred instead of changing direction.
+The website-build tasks from the 2026-09-24 experiment are retired. Websites are now an upsell (see [`../plans/MVP-SCOPE.md`](../plans/MVP-SCOPE.md)).
 
 ## Ordered task list
 
-### Task 1 - Confirm the dealer offer and validation hypothesis
+### Task 1 - Finalise the three plans and pricing
 
-- [ ] Write the one-sentence offer for car dealerships.
-- [ ] Define the customer problem being tested: a dealership may have no website or may have a weak website that does not present the business credibly.
-- [ ] Define the target lead: the owner or decision-maker of a Zimbabwean car dealership.
-- [ ] Define the commercial action being tested: serious request for a dealership website, pricing discussion, deposit, or payment.
-- [ ] Define the evidence threshold that will trigger continuation, revision, or stopping.
+- [x] Starter: Page Alive, 4 posts/month, $32/month.
+- [x] Growth, 12 posts/month, $96/month; $48 for the first month for the first five dealerships.
+- [x] Pro, 30 posts/month, $240/month; $120 for the first month for the first five dealerships.
+- [ ] Owner answers the open questions in [`plan.md`](./plan.md) section 12: payment method and timing, minimum term and cancellation, how launch places are counted, missing photos, approval rhythm, Facebook-only clients, upsell prices.
+- [ ] Record the answers in `plan.md`, `plans/MVP-SCOPE.md` and `sales-script.md`.
 
-**Completion evidence:** an approved offer, target definition, hypothesis, and decision threshold recorded in `docs/plan.md`.
+**Completion evidence:** every price and term the sales script quotes is confirmed by the owner and written down.
 
-### Task 2 - Prepare the single dealership demo website
+### Task 2 - Create the organisation design system and content templates
 
-- [ ] Review the designs under `/designs` and select the single demo direction.
-- [ ] Specify the demo pages, sections, dealership facts, vehicle examples, calls to action, and visual hierarchy.
-- [ ] Use only approved or clearly labelled demo information. Do not present invented dealership results, inventory, awards, prices, or testimonials as real.
-- [ ] Create the demo as a separate Next.js application when implementation is authorized.
-- [ ] Keep the demo app isolated and frontend-only. Do not add a backend or connect it directly to the existing database.
-- [ ] Deploy the demo to a stable public URL.
-- [ ] Verify mobile layout, speed, link behavior, WhatsApp/phone actions, and private source assets.
+- [ ] Organisation design system in Figma: colours, typography, spacing and grid, logo usage, price badges, image treatments, post dimensions, content categories, tone of voice, approved calls to action.
+- [ ] Locked Figma templates and components for each approved format: vehicle listing, new arrival, comparison, features and benefits, price update, special offer, buyer tip, customer delivery, sold vehicle, stock highlight, engagement question, dealership update.
+- [ ] Facebook and Instagram sizes for each template.
+- [ ] A client design-system template (logo, colours, fonts, location, contact details, vehicle categories, pricing style, tone, prohibited wording, platform requirements, approved examples).
 
-**Current status:** documentation only. The app must not be implemented as part of the documentation update.
+**Completion evidence:** a sample month of posts produced from the templates in under 15 minutes per post.
 
-**Completion evidence:** a public demo URL, design/source reference, content review, and a short manual smoke-test record.
+### Task 3 - Create the three main ad formats
 
-### Task 3 - Define and configure the Meta Ads test
+- [ ] "This could be your dealership": a polished example page using our real post formats.
+- [ ] "Which dealership would you trust?": a neglected page next to an active, professional one.
+- [ ] "Get more people asking about your cars": a polished vehicle post and an enquiry path.
+- [ ] Square/feed and vertical Stories/Reels versions of each.
+- [ ] Every fictional mockup labelled "Demo concept", "Illustrative example" or "Example dealership page"; no unlabelled fictional metrics or badges.
 
-- [ ] Write one focused campaign brief for Zimbabwean car dealerships.
-- [ ] Create the advert promise around a dealership-specific website, not generic AI website creation.
-- [ ] Prepare a small set of creative variants using the approved demo.
-- [ ] Use WhatsApp as the destination.
-- [ ] Define budget, test dates, location, campaign names, and the owner responsible for monitoring replies.
-- [ ] Define how each conversation will be recorded without storing unnecessary sensitive data.
-- [ ] Avoid claims that a website guarantees sales, larger deals, rankings, or revenue.
+**Completion evidence:** three approved creatives, each checked against the claims rules.
 
-**Completion evidence:** approved campaign brief, ad copy, creative references, launch settings, and tracking record.
+### Task 4 - Set up the WhatsApp sales flow
 
-### Task 4 - Narrow the WhatsApp agent to dealer qualification
+- [ ] Run the flow in [`sales-script.md`](./sales-script.md) on +263 77 510 1506.
+- [ ] Decide whether Angel (`apps/whatsapp-agent`) answers first or a person does. Angel still runs the retired website script with the $125 Paynow deposit, so it must be updated to the social media script, or switched off, before any ad points to its number.
+- [ ] If Angel is used: new offer, plan recommendation, qualification questions and escalation rules; no in-chat payment; live evals updated and passing.
+- [ ] Test the full conversation, including every objection and every escalation to the owner.
 
-- [ ] Change the first response so it identifies the focused dealership offer.
-- [ ] Ask for the lead's name.
-- [ ] Ask for the dealership name.
-- [ ] Ask what types of cars the dealership sells or deals in.
-- [ ] Ask where the dealership is located.
-- [ ] Ask whether the lead has seen the dealership demo.
-- [ ] Provide the demo link when the lead has not seen it.
-- [ ] Ask a small number of follow-up questions only when they help qualify the opportunity.
-- [ ] Classify the lead as qualified, not yet qualified, unsupported, or requiring human follow-up.
-- [ ] Preserve the existing deeper code where useful, but do not expose unsupported automation promises.
-- [ ] Provide a clear handoff to the owner when there is an objection, buying signal, unusual request, or uncertainty.
+**Completion evidence:** test transcripts for the common paths and a verified hand-off to the owner.
 
-**Completion evidence:** approved conversation script, test transcripts for common paths, and a verified human handoff.
+### Task 5 - Build the client intake form
 
-**Current status (2026-09-25):** the qualification flow and escalation paths are implemented in `apps/whatsapp-agent`, with transcripts from `pnpm --filter @where-they-are/whatsapp-agent eval`. Still open: the owner approving the script, and a verified handoff on the real business number.
+- [ ] Collect: dealership name, location, Facebook link, Instagram link (if any), plan, page access, logo, colours, contact details, vehicle photos and details (prices, mileage, engine, gearbox, duty status), offers, events and updates.
+- [ ] A simple form or WhatsApp checklist; no portal.
+- [ ] A way to add new vehicles during the month.
 
-### Task 4b - Close the sale in WhatsApp (added 2026-09-25)
+**Completion evidence:** one real or test dealership onboarded from the form without back-and-forth.
 
-- [ ] Angel follows `docs/sales-script.md`: founding offer and demo link early, one qualification question per message, lead score and stages.
-- [ ] Angel requests the $125 deposit through Paynow mobile checkout (EcoCash or OneMoney) and confirms it only after Paynow reports it paid.
-- [ ] After payment, Angel sends the materials checklist and the 3-day delivery promise; the owner is alerted.
-- [ ] The owner marks delivery with `#delivered`, and the $125 balance is requested through Paynow.
-- [ ] Qualified leads, deposit requests and payments are reported to Meta through the Conversions API.
-- [ ] Verify end to end against Paynow's test mode before live ads.
+### Task 6 - Create the quality checklist
 
-**Completion evidence:** a paid Paynow test transaction moving a lead from qualified to deposit paid, the customer confirmation, the owner alert, and a Meta test event.
+- [ ] The checklist from `plan.md` section 7.3 as a one-page, tick-box list used before every post is scheduled.
+- [ ] A record of errors caught, so recurring mistakes lead to template or process fixes.
 
-### Task 5 - Implement truthful objection handling
+**Completion evidence:** the checklist used on the sample month from Task 2.
 
-- [ ] Handle the objection that the dealership is too small or not ready for a website.
-- [ ] Explain that the question is not only whether the dealership already has a website, but whether its online presence presents the business strongly enough.
-- [ ] Explain that a credible website may help the dealership appear more established when customers or business partners evaluate it, without promising that it will produce a specific result.
-- [ ] Ask where the dealership is located when local context is useful.
-- [ ] Use one competitor example only when the business owner has supplied or manually verified the example.
-- [ ] Never invent a competitor, website, location, market position, or claim about a competitor.
-- [ ] Escalate objections that require negotiation, custom pricing, legal claims, or unsupported promises.
+### Task 7 - Track qualified leads, conversions and retention
 
-**Completion evidence:** objection-response matrix, verified competitor source where used, and transcript tests showing safe escalation.
+- [ ] A simple record (sheet or the existing agent CRM) of every lead: source ad, dealership, city, stage, recommended plan, outcome, reason lost.
+- [ ] A client record: plan, start date, first-month price, posts promised against posts delivered, renewal date, renewed or churned and why.
+- [ ] Weekly numbers: cost per qualified conversation, cost per paying client, plan mix, renewals.
 
-### Task 6 - Run the first controlled campaign and record demand
+**Completion evidence:** the record in use from the first ad conversation onwards.
 
-- [ ] Launch only after the demo, script, monitoring, and tracking record are ready.
-- [ ] Record ad spend, conversations, qualified leads, demo-link delivery, demo engagement when observable, follow-ups, objections, pricing requests, and commercial commitments.
-- [ ] Review conversations on a fixed cadence during the test.
-- [ ] Do not optimize only for clicks. Evaluate qualified conversations and commercial intent.
-- [ ] Keep changes controlled so that the team knows which creative or message changed.
-- [ ] Stop or revise misleading creative, unsupported claims, or a broken handoff immediately.
+### Task 8 - Run the first 7-day campaign
 
-**Completion evidence:** dated campaign record and conversation summary.
+- [ ] Launch only when Tasks 1 to 7 are ready enough to answer, sell and deliver.
+- [ ] Leads objective, WhatsApp conversion location, Mutare and Harare, 25 to 65+, Advantage+ audience and placements, $7/day, 7 days, the three creatives in one ad set.
+- [ ] Review conversations daily; stop any misleading creative or broken hand-off immediately.
 
-### Task 7 - Decide whether to continue, revise, or expand
+**Completion evidence:** a dated campaign record with spend, conversations, qualified leads and paying clients.
 
-- [ ] Compare the observed evidence with the threshold from Task 1.
-- [ ] Identify the strongest message, objection, and lead type.
-- [ ] Estimate the manual time required per qualified lead and per delivered site.
-- [ ] Decide whether to continue the dealer offer, revise the offer or demo, or stop the experiment.
-- [ ] If demand is demonstrated, define the smallest next automation task.
-- [ ] If demand is not demonstrated, do not respond by building more platform features. Record the learning and change the hypothesis first.
+### Task 9 - Deliver the first clients
 
-**Completion evidence:** a written decision with supporting counts, examples, costs, and next step.
+- [ ] Set up each client's design system.
+- [ ] Monthly content plan matching the plan's post count.
+- [ ] Produce with Claude from the templates and the supplied facts only; review every post against the checklist; publish to Facebook and Instagram.
+- [ ] Measure production minutes per post.
 
-## Deferred until demand is demonstrated
+**Completion evidence:** every promised post delivered for each client's first month.
 
-- Multi-vertical acquisition.
-- Full automated website generation for every supported business group.
-- Production authentication replacement beyond what the dealer experiment actually needs.
-- Hosting lifecycle completion (renewals, automated hosting billing). Paynow deposit and balance collection in WhatsApp is no longer deferred: see Task 4b.
-- Full portal workflows.
-- Modular registry expansion across all business groups.
-- Queues, operations consoles, CRM, support tickets, advanced analytics, and broad automation.
+### Task 10 - Recruit and train the first assistant
+
+- [ ] Hire only when recurring revenue is reliable, there is enough work, and the recovered time has a clear acquisition plan (see `plan.md` section 8).
+- [ ] Training examples and a review before any live client work.
+- [ ] Founder reviews every post, then moves to sampling and weekly audits after consistent quality.
+
+**Completion evidence:** an assistant producing posts that pass review without founder rework.
+
+### Task 11 - Retention and upsells
+
+- [ ] Check in with each client before the end of month one.
+- [ ] Record renewal or churn and the reason.
+- [ ] Offer upsells only where they fit: Brand Perfection, photography, paid ads, WhatsApp handling, marketplace and Google Business Profile management, review collection, catalogue sites, websites.
+
+**Completion evidence:** month-two renewal rate and reasons recorded.
+
+## Deferred
+
+- Full dealership websites and catalogue sites (retained platform; upsell only).
+- AI customer assistants for clients.
+- A custom scheduling or publishing tool, client portal or full CRM.
+- Automated in-chat payment collection.
+- Lodges, Airbnbs, guesthouses and restaurants.
 
 ## References
 
-[1]: ./plan.md "Current car-dealership validation plan"
+[1]: ./plan.md "Current execution plan"
 
-[2]: ./progress.md "Current validation progress"
+[2]: ./progress.md "Current progress"
 
-[3]: ../plans/MVP-SCOPE.md "Current validation scope charter"
+[3]: ./sales-script.md "Dealership social media sales script"
+
+[4]: ../plans/MVP-SCOPE.md "MVP scope charter"
