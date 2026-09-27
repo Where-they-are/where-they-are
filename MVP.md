@@ -1,53 +1,79 @@
-# Where They Are MVP Direction
+# Where They Are MVP
 
-_Last updated: 2026-09-24_  
-_Status: **redirect to the active Wizard-of-Oz validation plan**_
+_Last updated: 2026-09-27_  
+_Status: **active MVP: social media management for car dealerships**_
 
 ## Current authority
 
-The project has intentionally changed direction. The active MVP is now a **Wizard-of-Oz demand-validation experiment for Zimbabwean car dealerships**, not the full automated multi-vertical platform described in the former version of this document.
+Where They Are is now a **social media management agency for car dealerships**. We create and publish consistent, professional Facebook and Instagram content for dealership pages. Websites, branding, paid advertising, photography and other digital services are upsells, not the initial offer.
 
-Agents must begin with:
+This replaces the 2026-09-24 website validation experiment. Agents must begin with:
 
-1. [`docs/plan.md`](./docs/plan.md) — the active execution plan;
-2. [`docs/current_tasks.md`](./docs/current_tasks.md) — the ordered task board;
-3. [`docs/vision.md`](./docs/vision.md) — the focused dealership vision;
-4. [`docs/progress.md`](./docs/progress.md) — the current evidence and status;
-5. [`plans/MVP-SCOPE.md`](./plans/MVP-SCOPE.md) — the active scope boundary.
+1. [`plans/MVP-SCOPE.md`](./plans/MVP-SCOPE.md): the active scope boundary, plans and pricing.
+2. [`docs/plan.md`](./docs/plan.md): the active execution plan.
+3. [`docs/current_tasks.md`](./docs/current_tasks.md): the ordered task board.
+4. [`docs/sales-script.md`](./docs/sales-script.md): the WhatsApp sales flow.
+5. [`docs/vision.md`](./docs/vision.md): the product vision.
+6. [`docs/progress.md`](./docs/progress.md): the current evidence and status.
 
-The current validation journey is:
+## The MVP
+
+The MVP is the smallest system that lets us win dealership clients, deliver their posts every month at a consistent quality, and keep them paying:
 
 ```text
-car-dealer Meta ad
-  -> WhatsApp qualification
-  -> dealership demo
-  -> objection handling
-  -> human follow-up
-  -> demand or payment signal
+dealership-specific Meta ad
+  -> WhatsApp qualification and plan recommendation
+  -> owner confirms and takes payment
+  -> onboarding
+  -> client design system
+  -> monthly content plan
+  -> Claude-assisted production from Figma templates
+  -> quality review and approval
+  -> scheduling and publishing to Facebook and Instagram
+  -> renewal, retention and upsells
 ```
 
-## Required agent behavior
+It consists of:
 
-Finish the current task end to end before moving to the next task. Break every task into small todos. Run the relevant tests and manual checks. Fix bugs, integration failures, security problems, data problems, and logical oversights before marking the task complete. Record evidence and make a separate commit for every feature or fix.
+- **Dealership onboarding:** a simple intake of the dealership's name, location, Facebook and Instagram pages, chosen plan, branding, contact details and page access.
+- **Client brand and design-system setup:** logo, colours, fonts, contact details, pricing style, tone, prohibited wording and approved examples, on top of the organisation's own design system.
+- **Vehicle and business-information collection:** vehicle photos, prices, mileage, engine, gearbox, duty status, offers, events and dealership updates, all supplied by the client.
+- **Content planning:** a monthly plan per client that matches the plan's post count and mixes the approved formats (listings, new arrivals, comparisons, offers, buyer tips, deliveries, sold posts, engagement questions, dealership updates).
+- **Claude-assisted creative production:** ideation, copy and production that work only from the relevant design system and the supplied facts.
+- **Figma templates and components:** locked templates for every approved post format, so every post stays consistent.
+- **Review and approval:** the quality checklist on every post; the founder reviews everything until an assistant has proven consistent quality.
+- **Scheduling and publishing:** to Facebook and Instagram with Meta's own tools.
+- **Basic client and lead tracking:** leads and their stage, active clients and plans, posts delivered against posts promised, renewals and churn.
 
-Do not build the full multi-vertical platform, payment lifecycle, portal, generalized automation, or other deferred capabilities merely because earlier code exists. Preserve the existing deeper code as dormant foundation unless the active dealer experiment proves that a specific part is required.
+## Plans
 
-Do not invent dealership facts, inventory, competitor evidence, testimonials, prices, sales claims, lead guarantees, or business results. Escalate uncertain, commercial, or objection-heavy conversations to the human owner.
+| Plan | Posts per month | Price | First month for the first five dealerships |
+|---|---:|---:|---:|
+| Starter: Page Alive | 4 | $32/month | $32 (no launch discount) |
+| Growth | 12 | $96/month | $48 |
+| Pro | 30 | $240/month | $120 |
 
-## Deferred broader platform
+Every plan covers Facebook and Instagram. Full details are in [`plans/MVP-SCOPE.md`](./plans/MVP-SCOPE.md).
 
-The later automated platform is documented in [`docs/ultimate mvp.md`](./docs/ultimate%20mvp.md). It becomes active only after the dealer validation experiment produces the unlock evidence defined there and the active task board is deliberately updated.
+## Not in the MVP
 
-## References
+These are upsells or future scope, sold and quoted separately:
 
-[1]: ./docs/plan.md "Current car-dealership validation plan"
+- Brand Perfection, vehicle photography and walkaround videos.
+- Paid Facebook and Instagram advertising.
+- WhatsApp enquiry handling, marketplace listing management, Google Business Profile management and review collection.
+- Vehicle catalogue or inventory websites and full dealership websites.
+- AI customer assistants for clients.
+- Lodges, Airbnbs, guesthouses and restaurants.
 
-[2]: ./docs/current_tasks.md "Current validation tasks"
+Do not build a custom scheduling platform, client portal, full CRM, inventory platform, automated payment flow or analytics product for the MVP.
 
-[3]: ./docs/vision.md "Focused dealership vision"
+## Required agent behaviour
 
-[4]: ./docs/progress.md "Current validation progress"
+Break every task into small todos, finish each one end to end, run the relevant checks, and make a separate commit for each.
 
-[5]: ./docs/ultimate%20mvp.md "Ultimate MVP after demand validation"
+Do not invent vehicle facts, prices, mileage, availability, testimonials, engagement numbers or business results. Label any fictional mockup as "Demo concept", "Illustrative example" or "Example dealership page". Escalate uncertain or commercial conversations to the owner.
 
-[6]: ./plans/MVP-SCOPE.md "Current validation scope charter"
+## Retained foundation
+
+The earlier website platform (`apps/server`, `apps/web`, `apps/site-origin`, `apps/worker-whatsapp`) and the website-focused parts of `apps/whatsapp-agent` and `apps/dealership-demo` remain in the repository as dormant foundation for the later website upsell. The deferred website charter is in Appendix A of [`plans/MVP-SCOPE.md`](./plans/MVP-SCOPE.md), and the broader platform target is in [`docs/ultimate mvp.md`](./docs/ultimate%20mvp.md).

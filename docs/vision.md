@@ -1,67 +1,74 @@
 # Vision
 
-_Last updated: 2026-09-24_
+_Last updated: 2026-09-27_
 
 ## The current vision
 
-Where They Are helps Zimbabwean car dealerships present themselves as credible, established businesses online. The first product is not a general website platform. It is a focused offer for one audience: **car dealership owners and decision-makers**.
+> We help car dealerships get more attention, enquiries and viewing opportunities by keeping their social media active, professional and worth following.
 
-The first proof point is a dealership-specific demo website. A prospective customer should be able to see an example that looks relevant to the vehicle business, understand how it could represent their dealership, and start a WhatsApp conversation without entering a long form.
+Where They Are is a social media management agency for car dealerships in Zimbabwe. We help dealerships become more **visible**, more **memorable** and more **trusted**, so that more buyers notice their vehicles, remember the dealership and start a conversation when they are ready to buy.
 
-The initial service can be delivered with a human behind the scenes. Automation remains useful for speed, qualification, message capture, and repeatability, but it is not the immediate product promise. Demand must be tested before the team invests further in a broad automated platform.
+The outcome we sell is not "posts" or "content creation". It is a dealership that:
 
-## Customer insight being tested
+- stays in buyers' minds when they are ready to purchase;
+- presents its vehicles clearly and professionally;
+- gives buyers reasons to compare, comment and ask questions;
+- starts more meaningful conversations, enquiries and viewings;
+- looks active, credible and serious next to dealerships with neglected pages;
+- gets back the time the owner used to spend designing, writing and publishing.
 
-Some dealerships may believe that they are too small to need a website, or they may believe that having a social-media page is sufficient. The experiment tests a more specific proposition:
+## Customer insight
 
-> The question is not only whether a dealership has a website. The question is whether its online presence presents the dealership strongly enough to earn trust and support better business conversations.
+Many dealerships post a vehicle only when it arrives, with a quick photo and little context, and then go quiet. Buyers who are comparing dealerships see a page that looks inactive and move on. A page that shows its stock clearly and consistently looks like a serious business worth contacting.
 
-This message must be presented as a credible possibility, not a guarantee. A website may improve how a dealership is presented to customers or partners, but Where They Are must not promise larger deals, more sales, search rankings, or a specific financial outcome.
+This is a credible possibility, not a guarantee. We do not promise a number of sales, enquiries, followers or reach.
 
 ## Audience
 
-The first audience is Zimbabwean car dealerships, especially owners or decision-makers who:
+Car dealerships, vehicle importers, motor traders and used-car businesses in Zimbabwe, starting with **Mutare and Harare**, especially owners who:
 
-- sell or broker used or new vehicles;
-- serve a local area or a recognisable customer segment;
-- rely heavily on WhatsApp, Facebook, referrals, or walk-in traffic;
-- have no website, an outdated website, or a website that does not present their stock and business clearly;
-- can make or influence a decision about a dealership website.
+- rely on Facebook, Instagram and WhatsApp to sell;
+- post irregularly, or only when new stock comes in;
+- have no time to design, write and publish consistently;
+- make, or can influence, the decision to pay for the service.
 
-The audience is intentionally narrow. Other businesses remain possible future segments, not active acquisition targets.
+Every ad and conversation speaks to them directly ("Car dealership owner?"). Lodges, Airbnbs, guesthouses and restaurants may be tested later with separate campaigns and separate creative.
 
 ## Experience promise
 
-The customer experience should feel direct and relevant:
+1. The ad speaks to car dealership owners and shows what their page could look like.
+2. WhatsApp asks a few useful questions and recommends one plan.
+3. The owner confirms the start and collects payment.
+4. The dealership sends its vehicle photos and details; we do the rest.
+5. Every month the page receives the promised number of accurate, professional posts on Facebook and Instagram.
+6. The dealership can add upsells, such as Brand Perfection or a website, when they need them.
 
-1. The advert speaks specifically to car dealerships.
-2. WhatsApp asks a few useful qualification questions.
-3. The agent shares a dealership demo when needed.
-4. The customer can raise objections without being pressured or misled.
-5. A human can take over when a lead shows serious interest.
-6. The team learns whether the customer wants the service before building a large product.
+## Long-term vision
 
-## Long-term product vision
+Once the dealership offer is proven, Where They Are grows in two directions:
 
-If the dealership experiment demonstrates demand, Where They Are can become a highly automated service for other Zimbabwean SME groups. The later platform may support grounded intake, modular site generation, private previews, payments, publication, hosting, domain management, and a small customer portal.
+- **Deeper with dealerships:** Brand Perfection, photography and walkaround videos, paid advertising, WhatsApp enquiry handling, marketplace and Google Business Profile management, catalogue sites and full websites.
+- **Wider:** lodges, Airbnbs, guesthouses and restaurants, each with their own campaigns and outcomes (booking enquiries and occupied rooms; visits, orders and reservations).
 
-That later platform is deliberately not the current backlog. The immediate product decision is whether one audience and one website offer deserve further investment.
+The earlier automated website platform ([`ultimate mvp.md`](./ultimate%20mvp.md)) is retained as the foundation for the website upsell, not as the current backlog.
 
 ## Principles
 
 - Start with one audience and one clear offer.
-- Show a real, relevant example before explaining a broad platform.
-- Use the simplest manual process that can test demand.
-- Do not invent business facts or competitor evidence.
-- Do not make financial, ranking, or lead-generation guarantees.
-- Measure commercial intent, not vanity metrics alone.
-- Build automation only after repeated demand justifies it.
-- Preserve the deeper codebase without allowing it to pull the validation phase off course.
+- Sell the transformation, not the mechanism.
+- Show real vehicles and real dealership facts only.
+- Label every fictional mockup.
+- Make no sales, reach or follower guarantees.
+- Protect quality with design systems, locked templates and a checklist.
+- The CEO's time goes mostly to acquiring and keeping clients, not producing every post.
+- Measure qualified conversations, paying clients and renewals, not vanity metrics.
 
 ## References
 
-[1]: ./plan.md "Current car-dealership validation plan"
+[1]: ./plan.md "Current execution plan"
 
-[2]: ./ultimate%20mvp.md "Ultimate MVP after demand validation"
+[2]: ../plans/MVP-SCOPE.md "MVP scope charter"
 
-[3]: ../plans/MVP-SCOPE.md "Current validation scope charter"
+[3]: ./sales-script.md "Dealership social media sales script"
+
+[4]: ./ultimate%20mvp.md "Deferred website platform"
