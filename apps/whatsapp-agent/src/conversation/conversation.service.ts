@@ -8,12 +8,15 @@ import type { CrmRepository } from "../crm/crm.repository.js";
 import type {
 	Customer,
 	IgnoreCategory,
+	SilenceCategory,
 	TurnGate,
 	TurnUsage,
 } from "../crm/crm.types.js";
+import { QUALIFIED_SCORE } from "../crm/lead-score.js";
 import type { SocialMediaOffer } from "../knowledge/offer.js";
 import type { Transcriber } from "../media/transcriber.js";
 import type { OwnerNotifier } from "../notifications/owner-notifier.js";
+import type { ConversationGate } from "../relevance/conversation-gate.js";
 import type { RelevanceGate } from "../relevance/relevance-gate.js";
 import {
 	FALLBACK_REPLY,
@@ -123,6 +126,8 @@ const describeMediaForLog = (message: IncomingMessage): string =>
 
 export interface ConversationDeps {
 	agent: Agent;
+	/** Jev check that keeps Angel quiet when an ongoing chat needs no reply. */
+	conversationGate?: ConversationGate;
 	crm: CrmRepository;
 	/** Approved example posts Angel may share; empty when there are none. */
 	examplesUrl: string;
@@ -239,6 +244,10 @@ export class ConversationService {
 		if (stopped) {
 			return stopped;
 		}
+		const silenced = await this.checkTurn(customer, created, messages, trace);
+		if (silenced) {
+			return silenced;
+		}
 
 		const content = this.buildContent(messages);
 		if (content === null) {
@@ -253,10 +262,7 @@ export class ConversationService {
 				trace
 			);
 			if (ignoredAs) {
-				crm.recordEvent(customer.id, "ignored", {
-					by: "angel",
-					category: ignoredAs,
-				});
+				await this.onSilence(customer, ignoredAs, "angel");
 				return { outcome: "ignored", replies: [] };
 			}
 			const replies = splitIntoBubbles(text);
@@ -341,6 +347,81 @@ export class ConversationService {
 				};
 			})
 		);
+	}
+
+	/**
+	 * Runs the Jev conversation gate in an ongoing chat, so Angel doesn't
+	 * pester a lead who firmly said no or will get back to us, or answer a
+	 * finished conversation or a meaningless message. Photos and documents
+	 * always get a reply.
+	 */
+	private async checkTurn(
+		customer: Customer,
+		isFirstContact: boolean,
+		messages: IncomingMessage[],
+		trace: TurnTrace
+	): Promise<TurnResult | null> {
+		const { crm, conversationGate } = this.deps;
+		const sentMedia = messages.some(
+			(message) =>
+				message.mediaKind === "image" || message.mediaKind === "document"
+		);
+		if (!conversationGate || isFirstContact || sentMedia) {
+			return null;
+		}
+		const lastAngelMessage =
+			crm
+				.messages(customer.id, 20)
+				.findLast((message) => message.direction === "out")?.body ?? null;
+		const decision = await conversationGate.decide({
+			lastAngelMessage,
+			messages: messages.map(describeMediaForLog).filter(Boolean),
+		});
+		trace.gate = {
+			category: decision.category,
+			confidence: decision.confidence,
+			replyProbability: decision.replyProbability,
+			source: decision.source,
+		};
+		if (decision.verdict !== "silent" || decision.category === "needs_reply") {
+			return null;
+		}
+		await this.onSilence(customer, decision.category, "jev");
+		return { outcome: "ignored", replies: [] };
+	}
+
+	/**
+	 * Records why Angel stayed silent. A firm no closes the lead, a firm
+	 * "I'll get back to you" moves it to nurture, and the owner hears about
+	 * either from a qualified lead so they can follow up personally.
+	 */
+	private async onSilence(
+		customer: Customer,
+		category: SilenceCategory,
+		by: "angel" | "jev"
+	): Promise<void> {
+		const { crm } = this.deps;
+		crm.recordEvent(customer.id, "ignored", { by, category });
+		if (category === "not_interested") {
+			crm.setStage(customer.id, "lost", {
+				by: "system",
+				reason: "said they're not interested",
+			});
+		}
+		if (category === "will_get_back") {
+			crm.setStage(customer.id, "nurture", {
+				by: "agent",
+				reason: "will get back to us",
+			});
+		}
+		const firmAnswer =
+			category === "not_interested" || category === "will_get_back";
+		if (firmAnswer && customer.leadScore >= QUALIFIED_SCORE) {
+			await this.alertOwner(
+				customer,
+				`💤 ${customer.name ?? customer.displayName ?? customer.id}${customer.businessName ? ` (${customer.businessName})` : ""} ${category === "not_interested" ? "said they're not interested" : "said they'll get back to us"}, so Angel stopped replying. Lead score ${customer.leadScore}/10. Follow up personally if you think it's worth it: https://wa.me/${customer.id}`
+			);
+		}
 	}
 
 	/**
@@ -485,7 +566,7 @@ export class ConversationService {
 		isFirstContact: boolean,
 		content: ContentPart[],
 		trace: TurnTrace
-	): Promise<{ ignoredAs: IgnoreCategory | null; text: string }> {
+	): Promise<{ ignoredAs: SilenceCategory | null; text: string }> {
 		const turn: TurnContext = {
 			customer,
 			examplesAvailable: this.deps.examplesUrl.length > 0,
@@ -527,7 +608,7 @@ export class ConversationService {
 			};
 			return {
 				ignoredAs:
-					(requestContext.get(IGNORED_KEY) as IgnoreCategory | undefined) ??
+					(requestContext.get(IGNORED_KEY) as SilenceCategory | undefined) ??
 					null,
 				text: result.text ?? "",
 			};

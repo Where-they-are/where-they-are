@@ -13,9 +13,10 @@ import { ModelTranscriber } from "./media/transcriber.js";
 import { MetaConversionsClient } from "./meta/conversions.js";
 import { MetaReporter } from "./meta/meta-reporter.js";
 import type { OwnerNotifier } from "./notifications/owner-notifier.js";
+import { ConversationGate } from "./relevance/conversation-gate.js";
 import { RelevanceGate } from "./relevance/relevance-gate.js";
 
-/** TypeSafe's Jev decision model on OpenRouter, used for the relevance gate. */
+/** TypeSafe's Jev decision model on OpenRouter, used for the reply gates. */
 const JEV_MODEL = "~typesafe/jev-latest";
 const JEV_TIMEOUT_MS = 6000;
 
@@ -88,20 +89,21 @@ export const createRuntime = (
 		reasoningEffort: config.AGENT_REASONING_EFFORT,
 		takeoverHours: config.HUMAN_TAKEOVER_HOURS,
 	});
-	const relevance = new RelevanceGate(
-		new JevClient({
-			apiKey: config.OPENROUTER_API_KEY,
-			model: JEV_MODEL,
-			siteName: "Where They Are Angel",
-			timeoutMs: JEV_TIMEOUT_MS,
-		})
-	);
+	const jev = new JevClient({
+		apiKey: config.OPENROUTER_API_KEY,
+		model: JEV_MODEL,
+		siteName: "Where They Are Angel",
+		timeoutMs: JEV_TIMEOUT_MS,
+	});
+	const relevance = new RelevanceGate(jev);
+	const conversationGate = new ConversationGate(jev);
 	const transcriber = new ModelTranscriber({
 		model: config.AGENT_MODEL,
 		reasoningEffort: config.AGENT_REASONING_EFFORT,
 	});
 	const conversation = new ConversationService({
 		agent,
+		conversationGate,
 		crm,
 		examplesUrl: config.EXAMPLES_URL,
 		maxRepliesPerHour: config.MAX_REPLIES_PER_HOUR,
