@@ -46,8 +46,9 @@ The website-build tasks from the 2026-09-24 experiment are retired. Websites are
 ### Task 4 - Set up the WhatsApp sales flow
 
 - [ ] Run the flow in [`sales-script.md`](./sales-script.md) on +263 77 510 1506.
-- [ ] Decide whether Angel (`apps/whatsapp-agent`) answers first or a person does. Angel still runs the retired website script with the $125 Paynow deposit, so it must be updated to the social media script, or switched off, before any ad points to its number.
-- [ ] If Angel is used: new offer, plan recommendation, qualification questions and escalation rules; no in-chat payment; live evals updated and passing.
+- [x] Angel (`apps/whatsapp-agent`) answers first, on the social media script: qualification, one plan recommendation, objections, escalation rules and Jev silence rules; no in-chat payment.
+- [ ] Run the full live eval suite (`pnpm --filter @where-they-are/whatsapp-agent eval`) once OpenRouter credit is topped up, and fix anything it finds.
+- [ ] Link Angel to +263 77 510 1506 and test one real hand-off to the owner.
 - [ ] Test the full conversation, including every objection and every escalation to the owner.
 
 **Completion evidence:** test transcripts for the common paths and a verified hand-off to the owner.

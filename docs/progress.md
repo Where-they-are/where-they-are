@@ -67,11 +67,13 @@ See [`sales-script.md`](./sales-script.md).
 
 ## What exists in the repository
 
-Built for the earlier website direction, now dormant or needing changes:
+- **`apps/whatsapp-agent` ("Angel"):** moved to the social media sales script on 2026-09-27.
+  - Qualifies (dealership, city, how they post, how often they want to appear), recommends one plan with the correct price and launch offer, handles objections, and hands ready clients to the owner. No in-chat payment; the owner marks paying clients with `#client`.
+  - Jev keeps her silent on spam and wrong numbers at first contact, and on a firm no, a firm "I'll get back to you", finished conversations and meaningless messages in ongoing chats.
+  - Live evals: 41 scenarios across sales flow, objections, silence, hand-offs and edge cases. The sales flow passed live; the rest could not finish because the OpenRouter account ran out of credit (see below).
 
-- **`apps/whatsapp-agent` ("Angel"):** the WhatsApp agent. It still runs the retired website sales script, with the $125 Paynow website deposit.
-  - It must be updated to the social media script, or switched off, before any new ad points to its number.
-  - Its reusable parts still fit the new flow: WhatsApp handling, the Jev spam filter, voice-note transcription, the CRM and lead tracking, owner hand-off alerts, Meta Conversions API reporting and the live eval harness.
+Built for the earlier website direction, now dormant:
+
 - **`apps/dealership-demo`:** the Ridgeline Motors sample website, now only relevant to the website upsell.
 - **The automated website platform** (`apps/server`, `apps/web`, `apps/site-origin`, `apps/worker-whatsapp`): retained as the foundation for the website upsell (see `plans/MVP-SCOPE.md` Appendix A and [`ultimate mvp.md`](./ultimate%20mvp.md)).
 
@@ -80,7 +82,7 @@ Built for the earlier website direction, now dormant or needing changes:
 - The open commercial terms in [`plan.md`](./plan.md) section 12 are unanswered: payment method and timing, minimum term, how launch places are counted, missing photos, approval rhythm, Facebook-only clients and upsell prices.
 - **Nothing for delivery exists yet:** the organisation design system, Figma templates, client design-system template, intake form and quality checklist.
 - The three ad creatives do not exist yet.
-- The WhatsApp sales flow is not yet live for the new offer, and Angel has not been updated.
+- Angel's full live eval suite still needs a run once OpenRouter credit is topped up, and Angel is not yet linked to +263 77 510 1506.
 - No campaign has run, no dealership has paid, and no renewal data exists yet.
 
 ## Evidence required

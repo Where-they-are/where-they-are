@@ -289,7 +289,7 @@ The authoritative MVP scope and feature pushback protocol is [`plans/MVP-SCOPE.m
 - File artifacts are still local filesystem artifacts rather than object-storage artifacts.
 - Coolify deployment is currently a typed adapter around deployment triggering; the new deployment record provides a server-owned lifecycle state, while external reconciliation remains pending. Coolify credentials are optional and the Coolify smoke test is skipped unless `COOLIFY_CHECKS_ENABLED=true`; calling deployment without configured Coolify still returns an unavailable-provider error rather than preventing server startup.
 - Paynow hosted-payment creation/callback verification is not yet wired in `apps/server`; payment records and status transitions are ready for that provider adapter.
-- `apps/whatsapp-agent` (Angel) was built for the retired website experiment. It still collects a $125 website deposit and balance with Paynow mobile checkout through the shared `packages/paynow` client, keeps its own SQLite CRM and payment records, and reports qualified leads and payments to Meta's Conversions API. Its prompt must be moved to the social media script in `docs/sales-script.md` before it is used again. See `apps/whatsapp-agent/README.md`.
+- `apps/whatsapp-agent` (Angel) runs the social media sales script in `docs/sales-script.md`. It qualifies dealers, recommends one plan, hands ready clients to the owner (no in-chat payment), uses Jev to stay silent on spam, firm no's and finished chats, keeps its own SQLite CRM, and reports qualified leads and paying clients to Meta's Conversions API. The Paynow website deposit flow was removed; `packages/paynow` remains for later. See `apps/whatsapp-agent/README.md`.
 - Advanced analytics, support queues, operator consoles, audit systems, teams, invitations, and permission-management UX are intentionally out of scope for this phase.
 - Jev policy decisions are currently synchronous and in-process. Decision audit persistence, route-specific support workflows, and human escalation queues remain out of scope.
 - Public contact submissions currently have validation, idempotency, retention, starring, reading, and archiving primitives; rate limiting and scheduled expiry execution still need to be connected to the runtime.
@@ -341,8 +341,6 @@ The active documentation:
 
 What the existing code means now:
 
-- **`apps/whatsapp-agent` (Angel)** still runs the retired website sales script and the $125 Paynow website deposit.
-  - Update it to the social media script (no in-chat payment), or switch it off, before any new ad points to its number.
-  - Its WhatsApp handling, Jev spam filter, transcription, CRM, owner alerts, Meta Conversions API reporting and eval harness are reusable.
+- **`apps/whatsapp-agent` (Angel)** runs the social media sales script. The owner marks paying clients with `#client <number> <plan>`.
 - **`apps/dealership-demo`** (the Ridgeline Motors sample site) is only relevant to the website upsell.
 - **The website platform** (`apps/server`, `apps/web`, `apps/site-origin`, `apps/worker-whatsapp`, `packages/db`) is dormant foundation for the website upsell. Its deferred charter is Appendix A of `plans/MVP-SCOPE.md`; the broader target is [`docs/ultimate mvp.md`](./docs/ultimate%20mvp.md).
