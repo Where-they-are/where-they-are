@@ -1,213 +1,221 @@
 # Plan
 
-_Last updated: 2026-09-24_  
-_Status: **active execution plan for the current validation phase**_
+_Last updated: 2026-09-27_  
+_Status: **active execution plan: social media management for car dealerships**_
 
 ## 1. Objective
 
-The immediate objective is to determine whether Zimbabwean car dealerships show enough interest in a dealership-specific website offer to justify building the broader Where They Are platform.
+Prove that Where They Are can win car-dealership clients through dealership-specific Meta ads and WhatsApp, deliver consistent, accurate Facebook and Instagram content every month, and keep those clients paying.
 
-The experiment must answer:
+The questions this plan answers:
 
-> Will a car dealership owner or decision-maker respond to a focused advert, engage in a WhatsApp qualification conversation, review a relevant demo website, and show credible commercial intent?
+> Will dealership owners in Mutare and Harare respond to the ads, accept a recommended plan and pay for it? Can we deliver the promised posts at a consistent quality? Will they renew after the first month?
 
-The experiment should use the smallest practical amount of software. It is acceptable for a human to review leads, answer objections, assemble a proposal, and deliver the first site manually. This is not a failure of automation. It is the intended Wizard-of-Oz method for validating demand before deeper product investment.
+Websites and other services are upsells and are not part of this plan's early phases.
 
-## 2. Active customer journey
+## 2. Priorities, in order
 
-```text
-Focused Meta ad for car dealerships
-  -> WhatsApp message
-  -> agent identifies and qualifies the lead
-  -> agent asks whether the lead has seen the demo
-  -> agent shares the demo link when needed
-  -> lead raises questions or objections
-  -> agent responds within approved boundaries
-  -> human owner takes over for serious interest
-  -> proposal, deposit, or payment signal
-  -> manual fulfillment and learning record
-```
+1. Dealership offer validation.
+2. Social media creative examples.
+3. Meta ads and WhatsApp acquisition.
+4. Sales qualification and onboarding.
+5. Repeatable content production.
+6. Assistant training and quality control.
+7. Retention and upsells.
 
-This replaces the broader automated journey as the active implementation target. The previous generation, payment, publication, and hosting features remain available as dormant foundation work. They are not reasons to delay the demand test.
+Website development and broader business expansion are later phases (section 11).
 
-## 3. Demo website requirement
+## 3. Phase 1: Dealership offer validation
 
-The first demo must be designed for a car dealership and must be visually credible enough for an owner to imagine their business using it. The designs under `/designs` are the source material for the demo direction.
+The offer:
 
-The demo will eventually be implemented as its own Next.js application. That application must be isolated from the existing central NestJS backend and must be frontend-only for this experiment. It should not be implemented as part of the documentation update.
+| Plan | Posts per month | Rhythm | Price | Launch first month (Growth and Pro only, first five dealerships) |
+|---|---:|---|---:|---:|
+| Starter: Page Alive | 4 | About one every 7 days | $32/month | none: $32 |
+| Growth | 12 | About three a week | $96/month | $48, then $96/month |
+| Pro | 30 | About one a day | $240/month | $120, then $240/month |
 
-The demo should show a believable dealership presentation, including only approved demo content. It may include:
+Every plan covers Facebook and Instagram. Each post is a designed Facebook post, an adapted Instagram version, a caption where needed, and publishing to both, in the client's approved branding.
 
-- dealership identity and location;
-- vehicle categories or sample inventory;
-- trust and contact sections;
-- WhatsApp and phone actions;
-- a clear explanation of how a customer can enquire;
-- a strong mobile experience.
+Before launch, the owner confirms the open commercial terms (section 12).
 
-If sample vehicles, prices, testimonials, awards, or business results are not real, they must be labelled as demo content or excluded. The demo must not imply that a real dealership achieved results that have not been verified.
+## 4. Phase 2: Social media creative examples
 
-## 4. Advertising hypothesis
+We need examples that show a dealership owner what their page could become, using the actual post formats we sell:
 
-The advert should not sell an abstract AI website service. It should sell a specific outcome for a specific audience:
+- vehicle listings, new arrivals, comparisons, features and benefits, price updates, special offers, buyer tips, customer deliveries, sold-vehicle posts, stock highlights, engagement questions and dealership updates.
 
-> A modern dealership website that helps a car business present its vehicles, location, contact options, and credibility clearly online.
+Rules:
 
-The ad should direct the lead to WhatsApp. The first campaign should remain small and controlled. Record the creative, audience, budget, dates, and message version so that the result can be interpreted.
+- Use real vehicles and real facts from a willing dealership, or clearly label the example as "Demo concept", "Illustrative example" or "Example dealership page".
+- Never show fictional follower counts, verification badges or engagement figures without that label.
+- Never imply a real dealership achieved results it did not achieve.
 
-Avoid claims such as:
+## 5. Phase 3: Meta ads and WhatsApp acquisition
 
-- guaranteed sales or leads;
-- guaranteed bigger deals;
-- guaranteed search rankings;
-- guaranteed credibility or trust;
-- instant delivery before the process is proven;
-- competitor comparisons that are not verified.
+### 5.1 Creative direction
 
-## 5. WhatsApp qualification flow
+Sell the transformation, not the mechanism.
 
-The agent should be concise and should ask one useful question at a time. It should not conduct a long generic chatbot interview.
+Avoid: "We create vehicle content", "Get your dealership online", "We are a software company", long company descriptions, technical design language, generic social media management claims.
 
-### 5.1 Opening response
+Prefer: "This could be your dealership.", "Get more people asking about your cars.", "Which dealership would you trust?", "Turn people scrolling into people asking about your cars.", "Your cars deserve more than a quick upload.", "Give buyers a reason to talk about your cars."
 
-> Hi, thanks for reaching out to Where They Are. We are currently helping car dealerships present their business professionally online with a modern dealership website. May I ask your name?
+Ad formats:
 
-### 5.2 Qualification questions
+1. **This could be your dealership:** a polished dealership page using our real post formats.
+2. **Which dealership would you trust?:** a neglected page next to an active, professional one.
+3. **Get more people asking about your cars:** a polished vehicle post and a buyer enquiry path.
+4. **From scroll to enquiry:** a buyer sees a post, visits the page and asks about a vehicle.
+5. **The 12-post month:** a calendar of listings, comparisons, offers, tips, deliveries and engagement posts.
+6. **Your cars deserve more than a quick upload:** an ordinary vehicle photo transformed into a professional listing.
 
-Ask the following questions in a natural order:
+Start with the first three angles (aspiration, trust, direct outcome) in one ad set so Meta can compare them.
 
-1. What is your name?
-2. What is the name of your car dealership?
-3. What types of cars do you deal in?
-4. Where is the dealership located?
-5. Have you seen the dealership website demo?
+### 5.2 Campaign setup
 
-If the lead has not seen the demo:
+| Setting | Value |
+|---|---|
+| Objective | Leads |
+| Conversion location | WhatsApp |
+| WhatsApp number | +263 77 510 1506 |
+| Locations | Mutare and Harare |
+| Age | 25 to 65+ |
+| Gender | All |
+| Audience | Advantage+ audience, keeping the location restrictions |
+| Placements | Advantage+ placements |
+| Performance goal | Maximize number of conversations |
+| Budget | $7 per day |
+| Initial test | 7 days |
+| Call to action | Send WhatsApp message |
 
-> Here is the dealership demo: [approved demo link]. Have a look at how the vehicles, dealership information, and contact actions are presented, then let me know what you think.
+Record the creative, audience, budget, dates and message version for every change, so results can be interpreted.
 
-The agent may ask one or two additional questions when needed, such as whether the dealership already has a website and how customers currently enquire. It must not collect unnecessary sensitive information.
+## 6. Phase 4: Sales qualification and onboarding
 
-### 5.3 Qualification states
+The WhatsApp flow is in [`sales-script.md`](./sales-script.md). In short: open with the dealership outcome, ask for the dealership and city, ask how they post today, ask how often they want to appear in front of buyers, recommend one plan with the correct price, and hand ready or serious prospects to the owner. The owner confirms and takes payment.
 
-The lead should be classified into one of these operational states:
+Onboarding collects:
 
-- **New:** the conversation has started but the minimum details are not known;
-- **Qualified:** the lead is connected to a car dealership and has provided enough context for a useful follow-up;
-- **Demo sent:** the approved demo link was delivered;
-- **Engaged:** the lead responded after receiving or discussing the demo;
-- **Commercial signal:** the lead asks for price, timeline, next steps, or a proposal;
-- **Human follow-up:** an owner needs to respond;
-- **Not a fit:** the request is outside the dealership offer or cannot be served;
-- **Closed:** the experiment records the outcome.
+- dealership name and location;
+- Facebook page link, and Instagram link if they have one;
+- selected plan;
+- page access so we can publish;
+- logo, colours and contact details;
+- vehicle photos and details: prices, mileage, engine, gearbox and duty status where relevant;
+- offers, events or dealership updates to include.
 
-These states are for the validation workflow. They do not authorize building a CRM or support-ticket platform.
+## 7. Phase 5: Repeatable content production
 
-## 6. Objection handling
+### 7.1 Design systems
 
-The agent may respond to common objections, but it must not argue, pressure, or invent evidence.
+**Organisation design system:** brand colours, typography, spacing and grid rules, logo usage, price badges, image treatments, standard post dimensions, content categories, tone of voice and approved calls to action.
 
-### Objection: “We are too small for a website.”
+**Client design system (one per client):** client logo, colours and fonts, location, contact details, preferred vehicle categories, pricing style, tone and prohibited wording, platform requirements and approved examples.
 
-Approved response direction:
+### 7.2 Production
 
-> You may not need a large or complicated website. The point is to give your dealership a clear, professional place online where people can understand what you sell, where you are, and how to contact you. The question is not only whether you already have a website. It is whether your current online presence presents the business strongly enough when a customer or business partner checks it.
+- A monthly content plan per client that matches its plan's post count and mixes the approved formats.
+- Figma components and locked templates for every format, so posts stay consistent.
+- Claude for ideation, copy and production assistance, always working from the relevant design system and the facts the client supplied. It never fills in a missing price, mileage or specification.
+- Publishing and scheduling with Meta's own tools, not a custom platform.
 
-The agent may add:
+### 7.3 Quality checklist
 
-> A stronger online presence may help the dealership look more established when people evaluate it, but we cannot promise a specific number of leads, sales, or larger deals.
+Before scheduling, verify:
 
-### Objection: “We already have a Facebook page.”
+- correct vehicle model and year;
+- correct price;
+- correct mileage;
+- correct engine and gearbox;
+- correct duty status;
+- correct phone number;
+- correct dealership name and location;
+- no spelling errors;
+- no invented claims;
+- clear hierarchy and mobile readability;
+- correct Facebook and Instagram formatting;
+- a clear call to action;
+- correct image cropping and quality.
 
-Approved response direction:
+## 8. Phase 6: Assistant training and quality control
 
-> A Facebook page can be useful. The demo shows a separate place that presents the dealership, its vehicle categories, location, and contact options in one focused experience. We can first understand what you already use and then see whether a website would add value.
+- The founder reviews every post at first.
+- A new assistant completes training examples and passes a review before touching live client work.
+- After consistent quality, review moves to sampling and weekly audits.
 
-### Objection: “Show me another dealership that has one.”
+Staffing assumption (example mix of 5 Starter, 10 Growth and 3 Pro clients):
 
-Use one competitor or market example only if the owner has supplied or manually verified it. The agent must not search for, invent, or exaggerate a competitor example during an unverified automated conversation.
+| Measure | Value |
+|---|---:|
+| Monthly revenue | $1,840 |
+| Posts per month | 230 |
+| Production time at 15 minutes per post | 57.5 hours |
+| Assistant handling 50% of production | about 115 posts, saving about 28.75 hours a month (about 7 hours a week) |
+| Assistant cost | $200 salary + $100 AI subscription = $300/month |
 
-Approved response direction:
+Hire the assistant when recurring revenue is reliable, there is enough work to use their time, and there is a clear plan to spend the recovered hours on acquiring clients.
 
-> There are dealerships in the market that use websites to present their business. We can share a verified example if useful. The more important question is whether the website would make your own dealership easier to understand and contact.
+CEO time allocation target:
 
-### Objection: “How much does it cost?”
+- 60% to 70% client acquisition and sales;
+- 15% to 20% client relationships and retention;
+- 10% to 15% quality control and creative direction;
+- 5% to 10% systems and strategy.
 
-The agent should give the currently approved price or state that the owner will provide a tailored quote. It must not invent pricing, discounts, payment terms, or delivery commitments.
+## 9. Phase 7: Retention and upsells
 
-### Escalation triggers
+- Deliver every promised post, on time, on both platforms.
+- Check in with each client before the end of their first month, especially Growth and Pro clients moving from the launch price to the full price.
+- Offer upsells only when they fit the client's need: Brand Perfection (sold in defined catalogue batches such as 10, 25 or 50 vehicles), photography and walkaround videos, paid ads, WhatsApp enquiry handling, marketplace listing management, Google Business Profile management, review collection, catalogue sites and full websites.
 
-Hand the conversation to the owner when the lead requests negotiation, a custom feature, a guarantee, a competitor claim, a legal or regulatory statement, a complex inventory integration, a proposal, a payment link, or a timeline that is not already approved.
-
-## 7. Human fulfillment
-
-The first dealership sites may be produced manually or with the existing generation foundation behind the scenes. The customer-facing promise must remain truthful. The team should record:
-
-- the information supplied by the dealership;
-- the sections and content requested;
-- the time spent qualifying and fulfilling the request;
-- the changes requested;
-- the commercial outcome;
-- the reasons a lead did not proceed.
-
-Do not build a new operations console for this. A simple controlled record is sufficient for the experiment.
-
-## 8. Measurement and decision gate
+## 10. Measurement and decision gate
 
 Track the full path:
 
 | Stage | Meaning |
 |---|---|
-| Ad response | The lead starts a WhatsApp conversation from the campaign |
-| Qualified lead | The lead is a car dealership decision-maker or credible contact |
-| Demo sent | The approved demo link is delivered |
-| Demo engagement | The lead responds after receiving or discussing the demo |
-| Commercial signal | The lead asks for price, proposal, timeline, or next steps |
-| Deposit/payment | The lead makes a commercial commitment |
-| Fulfilled site | A site is delivered or actively commissioned |
+| Ad response | A WhatsApp conversation starts from the campaign |
+| Qualified lead | A real dealership owner or decision-maker |
+| Plan recommended | The lead heard one plan and its correct price |
+| Ready to start | The lead wants to begin; handed to the owner |
+| Paying client | First payment received |
+| Onboarded | Page access, branding and first vehicle details received |
+| Delivered | The month's promised posts were published |
+| Renewed | The client paid for month 2 |
 
-Do not decide based only on impressions, clicks, or conversation volume. The key question is whether the campaign creates enough qualified and commercially serious conversations to justify continuing.
+Also track cost per qualified conversation, cost per paying client, plan mix, posts delivered against promised, production minutes per post, quality errors caught before publishing, renewals and churn reasons.
 
-Before launch, define numerical thresholds for:
+The owner sets numerical thresholds before or during the first 7-day test: acceptable cost per qualified conversation, minimum paying clients, and minimum renewal rate. This plan does not invent them.
 
-- minimum test duration and budget;
-- acceptable cost per qualified conversation;
-- minimum number of commercial signals;
-- minimum number of deposits or paid commitments;
-- maximum manual fulfillment time that remains economically sensible.
+Do not decide on impressions, clicks, likes or conversation volume alone.
 
-The business owner should approve the thresholds before the campaign begins. This document intentionally does not invent a success number without the campaign budget and price being confirmed.
+## 11. Later phases
 
-## 9. Decision outcomes
+- Full dealership websites and catalogue sites, using the retained website platform ([`../plans/MVP-SCOPE.md`](../plans/MVP-SCOPE.md) Appendix A, [`ultimate mvp.md`](./ultimate%20mvp.md)).
+- Paid ads management, photography and other upsells as productised services.
+- Separate campaigns for lodges, Airbnbs, guesthouses and restaurants.
 
-At the end of the first controlled test, choose one outcome:
+## 12. Open questions for the owner
 
-### Continue and deepen
+These are not decided yet. The sales assistant must say the owner will confirm them rather than guess:
 
-Use this when qualified dealerships show repeated commercial intent. The next step should improve the demo, fulfillment repeatability, and one bottleneck in the agent workflow. Do not open multiple verticals yet.
-
-### Revise and retest
-
-Use this when the audience engages but the message, demo, pricing, or qualification flow is weak. Change one major assumption at a time and run another controlled test.
-
-### Stop or change the hypothesis
-
-Use this when the test produces no credible commercial intent after a fair trial. Do not respond by building more automation. Record the learning, revise the audience or offer, and decide whether the next experiment still belongs to car dealerships.
-
-## 10. Explicit non-goals for this phase
-
-Do not implement the full multi-vertical platform, a general-purpose chatbot, autonomous sales, a CRM, support tickets, a customer portal, a full payment lifecycle, advanced analytics, broad plan enforcement, or a generalized modular registry as part of this demand test unless a current task explicitly proves that it is required to run the experiment.
+1. How clients pay (EcoCash, bank transfer, cash) and when (monthly in advance?).
+2. Minimum term, notice period and cancellation terms.
+3. How "first five dealerships" is counted for the launch offer, and how many places are left.
+4. What happens when a client cannot supply enough vehicle photos or details for their plan's post count.
+5. Whether clients approve each post, a weekly batch, or only the monthly plan, and how quickly.
+6. Whether a client without Instagram gets the Instagram version set up, or Facebook only.
+7. Upsell prices, including Brand Perfection batch prices.
 
 ## References
 
-[1]: ./vision.md "Focused car-dealership vision"
+[1]: ./vision.md "Vision"
 
-[2]: ./current_tasks.md "Current validation tasks"
+[2]: ./current_tasks.md "Current tasks"
 
-[3]: ./progress.md "Current validation progress"
+[3]: ./progress.md "Progress"
 
-[4]: ../plans/MVP-SCOPE.md "Current validation scope charter"
+[4]: ./sales-script.md "Dealership social media sales script"
 
-[5]: ../plans/meta_ads.md "Meta Ads plan"
-
-[6]: ../designs/ "Dealership design source material"
+[5]: ../plans/MVP-SCOPE.md "MVP scope charter"
