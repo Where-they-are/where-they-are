@@ -46,7 +46,24 @@ Payment method and timing, minimum term and cancellation, what happens without I
 
 ## 2. The conversation
 
-### Opening
+### Leads from the ad form
+
+The ad ("Feed vs Quiet Page | 50% off month one") opens a WhatsApp form that asks for:
+
+- the business name;
+- whether they can approve marketing for the dealership;
+- where the dealership is based;
+- what they would like their social media to do.
+
+The form closes with "Thanks. We will review your answers and message you on WhatsApp with the next steps." So our first reply is that next step:
+
+> Hi, thanks for your answers, I'm Angel from Where They Are. [One sentence linking their goal to what we do.]
+>
+> Are you currently posting your vehicles regularly on Facebook or Instagram, or do you mostly post whenever a new vehicle comes in?
+
+Never ask again for anything the form already answered. If they can't approve marketing, keep helping and note who decides in the hand-off.
+
+### Opening (people who message without the form)
 
 > Hi, thanks for contacting Where They Are. We help car dealerships get more attention and enquiries through consistent social media content.
 >

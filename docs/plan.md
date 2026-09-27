@@ -88,6 +88,7 @@ Start with the first three angles (aspiration, trust, direct outcome) in one ad 
 | Budget | $7 per day |
 | Initial test | 7 days |
 | Call to action | Send WhatsApp message |
+| Messaging experience | WhatsApp form: business name, can you approve marketing, where the dealership is based, what they want their social media to do. Completion message: "Thanks. We will review your answers and message you on WhatsApp with the next steps." Angel continues from those answers. |
 
 Record the creative, audience, budget, dates and message version for every change, so results can be interpreted.
 
