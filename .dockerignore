@@ -31,3 +31,8 @@ docker-compose.yml
 local.db
 local.db-*
 .data
+
+# WhatsApp Web session data: persisted in a volume at runtime, never baked in
+**/.wwebjs_auth
+**/.wwebjs_cache
+apps/*/data
