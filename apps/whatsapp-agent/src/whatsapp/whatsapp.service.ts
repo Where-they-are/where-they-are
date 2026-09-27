@@ -21,6 +21,10 @@ import { normalizePhone, phoneFromChatId } from "../owner/phone.js";
 import type { AngelRuntime } from "../runtime.js";
 import { EchoTracker, MessageBatcher } from "./message-batcher.js";
 import {
+	DEFAULT_AUTOMATED_TEXTS,
+	isAutomatedBusinessMessage,
+} from "./meta-forms.js";
+import {
 	adSourceFrom,
 	isIgnoredChat,
 	isIgnoredType,
@@ -62,6 +66,7 @@ export class WhatsAppService
 	private readonly logger = new Logger("WhatsApp");
 	private readonly config: AgentConfig;
 	private readonly echoes = new EchoTracker();
+	private readonly automatedTexts: string[];
 	private readonly batcher: MessageBatcher<QueuedMessage>;
 	private client: InstanceType<typeof Client> | undefined;
 	private runtime: AngelRuntime | undefined;
@@ -78,6 +83,10 @@ export class WhatsAppService
 
 	constructor(@Inject(AGENT_CONFIG) config: AgentConfig) {
 		this.config = config;
+		this.automatedTexts = [
+			...DEFAULT_AUTOMATED_TEXTS,
+			...config.AUTOMATED_MESSAGE_TEXTS,
+		];
 		this.batcher = new MessageBatcher(
 			config.REPLY_DEBOUNCE_MS,
 			(chatId, items) => {
@@ -286,6 +295,15 @@ export class WhatsAppService
 			await this.handleOwner(message);
 			return;
 		}
+		if (message.type !== "chat" && !message.hasMedia) {
+			// Ad forms and interactive replies arrive in formats whatsapp-web.js
+			// doesn't document; log their shape so the first real one can be checked.
+			const raw = (message as unknown as { _data?: Record<string, unknown> })
+				._data;
+			this.logger.log(
+				`Inbound ${message.type} message from ${phone}; fields: ${Object.keys(raw ?? {}).join(", ")}`
+			);
+		}
 		const incoming = await toIncomingMessage(message);
 		const displayName =
 			(message as unknown as { _data?: { notifyName?: string } })._data
@@ -323,6 +341,14 @@ export class WhatsAppService
 			return;
 		}
 		if (this.echoes.consume(message.to, message.body)) {
+			return;
+		}
+		if (isAutomatedBusinessMessage(message, this.automatedTexts)) {
+			// Meta's ad form welcome and completion messages come from our own
+			// number; they are not the owner replying by hand.
+			this.logger.log(
+				`Automated ${message.type} message in ${message.to}: Angel stays on`
+			);
 			return;
 		}
 		const phone = await this.phoneFor(message.to);

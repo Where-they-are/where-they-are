@@ -4,6 +4,7 @@ import type {
 	MediaKind,
 } from "../conversation/conversation.service.js";
 import type { AdSource } from "../crm/crm.types.js";
+import { formAnswersFrom } from "./meta-forms.js";
 
 /** Chats Angel never answers: groups, status updates, channels, broadcasts. */
 const IGNORED_CHAT = /@(g\.us|broadcast|newsletter)$|^status@/;
@@ -48,6 +49,13 @@ const describeNonMedia = (message: Message): string => {
 	}
 	if (message.type === "vcard" || message.type === "multi_vcard") {
 		return "(Shared a contact card)";
+	}
+	if (message.type !== "chat") {
+		// Forms and interactive replies, e.g. the WhatsApp form from our ads.
+		const answers =
+			message.body.trim() ||
+			formAnswersFrom((message as unknown as { _data?: unknown })._data);
+		return answers ? `(Ad form answers)\n${answers}` : message.body;
 	}
 	return message.body;
 };

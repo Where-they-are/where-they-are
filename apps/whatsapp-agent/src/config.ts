@@ -15,6 +15,17 @@ const configSchema = z.object({
 	AGENT_REASONING_EFFORT: z
 		.enum(["minimal", "low", "medium", "high"])
 		.default("low"),
+	/** Extra automated business messages (separated by ||) that must not pause Angel. */
+	AUTOMATED_MESSAGE_TEXTS: z
+		.string()
+		.optional()
+		.default("")
+		.transform((value) =>
+			value
+				.split("||")
+				.map((text) => text.trim())
+				.filter(Boolean)
+		),
 	CHROME_EXECUTABLE_PATH: z.string().optional().default(""),
 	EXAMPLES_URL: z.string().url().optional().or(z.literal("")).default(""),
 	HUMAN_TAKEOVER_HOURS: z.coerce.number().positive().default(12),
