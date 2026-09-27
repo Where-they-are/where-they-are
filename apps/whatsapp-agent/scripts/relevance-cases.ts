@@ -267,6 +267,15 @@ export const relevanceCases: RelevanceCase[] = [
 	},
 	{
 		expect: "respond",
+		id: "ad_form",
+		level: "medium",
+		messages: [
+			"(Ad form answers)\nBusiness name: Zim Wheels\nCan you approve marketing for this business?: Yes\nWhere is your dealership based?: Harare\nWhat would you like your social media to do?: More people asking about our cars",
+		],
+		why: "Answers from our own ad's WhatsApp form",
+	},
+	{
+		expect: "respond",
 		id: "followers_dealer",
 		level: "hard",
 		messages: [

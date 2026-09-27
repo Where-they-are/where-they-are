@@ -80,6 +80,42 @@ export const scenarios: Scenario[] = [
 		],
 	},
 	{
+		description:
+			"Arrives from the ad form: no repeated questions, straight to how they post, then Growth",
+		expect: {
+			businessType: "car_dealership",
+			location: /Mutare/i,
+			mentions: [/thanks for your answers/i, /post/i, /\$96/],
+			neverMentions: [
+				/name of your dealership|which city|where (is your dealership|are you) based|approve marketing/i,
+				OTHER_AMOUNTS,
+			],
+			recommendedPlan: "growth",
+		},
+		group: "sales_flow",
+		id: "ad_form",
+		turns: [
+			"(Ad form answers)\nBusiness name: Tino Motors\nCan you approve marketing for this business?: Yes\nWhere is your dealership based?: Mutare\nWhat would you like your social media to do?: Get more people asking about our cars",
+			"We only post when new stock comes in",
+			"Three times a week sounds right",
+		],
+	},
+	{
+		description:
+			"Ad form from someone who can't approve marketing: still helped, never pestered about it",
+		expect: {
+			mentions: [/thanks for your answers/i],
+			neverMentions: [/name of your dealership|which city/i],
+			repliedTurns: [0, 1],
+		},
+		group: "sales_flow",
+		id: "ad_form_not_owner",
+		turns: [
+			"(Ad form answers)\nBusiness name: Harare Car Mart\nCan you approve marketing for this business?: No, my boss decides\nWhere is your dealership based?: Harare\nWhat would you like your social media to do?: Look more professional",
+			"We post every day but the photos look messy",
+		],
+	},
+	{
 		description: "Wants to appear every day: Pro at $240, $120 first month",
 		expect: {
 			mentions: [/\$240/, /\$120/],
