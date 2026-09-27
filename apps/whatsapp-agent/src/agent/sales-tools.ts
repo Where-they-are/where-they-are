@@ -2,22 +2,15 @@ import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
 
 import type { CrmRepository } from "../crm/crm.repository.js";
-import { PAYMENT_KINDS, PAYMENT_METHODS } from "../crm/crm.types.js";
 import { QUALIFIED_SCORE, scoreLead } from "../crm/lead-score.js";
 import { type DealershipPricing, OFFER_TERMS } from "../knowledge/pricing.js";
 import type { MetaReporter } from "../meta/meta-reporter.js";
 import type { OwnerNotifier } from "../notifications/owner-notifier.js";
-import type {
-	PaymentRequestResult,
-	PaymentService,
-} from "../payments/payment.service.js";
-import { checkWallet } from "../payments/wallet.js";
 
 export interface SalesToolDeps {
 	crm: CrmRepository;
 	meta: MetaReporter;
 	notifier: OwnerNotifier;
-	payments: PaymentService;
 	pricing: () => DealershipPricing;
 }
 
@@ -33,24 +26,7 @@ const BAND_ADVICE = {
 		"Interested but not ready: keep helping, ask the next useful question, and don't push for payment.",
 } as const;
 
-const PAYMENT_GUIDANCE: Record<
-	Exclude<PaymentRequestResult, { ok: true }>["reason"],
-	string
-> = {
-	already_paid:
-		"This payment is already confirmed. Do not ask for it again; thank them instead.",
-	deposit_not_paid:
-		"The deposit is not paid yet, so there is no balance to pay. Offer the deposit instead if they want to start.",
-	not_configured:
-		"Payments can't be taken in the chat right now. Tell them a member of the team will send the payment details here shortly. The team has been alerted.",
-	not_delivered:
-		"The balance is only due after the site is delivered. Tell them there is nothing to pay until then.",
-	provider_error:
-		"Paynow could not send the request. Apologise, check the number with them, and offer to try once more. If it fails again, hand over with request_human (reason: payment).",
-	unknown_customer: "Something went wrong. Hand over with request_human.",
-};
-
-/** Mastra tools for the offer, the lead score and Paynow payments. */
+/** Mastra tools for the offer and the lead score. */
 export const createSalesTools = (
 	deps: SalesToolDeps,
 	customerIdFrom: CustomerIdFrom
@@ -148,102 +124,8 @@ export const createSalesTools = (
 		}),
 	});
 
-	const requestPayment = createTool({
-		description:
-			"Send a Paynow payment prompt to the customer's EcoCash or OneMoney wallet. Use kind 'deposit' only once they clearly want to go ahead and have told you which number to use (it can be the WhatsApp number they're chatting from). Use kind 'balance' only when they ask to pay after their site is delivered. Never ask for PINs or passwords.",
-		execute: async (input, context) => {
-			const id = customerIdFrom(context);
-			const wallet = checkWallet(input.phone, input.method);
-			if (!wallet.ok) {
-				return {
-					ok: false,
-					tellCustomer:
-						wallet.problem === "unsupported_network"
-							? "We can take EcoCash (077/078) or OneMoney (071). Ask which EcoCash or OneMoney number to use."
-							: "That doesn't look like a Zimbabwe mobile number. Ask them to check it.",
-				};
-			}
-			const result = await deps.payments.request({
-				customerId: id,
-				kind: input.kind,
-				method: wallet.method,
-				phone: wallet.phone,
-			});
-			if (result.ok) {
-				return {
-					amountUsd: result.amountUsd,
-					ok: true,
-					tellCustomer: `A ${wallet.method === "ecocash" ? "EcoCash" : "OneMoney"} prompt for $${result.amountUsd} has been sent to ${wallet.phone.replace("263", "0")}. Ask them to approve it on their phone with their PIN. You'll confirm here once it's through.${result.status === "already_pending" ? " (A prompt was already waiting, so no new one was sent.)" : ""}`,
-				};
-			}
-			if (result.reason === "not_configured") {
-				await deps.notifier
-					.notifyOwner(
-						`💳 ${id} wants to pay the ${input.kind} but Paynow isn't set up in Angel. Please send them payment details: https://wa.me/${id}`
-					)
-					.catch(() => undefined);
-			}
-			return {
-				ok: false,
-				reason: result.reason,
-				tellCustomer: PAYMENT_GUIDANCE[result.reason],
-			};
-		},
-		id: "request_payment",
-		inputSchema: z.object({
-			kind: z.enum(PAYMENT_KINDS),
-			method: z
-				.enum(PAYMENT_METHODS)
-				.optional()
-				.describe("Leave out to detect it from the number"),
-			phone: z
-				.string()
-				.trim()
-				.min(9)
-				.max(20)
-				.describe(
-					"The wallet number to charge, as the customer gave it, e.g. 0771234567"
-				),
-		}),
-	});
-
-	const checkPayment = createTool({
-		description:
-			"Check the latest deposit or balance payment with Paynow, e.g. when the customer says they've approved it or paid.",
-		execute: async (input, context) => {
-			const id = customerIdFrom(context);
-			const payment = await deps.payments.refresh(id, input.kind);
-			if (!payment) {
-				return {
-					status: "none",
-					tellCustomer: "No payment request has been sent yet.",
-				};
-			}
-			const guidance: Record<typeof payment.status, string> = {
-				cancelled:
-					"It was cancelled. Offer to send the request again (request_payment).",
-				created: "It's still being set up. Ask them to wait a moment.",
-				expired:
-					"It expired before it was approved. Offer to send it again (request_payment).",
-				failed:
-					"It didn't go through. Offer to send it again, or to use another number.",
-				paid: "It's confirmed as paid. The confirmation has already been sent, so just thank them.",
-				sent: "Paynow hasn't confirmed it yet. Ask them to approve the prompt on their phone; you'll confirm here as soon as it's through. Never say it's paid until it is.",
-			};
-			return {
-				amountUsd: payment.amountUsd,
-				status: payment.status,
-				tellCustomer: guidance[payment.status],
-			};
-		},
-		id: "check_payment",
-		inputSchema: z.object({ kind: z.enum(PAYMENT_KINDS).default("deposit") }),
-	});
-
 	return {
-		check_payment: checkPayment,
 		get_offer: getOffer,
-		request_payment: requestPayment,
 		rescore,
 		update_lead_signals: updateLeadSignals,
 	};

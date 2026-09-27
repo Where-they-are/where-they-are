@@ -6,7 +6,6 @@ const booleanString = z
 	.transform((value) => value === "true");
 
 const digits = (value: string) => value.replace(/\D/g, "");
-const TRAILING_SLASH = /\/+$/;
 
 const configSchema = z.object({
 	ADMIN_TOKEN: z.string().optional().default(""),
@@ -39,15 +38,6 @@ const configSchema = z.object({
 		.string()
 		.transform(digits)
 		.pipe(z.string().min(9, "OWNER_WHATSAPP_NUMBER must be a full number")),
-	PAYNOW_AUTH_EMAIL: z.string().optional().default(""),
-	PAYNOW_INTEGRATION_ID: z.string().optional().default(""),
-	PAYNOW_INTEGRATION_KEY: z.string().optional().default(""),
-	/** Angel's public address, e.g. https://angel.wheretheyare.co.zw, for Paynow's result URL. */
-	PUBLIC_BASE_URL: z
-		.string()
-		.optional()
-		.default("")
-		.transform((value) => value.replace(TRAILING_SLASH, "")),
 	REPLY_DEBOUNCE_MS: z.coerce.number().int().min(0).default(3500),
 	WHATSAPP_AUTH_PATH: z.string().min(1).default("./data/wwebjs_auth"),
 	WHATSAPP_CLIENT_ID: z.string().min(1).default("angel"),

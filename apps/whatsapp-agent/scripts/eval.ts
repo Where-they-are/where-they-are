@@ -10,23 +10,10 @@ import { resolve } from "node:path";
 import { readConfig } from "../src/config.js";
 import type { CrmEvent, Customer } from "../src/crm/crm.types.js";
 import { ConsoleOwnerNotifier } from "../src/notifications/owner-notifier.js";
-import type { PaymentGateway } from "../src/payments/payment.service.js";
 import { createRuntime } from "../src/runtime.js";
 import { type Scenario, scenarios } from "./scenarios.js";
 
 const MAX_WORDS = 120;
-
-/** Paynow stand-in: every prompt is accepted and stays pending until the scenario says otherwise. */
-const fakePaynow: PaymentGateway = {
-	poll: () => Promise.resolve(null),
-	requestMobilePayment: () =>
-		Promise.resolve({
-			instructions: "Approve the prompt on your phone",
-			ok: true,
-			paynowReference: "eval",
-			pollUrl: "https://paynow.invalid/poll",
-		}),
-};
 const CONCURRENCY = 3;
 /** Unconditional promises Angel must never make. */
 const GLOBAL_FORBIDDEN = [
@@ -68,12 +55,10 @@ const describeEvent = (event: CrmEvent): string => {
 	].join("");
 };
 
-/** Compares a finished conversation with what the scenario expects. */
-const checkExpectations = (
+/** Required and forbidden wording across all of Angel's replies. */
+const checkReplies = (
 	expect: Scenario["expect"],
-	replies: string[],
-	customer: Customer | undefined,
-	events: CrmEvent[]
+	replies: string[]
 ): string[] => {
 	const failures: string[] = [];
 	const all = replies.join("\n\n");
@@ -91,6 +76,17 @@ const checkExpectations = (
 			failures.push(`forbidden ${pattern} in: "${hit.slice(0, 120)}"`);
 		}
 	}
+	return failures;
+};
+
+/** Compares a finished conversation with what the scenario expects. */
+const checkExpectations = (
+	expect: Scenario["expect"],
+	replies: string[],
+	customer: Customer | undefined,
+	events: CrmEvent[]
+): string[] => {
+	const failures = checkReplies(expect, replies);
 	const actual = {
 		businessType: customer?.businessType,
 		demoSent: Boolean(customer?.demoSentAt),
@@ -142,37 +138,14 @@ const runScenario = async (
 	const notifier = new ConsoleOwnerNotifier();
 	const runtime = createRuntime(config, notifier, {
 		dataDir: resolve(root, scenario.id),
-		gateway: fakePaynow,
 	});
 	const customerId = `26377${String(10_000_000 + index).slice(1)}`;
 	const transcript: string[] = [];
 	const replies: string[] = [];
 	const ms: number[] = [];
 	const failures: string[] = [];
-	runtime.payments.attachMessenger({
-		sendToCustomer: (_chatId, text) => {
-			transcript.push(`**Angel (automatic, after Paynow):** ${text}`);
-			return Promise.resolve();
-		},
-	});
-	const simulatePaynow = async (status: "Paid" | "Cancelled") => {
-		const payment = runtime.crm.payments.latest(customerId, "deposit");
-		if (!payment) {
-			failures.push(`no deposit request to mark ${status}`);
-			return;
-		}
-		transcript.push(`_(Paynow reports ${status} for ${payment.reference})_`);
-		await runtime.payments.handleStatusUpdate({
-			amount: payment.amountUsd,
-			outcome: status === "Paid" ? "paid" : "cancelled",
-			paynowReference: "eval",
-			pollUrl: payment.pollUrl,
-			providerStatus: status,
-			reference: payment.reference,
-		});
-	};
 
-	for (const [turnIndex, step] of scenario.turns.entries()) {
+	for (const step of scenario.turns) {
 		const batch = Array.isArray(step) ? step : [step];
 		const turn = batch.join(" / ");
 		transcript.push(`**Customer:** ${turn}`);
@@ -201,11 +174,7 @@ const runScenario = async (
 				`reply too long (${wordCount(turnText)} words) on "${turn}"`
 			);
 		}
-		if (scenario.paynow?.afterTurn === turnIndex) {
-			await simulatePaynow(scenario.paynow.status);
-		}
 	}
-	runtime.payments.stop();
 
 	const customer = runtime.crm.get(customerId);
 	const events = runtime.crm.events(customerId, 100);
@@ -221,11 +190,11 @@ const runScenario = async (
 				businessName: customer?.businessName,
 				businessType: customer?.businessType,
 				demoSentAt: customer?.demoSentAt,
+				leadScore: customer?.leadScore,
+				leadSignals: customer?.leadSignals,
 				location: customer?.location,
 				name: customer?.name,
 				notes: customer?.notes,
-				leadScore: customer?.leadScore,
-				leadSignals: customer?.leadSignals,
 				stage: customer?.stage,
 				stockSize: customer?.stockSize,
 				timing: customer?.timing,
