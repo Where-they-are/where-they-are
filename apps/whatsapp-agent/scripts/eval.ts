@@ -1,8 +1,9 @@
 /**
  * Runs scripted customer conversations against the real model and checks
- * Angel's replies and CRM state. Writes a transcript report to ./data/eval.
+ * Angel's replies, silences and CRM state. Writes a transcript report to
+ * ./data/eval.
  *
- *   pnpm --filter @where-they-are/whatsapp-agent eval [scenario-id ...]
+ *   pnpm --filter @where-they-are/whatsapp-agent eval [scenario-id|group ...]
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -15,13 +16,18 @@ import { type Scenario, scenarios } from "./scenarios.js";
 
 const MAX_WORDS = 120;
 const CONCURRENCY = 3;
-/** Unconditional promises Angel must never make. */
+const QUESTION_MARK = /\?/g;
+/** Things Angel must never say, in any conversation. */
 const GLOBAL_FORBIDDEN = [
 	/\bI am (a )?human\b|\bI'm (a )?(real )?(person|human)\b/i,
 	/\{"|"\w+":\s/,
-	/\bCRM\b|update_lead_stage|request_human|save_customer_details/i,
+	/\bCRM\b|update_lead_stage|request_human|save_customer_details|recommend_plan|ignore_message/i,
 	// No invented track record.
 	/\bwe (often|usually|regularly) (work|help|build)|\bmany (dealers|dealerships|clients|businesses) (use|have|choose)|\bour (clients|customers) (include|love|say)|dealers we('ve| have) worked with/i,
+	// The retired website offer.
+	/\$250|\$125|\bdeposit\b|Paynow|Ridgeline|website demo/i,
+	// Mechanism talk the ads and script avoid.
+	/software company|we create vehicle content|get your dealership online/i,
 ];
 
 const config = readConfig();
@@ -31,8 +37,17 @@ mkdirSync(root, { recursive: true });
 
 const selected = process.argv.slice(2);
 const toRun = selected.length
-	? scenarios.filter((scenario) => selected.includes(scenario.id))
+	? scenarios.filter(
+			(scenario) =>
+				selected.includes(scenario.id) || selected.includes(scenario.group)
+		)
 	: scenarios;
+
+interface TurnRecord {
+	outcome: string;
+	replies: string[];
+	text: string;
+}
 
 interface Outcome {
 	failures: string[];
@@ -46,12 +61,14 @@ const wordCount = (text: string) =>
 	text.split(WHITESPACE).filter(Boolean).length;
 
 const describeEvent = (event: CrmEvent): string => {
-	const { kind, reason, to } = event.detail;
+	const { category, kind, plan, reason, to } = event.detail;
 	return [
 		event.type,
 		to ? `→${String(to)}` : "",
 		reason ? `(${String(reason)})` : "",
 		kind ? `(${String(kind)})` : "",
+		plan ? `(${String(plan)})` : "",
+		category ? `(${String(category)})` : "",
 	].join("");
 };
 
@@ -79,54 +96,104 @@ const checkReplies = (
 	return failures;
 };
 
-/** Compares a finished conversation with what the scenario expects. */
-const checkExpectations = (
+/** Which turns got a reply, which stayed silent, and how many questions each asked. */
+const checkTurns = (
 	expect: Scenario["expect"],
-	replies: string[],
+	turns: TurnRecord[]
+): string[] => {
+	const failures: string[] = [];
+	for (const index of expect.silentTurns ?? []) {
+		const turn = turns[index];
+		if (turn && turn.replies.length > 0) {
+			failures.push(
+				`turn ${index} should be silent but got: "${turn.replies.join(" / ").slice(0, 100)}"`
+			);
+		}
+	}
+	for (const index of expect.repliedTurns ?? []) {
+		const turn = turns[index];
+		if (turn && turn.replies.length === 0) {
+			failures.push(
+				`turn ${index} ("${turn.text.slice(0, 50)}") got no reply (${turn.outcome})`
+			);
+		}
+	}
+	for (const [index, turn] of turns.entries()) {
+		const questions = turn.replies.join(" ").match(QUESTION_MARK)?.length ?? 0;
+		if (questions > 1 && !expect.allowExtraQuestions) {
+			failures.push(`turn ${index} asked ${questions} questions`);
+		}
+		if (turn.outcome === "fallback") {
+			failures.push(`fallback reply on turn ${index} ("${turn.text}")`);
+		}
+		const words = wordCount(turn.replies.join("\n\n"));
+		if (words > MAX_WORDS) {
+			failures.push(`turn ${index} reply too long (${words} words)`);
+		}
+	}
+	return failures;
+};
+
+/** Compares the CRM after a conversation with what the scenario expects. */
+const checkCrm = (
+	expect: Scenario["expect"],
 	customer: Customer | undefined,
 	events: CrmEvent[]
 ): string[] => {
-	const failures = checkReplies(expect, replies);
-	const actual = {
-		businessType: customer?.businessType,
-		demoSent: Boolean(customer?.demoSentAt),
-		handoff: events.some((event) => event.type === "handoff_requested"),
-		optedOut: customer?.optedOut,
-		paymentRequested: events.some(
-			(event) => event.type === "payment_requested"
-		),
+	const failures: string[] = [];
+	const handoffs = events.filter((event) => event.type === "handoff_requested");
+	const check = (ok: boolean, message: string) => {
+		if (!ok) {
+			failures.push(message);
+		}
 	};
-	if (
-		expect.leadScoreAtLeast !== undefined &&
-		(customer?.leadScore ?? 0) < expect.leadScoreAtLeast
-	) {
-		failures.push(
+	if (expect.handoff !== undefined) {
+		check(
+			handoffs.length > 0 === expect.handoff,
+			`handoff ${handoffs.length > 0}, expected ${expect.handoff}`
+		);
+	}
+	if (expect.handoffReason) {
+		check(
+			handoffs.some((event) => event.detail.reason === expect.handoffReason),
+			`no ${expect.handoffReason} hand-off (got ${handoffs.map((event) => String(event.detail.reason)).join(", ") || "none"})`
+		);
+	}
+	if (expect.businessType) {
+		check(
+			customer?.businessType === expect.businessType,
+			`businessType ${customer?.businessType}, expected ${expect.businessType}`
+		);
+	}
+	if (expect.recommendedPlan) {
+		check(
+			customer?.recommendedPlan === expect.recommendedPlan,
+			`recommended ${customer?.recommendedPlan ?? "nothing"}, expected ${expect.recommendedPlan}`
+		);
+	}
+	if (expect.optedOut !== undefined) {
+		check(
+			customer?.optedOut === expect.optedOut,
+			`optedOut ${customer?.optedOut}, expected ${expect.optedOut}`
+		);
+	}
+	if (expect.leadScoreAtLeast !== undefined) {
+		check(
+			(customer?.leadScore ?? 0) >= expect.leadScoreAtLeast,
 			`lead score ${customer?.leadScore ?? 0}, expected at least ${expect.leadScoreAtLeast}`
 		);
 	}
-	if (expect.location && !expect.location.test(customer?.location ?? "")) {
-		failures.push(
+	if (expect.location) {
+		check(
+			expect.location.test(customer?.location ?? ""),
 			`location ${customer?.location ?? "unknown"}, expected ${expect.location}`
 		);
 	}
-	if (expect.stages && customer && !expect.stages.includes(customer.stage)) {
-		failures.push(
+	if (expect.stages && customer) {
+		check(
+			expect.stages.includes(customer.stage),
 			`stage ${customer.stage}, expected ${expect.stages.join("|")}`
 		);
-	}
-	for (const key of [
-		"businessType",
-		"demoSent",
-		"handoff",
-		"optedOut",
-		"paymentRequested",
-	] as const) {
-		const wanted = expect[key];
-		if (wanted !== undefined && actual[key] !== wanted) {
-			failures.push(
-				`${key} ${String(actual[key])}, expected ${String(wanted)}`
-			);
-		}
 	}
 	return failures;
 };
@@ -141,21 +208,20 @@ const runScenario = async (
 	});
 	const customerId = `26377${String(10_000_000 + index).slice(1)}`;
 	const transcript: string[] = [];
-	const replies: string[] = [];
+	const turns: TurnRecord[] = [];
 	const ms: number[] = [];
-	const failures: string[] = [];
 
 	for (const step of scenario.turns) {
 		const batch = Array.isArray(step) ? step : [step];
-		const turn = batch.join(" / ");
-		transcript.push(`**Customer:** ${turn}`);
+		const text = batch.join(" / ");
+		transcript.push(`**Customer:** ${text}`);
 		const started = Date.now();
 		// biome-ignore lint/performance/noAwaitInLoops: a conversation is sequential
 		const result = await runtime.conversation.handle({
 			chatId: `${customerId}@c.us`,
 			customerId,
 			displayName: "Eval",
-			messages: batch.map((text) => ({ text })),
+			messages: batch.map((message) => ({ text: message })),
 		});
 		ms.push(Date.now() - started);
 		if (result.replies.length === 0) {
@@ -163,24 +229,20 @@ const runScenario = async (
 		}
 		for (const reply of result.replies) {
 			transcript.push(`**Angel:** ${reply}`);
-			replies.push(reply);
 		}
-		if (result.outcome === "fallback") {
-			failures.push(`fallback reply on turn "${turn}"`);
-		}
-		const turnText = result.replies.join("\n\n");
-		if (wordCount(turnText) > MAX_WORDS) {
-			failures.push(
-				`reply too long (${wordCount(turnText)} words) on "${turn}"`
-			);
-		}
+		turns.push({ outcome: result.outcome, replies: result.replies, text });
 	}
 
 	const customer = runtime.crm.get(customerId);
 	const events = runtime.crm.events(customerId, 100);
-	failures.push(
-		...checkExpectations(scenario.expect, replies, customer, events)
-	);
+	const failures = [
+		...checkReplies(
+			scenario.expect,
+			turns.flatMap((turn) => turn.replies)
+		),
+		...checkTurns(scenario.expect, turns),
+		...checkCrm(scenario.expect, customer, events),
+	];
 
 	transcript.push(
 		"",
@@ -189,16 +251,18 @@ const runScenario = async (
 			{
 				businessName: customer?.businessName,
 				businessType: customer?.businessType,
-				demoSentAt: customer?.demoSentAt,
+				desiredFrequency: customer?.desiredFrequency,
+				facebookUrl: customer?.facebookUrl,
+				instagramUrl: customer?.instagramUrl,
+				isDecisionMaker: customer?.isDecisionMaker,
 				leadScore: customer?.leadScore,
 				leadSignals: customer?.leadSignals,
 				location: customer?.location,
 				name: customer?.name,
 				notes: customer?.notes,
+				postingHabit: customer?.postingHabit,
+				recommendedPlan: customer?.recommendedPlan,
 				stage: customer?.stage,
-				stockSize: customer?.stockSize,
-				timing: customer?.timing,
-				vehicleTypes: customer?.vehicleTypes,
 			},
 			null,
 			2
@@ -231,11 +295,11 @@ for (const outcome of outcomes) {
 		outcome.ms.reduce((sum, value) => sum + value, 0) / outcome.ms.length
 	);
 	console.info(
-		`${ok ? "PASS" : "FAIL"} ${outcome.scenario.id} (avg ${avg}ms)${ok ? "" : `\n  - ${outcome.failures.join("\n  - ")}`}`
+		`${ok ? "PASS" : "FAIL"} ${outcome.scenario.group}/${outcome.scenario.id} (avg ${avg}ms)${ok ? "" : `\n  - ${outcome.failures.join("\n  - ")}`}`
 	);
 	lines.push(
 		`## ${ok ? "✅" : "❌"} ${outcome.scenario.id}: ${outcome.scenario.description}`,
-		`avg ${avg}ms per turn`,
+		`${outcome.scenario.group} · avg ${avg}ms per turn`,
 		...outcome.failures.map((failure) => `- FAIL: ${failure}`),
 		"",
 		...outcome.transcript,
