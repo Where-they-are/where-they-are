@@ -20,6 +20,8 @@ const INSTRUCTIONS = [
 ].join(" ");
 
 const NO_SPEECH = /^\(?no speech\)?\.?$/i;
+/** A voice note transcript never needs more; also keeps OpenRouter reservations small. */
+const MAX_TRANSCRIPT_TOKENS = 2048;
 
 /** Transcribes voice notes with the same audio-capable models Angel uses. */
 export class ModelTranscriber implements Transcriber {
@@ -50,7 +52,12 @@ export class ModelTranscriber implements Transcriber {
 						role: "user",
 					},
 				] as never,
-				{ modelSettings: { temperature: 0 } }
+				{
+					modelSettings: {
+						maxOutputTokens: MAX_TRANSCRIPT_TOKENS,
+						temperature: 0,
+					},
+				}
 			);
 			const text = (result.text ?? "").trim();
 			return text && !NO_SPEECH.test(text) ? text : null;

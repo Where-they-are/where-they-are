@@ -105,6 +105,12 @@ export const isTransientModelError = (error: unknown): boolean =>
 /** Base64 length of roughly 12 MB of media. */
 const MAX_MEDIA_BASE64 = 16_000_000;
 const MAX_STEPS = 8;
+/**
+ * Output cap per model call (reply plus reasoning). Without it OpenRouter
+ * reserves the model maximum (65K tokens) and rejects calls once credit runs
+ * below that, long before it is spent.
+ */
+const MAX_OUTPUT_TOKENS = 4096;
 const SUPPORTED_MEDIA = /^(image\/(jpeg|png|webp)|audio\/|application\/pdf)/;
 
 type ContentPart =
@@ -591,7 +597,10 @@ export class ConversationService {
 						resource: customer.id,
 						thread: `whatsapp-${customer.id}`,
 					},
-					modelSettings: { temperature: 0.4 },
+					modelSettings: {
+						maxOutputTokens: MAX_OUTPUT_TOKENS,
+						temperature: 0.4,
+					},
 					requestContext,
 				}
 			)) as GenerateResult;
