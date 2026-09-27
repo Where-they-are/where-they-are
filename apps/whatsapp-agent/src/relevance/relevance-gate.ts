@@ -41,7 +41,7 @@ export interface DecisionClient {
 }
 
 const BUSINESS_CONTEXT =
-	"Where They Are is a Zimbabwean social media agency for car dealerships: it creates and publishes Facebook and Instagram posts for dealership pages. Its ads target car dealership owners in Mutare and Harare and show example vehicle posts, so people sometimes message asking about a car, its price or a test drive: they came from our ads and need a polite reply. Other businesses (restaurants, lodges, shops and so on) are future clients and also get a reply. Angel is its WhatsApp sales assistant. This WhatsApp number is also the founder's own number, so friends, family, acquaintances, spammers and wrong numbers sometimes message it.";
+	"Where They Are is a Zimbabwean social media agency for car dealerships: it creates and publishes Facebook and Instagram posts for dealership pages. Its ads target car dealership owners in Mutare and Harare and open a short WhatsApp form (business name, whether they can approve marketing, where the dealership is based, their social media goal), so many first messages are those form answers: they are leads. The ads also show example vehicle posts, so people sometimes message asking about a car, its price or a test drive: they came from our ads and need a polite reply. Other businesses (restaurants, lodges, shops and so on) are future clients and also get a reply. Angel is its WhatsApp sales assistant. This WhatsApp number is also the founder's own number, so friends, family, acquaintances, spammers and wrong numbers sometimes message it.";
 
 const QUESTIONS: Record<string, JevQuestion> = {
 	category: {
