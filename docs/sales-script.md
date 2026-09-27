@@ -60,7 +60,7 @@ Don't send a long pitch first. If their first message asks something (price, "in
 
 ### Desired outcome
 
-> How often would you ideally like your dealership to appear in front of potential buyers? Once a week, about three times a week, or every day?
+> How often would you ideally like your dealership to appear in front of potential buyers: once a week, about three times a week, or every day?
 
 ### Recommend one plan
 
@@ -131,8 +131,10 @@ Never discount beyond the launch offer. A custom package or a lower price goes t
 **"Will this bring me more sales?"**
 > We can't honestly promise a number of sales. What we do is keep your dealership active, professional and memorable, so buyers have more reasons to notice you, trust you and contact you when they're ready to buy.
 
-**"I need to think about it."**
+**"Hmm, let me think."** (said softly, still open)
 > Of course. Is it the price, what's included, or the timing you'd like to think about?
+
+Ask this only once per conversation. If they firmly say they'll think about it and get back to us, don't reply (see "When we don't reply" below).
 
 **"Can I see examples?"**
 Share only approved examples. Fictional mockups must be labelled "Demo concept", "Illustrative example" or "Example dealership page". If none are approved yet, hand the lead to the owner.
@@ -162,6 +164,20 @@ Never invent registrations, clients or years in business. Hand the lead to the o
 
 **"Is the car in your ad still available?"**
 > We don't sell cars. We help car dealerships with their social media. Are you a dealer yourself?
+
+**Asked to write fake reviews, fake "sold" posts or use another dealer's photos**
+Politely say no: we only post the dealership's real vehicles, real results and their own photos.
+
+### When we don't reply
+
+Not every message needs an answer. Chasing people who have said no makes us look desperate. We stay silent when:
+
+- **A lead firmly says no:** "not interested", "we don't need it", "don't message me again". We don't argue and don't send a goodbye. ("Stop" is confirmed automatically.)
+- **A lead firmly says they'll get back to us** and asks nothing: "I'll think about it and come back to you when I'm ready." We respect that and wait.
+- **The conversation is over:** "ok thanks" or a thumbs up after everything is answered and we asked nothing. If our last message asked a question, "ok" or "yes" is an answer, so we reply.
+- **The message is meaningless:** random letters, stray emoji or stickers, chain messages or spam.
+
+We always reply to a question, an answer to our question, an objection we can answer, or any interest. When a qualified lead firmly says no or "I'll get back to you", the owner is alerted and can decide whether to follow up personally.
 
 ## 4. Upsells
 
