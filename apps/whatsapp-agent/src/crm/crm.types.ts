@@ -155,10 +155,21 @@ export type ProfilePatch = Partial<
 	>
 >;
 
-export const PAYMENT_KINDS = ["deposit", "balance"] as const;
+/**
+ * What a payment is for: a plan's first month (Angel's close) or a later
+ * month the owner bills with #bill. Deposit and balance are history from the
+ * retired website offer.
+ */
+export const PAYMENT_KINDS = [
+	"first_month",
+	"renewal",
+	"deposit",
+	"balance",
+] as const;
 export type PaymentKind = (typeof PAYMENT_KINDS)[number];
 
-export const PAYMENT_METHODS = ["ecocash", "onemoney"] as const;
+/** A USSD prompt on an EcoCash or OneMoney wallet, or a Paynow checkout link. */
+export const PAYMENT_METHODS = ["ecocash", "onemoney", "link"] as const;
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 
 /**
@@ -191,15 +202,19 @@ export interface Payment {
 	id: number;
 	instructions: string | null;
 	kind: PaymentKind;
+	/** The Paynow checkout link, for link payments. */
+	link: string | null;
 	method: PaymentMethod;
 	paidAt: string | null;
 	paynowReference: string | null;
-	/** The wallet number the prompt was sent to, digits only. */
+	/** The wallet number the prompt was sent to, or the chat number for a link. Digits only. */
 	phone: string;
+	/** The plan paid for; null on website payments. */
+	plan: PlanId | null;
 	pollUrl: string | null;
 	/** Paynow's own wording, e.g. "Awaiting Delivery". */
 	providerStatus: string | null;
-	/** Our unique reference, e.g. WTA-263771234567-DEP-1. */
+	/** Our unique reference, e.g. WTA-263771234567-FM-1. */
 	reference: string;
 	status: PaymentStatus;
 	updatedAt: string;

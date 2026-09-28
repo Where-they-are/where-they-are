@@ -1,5 +1,6 @@
 import type { DatabaseSync } from "node:sqlite";
 
+import type { PlanId } from "../knowledge/offer.js";
 import {
 	FINAL_PAYMENT_STATUSES,
 	type Payment,
@@ -33,9 +34,17 @@ CREATE INDEX IF NOT EXISTS payments_customer ON payments(customer_id, id);
 CREATE INDEX IF NOT EXISTS payments_status ON payments(status);
 `;
 
+/** Columns added after the table first shipped. */
+const ADDED_COLUMNS = [
+	["plan", "TEXT"],
+	["link", "TEXT"],
+] as const;
+
 const KIND_CODES: Record<PaymentKind, string> = {
 	balance: "BAL",
 	deposit: "DEP",
+	first_month: "FM",
+	renewal: "RN",
 };
 
 const text = (value: unknown): string | null =>
@@ -49,10 +58,12 @@ const toPayment = (row: Row): Payment => ({
 	id: Number(row.id),
 	instructions: text(row.instructions),
 	kind: row.kind as PaymentKind,
+	link: text(row.link),
 	method: row.method as PaymentMethod,
 	paidAt: text(row.paid_at),
 	paynowReference: text(row.paynow_reference),
 	phone: String(row.phone),
+	plan: text(row.plan) as PlanId | null,
 	pollUrl: text(row.poll_url),
 	providerStatus: text(row.provider_status),
 	reference: String(row.reference),
@@ -63,6 +74,7 @@ const toPayment = (row: Row): Payment => ({
 export interface PaymentUpdate {
 	error?: string | null;
 	instructions?: string | null;
+	link?: string | null;
 	paynowReference?: string | null;
 	pollUrl?: string | null;
 	providerStatus?: string | null;
@@ -81,15 +93,26 @@ export class PaymentStore {
 		this.db = db;
 		this.now = now;
 		this.db.exec(SCHEMA);
+		const existing = new Set(
+			(this.db.prepare("PRAGMA table_info(payments)").all() as Row[]).map(
+				(column) => column.name
+			)
+		);
+		for (const [column, type] of ADDED_COLUMNS) {
+			if (!existing.has(column)) {
+				this.db.exec(`ALTER TABLE payments ADD COLUMN ${column} ${type}`);
+			}
+		}
 	}
 
-	/** Records a new payment with a unique reference such as WTA-2637…-DEP-2. */
+	/** Records a new payment with a unique reference such as WTA-2637…-FM-2. */
 	create(input: {
 		amountUsd: number;
 		customerId: string;
 		kind: PaymentKind;
 		method: PaymentMethod;
 		phone: string;
+		plan?: PlanId | null;
 	}): Payment {
 		const at = this.now().toISOString();
 		const attempt =
@@ -105,7 +128,7 @@ export class PaymentStore {
 		const reference = `WTA-${input.customerId}-${KIND_CODES[input.kind]}-${attempt}`;
 		const result = this.db
 			.prepare(
-				"INSERT INTO payments (customer_id, kind, amount_usd, method, phone, reference, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+				"INSERT INTO payments (customer_id, kind, amount_usd, method, phone, plan, reference, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
 			)
 			.run(
 				input.customerId,
@@ -113,6 +136,7 @@ export class PaymentStore {
 				input.amountUsd,
 				input.method,
 				input.phone,
+				input.plan ?? null,
 				reference,
 				at,
 				at
@@ -148,7 +172,7 @@ export class PaymentStore {
 			.prepare(
 				`UPDATE payments SET status = ?, provider_status = COALESCE(?, provider_status),
 					paynow_reference = COALESCE(?, paynow_reference), poll_url = COALESCE(?, poll_url),
-					instructions = COALESCE(?, instructions), error = COALESCE(?, error), updated_at = ?,
+					instructions = COALESCE(?, instructions), link = COALESCE(?, link), error = COALESCE(?, error), updated_at = ?,
 					paid_at = CASE WHEN ? = 'paid' THEN ? ELSE paid_at END WHERE id = ?`
 			)
 			.run(
@@ -157,6 +181,7 @@ export class PaymentStore {
 				update.paynowReference ?? null,
 				update.pollUrl ?? null,
 				update.instructions ?? null,
+				update.link ?? null,
 				update.error ?? null,
 				at,
 				update.status,
