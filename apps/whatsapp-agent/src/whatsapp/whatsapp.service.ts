@@ -334,6 +334,7 @@ export class WhatsAppService
 					crm: this.runtime.crm,
 					meta: this.runtime.meta,
 					offer: this.runtime.offer,
+					payments: this.runtime.payments,
 					takeoverHours: this.config.HUMAN_TAKEOVER_HOURS,
 				})
 			: `Hi! I'm Angel. You're the owner, so I won't treat you as a lead.\n\n${OWNER_HELP}`;

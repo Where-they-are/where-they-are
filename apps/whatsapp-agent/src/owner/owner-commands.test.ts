@@ -1,7 +1,10 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { CrmRepository } from "../crm/crm.repository.js";
 import { socialMediaOffer } from "../knowledge/offer.js";
+import { MetaReporter } from "../meta/meta-reporter.js";
+import { ConsoleOwnerNotifier } from "../notifications/owner-notifier.js";
+import { PaymentService } from "../payments/payment.service.js";
 import {
 	isOwnerCommand,
 	OWNER_HELP,
@@ -178,6 +181,88 @@ describe("#client", () => {
 		);
 		expect(await runOwnerCommand("#client 263700000000 pro", deps)).toContain(
 			"No lead found"
+		);
+	});
+});
+
+describe("#bill", () => {
+	const LINK = "https://www.paynow.co.zw/Payment/ConfirmPayment/9";
+	const withPayments = () => {
+		vi.spyOn(console, "info").mockImplementation(() => undefined);
+		const deps = setup();
+		const notifier = new ConsoleOwnerNotifier();
+		const payments = new PaymentService({
+			crm,
+			gateway: {
+				poll: () => Promise.resolve(null),
+				requestMobilePayment: () =>
+					Promise.resolve({
+						instructions: null,
+						ok: true as const,
+						paynowReference: null,
+						pollUrl: "https://paynow.test/poll",
+					}),
+				requestPaymentLink: () =>
+					Promise.resolve({
+						link: LINK,
+						ok: true as const,
+						pollUrl: "https://paynow.test/poll",
+					}),
+			},
+			meta: new MetaReporter(null, crm),
+			notifier,
+			offer: deps.offer,
+		});
+		const sent: string[] = [];
+		payments.attachMessenger({
+			sendToCustomer: (_chatId, text) => {
+				sent.push(text);
+				return Promise.resolve();
+			},
+		});
+		return { deps: { ...deps, payments }, payments, sent };
+	};
+
+	it("only bills paying clients", async () => {
+		const { deps, payments } = withPayments();
+		expect(await runOwnerCommand(`#bill ${ID}`, deps)).toContain(
+			"isn't a paying client yet"
+		);
+		payments.stop();
+	});
+
+	it("sends a client next month's link at the full price", async () => {
+		const { deps, payments, sent } = withPayments();
+		await runOwnerCommand(`#client ${ID} growth`, deps);
+		const reply = await runOwnerCommand(`#bill ${ID}`, deps);
+		expect(reply).toContain("$96 renewal link");
+		expect(reply).toContain(`WTA-${ID}-RN-1`);
+		expect(sent.at(-1)).toContain(LINK);
+		expect(crm.payments.latest(ID, "renewal")).toMatchObject({
+			amountUsd: 96,
+			method: "link",
+			plan: "growth",
+		});
+		payments.stop();
+	});
+
+	it("takes an amount and a wallet prompt", async () => {
+		const { deps, payments, sent } = withPayments();
+		await runOwnerCommand(`#client ${ID} pro`, deps);
+		const reply = await runOwnerCommand(`#bill ${ID} ecocash $200`, deps);
+		expect(reply).toContain("$200 renewal ecocash prompt");
+		expect(sent.at(-1)).toContain("approve it with your PIN");
+		expect(await runOwnerCommand(`#bill ${ID} lots`, deps)).toContain(
+			"isn't an amount"
+		);
+		payments.stop();
+	});
+
+	it("says so when Paynow isn't set up", async () => {
+		const deps = setup();
+		await runOwnerCommand(`#client ${ID} growth`, deps);
+		expect(await runOwnerCommand(`#bill ${ID}`, deps)).toContain(
+			"Paynow isn't set up"
 		);
 	});
 });

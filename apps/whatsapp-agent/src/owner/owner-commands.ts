@@ -13,6 +13,9 @@ import {
 	usd,
 } from "../knowledge/offer.js";
 import type { MetaReporter } from "../meta/meta-reporter.js";
+import type { PaymentService } from "../payments/payment.service.js";
+import { paymentLinkMessage } from "../payments/payment-messages.js";
+import { checkWallet } from "../payments/wallet.js";
 import { normalizePhone } from "./phone.js";
 
 const COMMAND = /^#(\w+)\s*(.*)$/s;
@@ -31,12 +34,13 @@ export const OWNER_HELP = [
 	"#pause <number> [hours|forever] – Angel stays quiet in that chat",
 	"#resume <number> – hand the chat back to Angel",
 	"#client <number> <starter|growth|pro> [amount] – they paid: mark them a client",
+	"#bill <number> [amount] [link|ecocash|onemoney] – send a client next month's Paynow request (a link unless you say otherwise)",
 	"#lost <number> – they decided not to go ahead",
 	"#stage <number> <stage> – set any stage",
 	"#note <number> <text> – add a note",
 	"#price – the plans and launch places left",
-	"#ignored – messages Angel stayed silent on (spam, personal, wrong numbers)",
-	"#allow <number> – always let Angel reply to someone it ignored",
+	"#ignored – people Angel stayed silent on (no ad form, spam, personal, wrong numbers)",
+	"#allow <number> – let Angel reply to someone, even without the ad form",
 	"",
 	`Stages: ${LEAD_STAGES.join(", ")}`,
 	"Replying by hand in a customer's chat also pauses Angel there.",
@@ -48,6 +52,8 @@ export interface OwnerCommandDeps {
 	meta?: MetaReporter;
 	now?: () => Date;
 	offer: () => SocialMediaOffer;
+	/** Paynow requests for renewals; optional in tests. */
+	payments?: PaymentService;
 	takeoverHours: number;
 }
 
@@ -281,8 +287,66 @@ const signClient = withLead(async ({ args, customer, deps }) => {
 	].join("\n");
 });
 
+const BILL_METHODS = new Set(["link", "ecocash", "onemoney"]);
+
+/** Reads "#bill <number> [amount] [method]" in any order after the number. */
+const billArgs = (args: string[]) => {
+	const method = args.find((arg) => BILL_METHODS.has(arg.toLowerCase()));
+	const amountArg = args.find((arg) => arg !== method);
+	return {
+		amount: amountArg ? Number(amountArg.replace(DOLLAR, "")) : undefined,
+		amountArg,
+		method: (method?.toLowerCase() ?? "link") as
+			| "link"
+			| "ecocash"
+			| "onemoney",
+	};
+};
+
+/** Sends a client next month's Paynow request; Paynow confirms it. */
+const bill = withLead(async ({ args, customer, deps }) => {
+	if (!deps.payments?.enabled) {
+		return "Paynow isn't set up, so Angel can't send payment requests.";
+	}
+	const plan = customer.plan ?? customer.recommendedPlan;
+	if (!(plan && PAID_STAGES.includes(customer.stage))) {
+		return `${who(customer)} isn't a paying client yet. Angel takes the first month; #bill is for later months.`;
+	}
+	const { amount, amountArg, method } = billArgs(args);
+	if (amount !== undefined && !(Number.isFinite(amount) && amount > 0)) {
+		return `"${amountArg}" isn't an amount. Example: #bill ${customer.id} 96 link`;
+	}
+	const wallet = method === "link" ? null : checkWallet(customer.id, method);
+	if (wallet && !wallet.ok) {
+		return `${customer.id} can't take a ${method} prompt. Send a link instead: #bill ${customer.id} link`;
+	}
+	const result = await deps.payments.request({
+		customerId: customer.id,
+		kind: "renewal",
+		method,
+		plan,
+		...(amount === undefined ? {} : { amountUsd: amount }),
+		...(wallet ? { phone: wallet.phone } : {}),
+	});
+	if (!result.ok) {
+		return `Paynow didn't take the request: ${result.error ?? result.reason}.`;
+	}
+	const payment = deps.crm.payments.byReference(result.reference);
+	const text =
+		result.link && payment
+			? paymentLinkMessage(payment)
+			: `I've sent a Paynow prompt for ${usd(result.amountUsd)} for next month to your phone. Please approve it with your PIN. We'll confirm here once it's paid.`;
+	await deps.payments.messageCustomer(customer.id, text);
+	const waiting =
+		result.status === "already_pending"
+			? " (it was already waiting, so I sent it again)"
+			: "";
+	return `Sent ${who(customer)} a ${usd(result.amountUsd)} renewal ${method === "link" ? "link" : `${method} prompt`}${waiting}. Ref ${result.reference}. You'll get an alert when Paynow confirms it.`;
+});
+
 const HANDLERS: Record<string, Handler> = {
 	allow,
+	bill,
 	client: signClient,
 	help: () => OWNER_HELP,
 	ignored: listIgnored,
