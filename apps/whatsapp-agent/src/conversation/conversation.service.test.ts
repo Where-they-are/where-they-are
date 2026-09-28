@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { TURN_CONTEXT_KEY } from "../agent/angel.js";
 import type { TurnContext } from "../agent/instructions.js";
+import { PAYMENT_LINK_KEY } from "../agent/payment-tools.js";
 import { CrmRepository } from "../crm/crm.repository.js";
 import { socialMediaOffer } from "../knowledge/offer.js";
 import { ConsoleOwnerNotifier } from "../notifications/owner-notifier.js";
@@ -53,6 +54,18 @@ const setup = (
 };
 
 describe("ConversationService", () => {
+	it("adds a Paynow link the reply left out, exactly as issued", async () => {
+		const link = "https://www.paynow.co.zw/Payment/ConfirmPayment/1";
+		const { send } = setup((_messages, options) => {
+			(
+				options as { requestContext: { set: (k: string, v: unknown) => void } }
+			).requestContext.set(PAYMENT_LINK_KEY, link);
+			return Promise.resolve({ text: "Here is your payment link." });
+		});
+		const result = await send("Link please");
+		expect(result.replies).toEqual(["Here is your payment link.", link]);
+	});
+
 	it("replies through the agent and logs both sides", async () => {
 		const { send } = setup(async () => ({
 			text: "Hi! I'm Angel.\n\nMay I know your name?",

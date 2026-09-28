@@ -152,7 +152,7 @@ export const socialMediaOffer = (
 		launchPlacesLeft,
 		launchPlacesTotal: config.launchPlaces,
 		notDecided:
-			"Payment method and timing, minimum term, contracts and cancellation, setting up Instagram for dealerships without it, how often they approve posts, and prices for extra services are confirmed by the owner. Never answer these yourself.",
+			"Minimum term, contracts and cancellation, payment for later months, setting up Instagram for dealerships without it, how often they approve posts, and prices for extra services are confirmed by the owner. Never answer these yourself.",
 		plans,
 		summary: PLAN_IDS.map((id) => plans[id].summary).join("\n"),
 	};

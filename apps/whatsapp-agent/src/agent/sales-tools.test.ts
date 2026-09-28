@@ -5,6 +5,7 @@ import { CrmRepository } from "../crm/crm.repository.js";
 import { socialMediaOffer } from "../knowledge/offer.js";
 import { MetaReporter } from "../meta/meta-reporter.js";
 import { ConsoleOwnerNotifier } from "../notifications/owner-notifier.js";
+import { PaymentService } from "../payments/payment.service.js";
 import { CUSTOMER_ID_KEY, createAngelTools, IGNORED_KEY } from "./tools.js";
 
 const ID = "263771234567";
@@ -40,6 +41,7 @@ const setup = (examplesUrl = "") => {
 		meta,
 		notifier,
 		offer,
+		payments: new PaymentService({ crm, gateway: null, meta, notifier, offer }),
 		takeoverHours: 12,
 	});
 	const requestContext = new RequestContext();
@@ -59,7 +61,7 @@ describe("offer and plan tools", () => {
 		expect(offer.plans).toContain("Growth Plan: 12 posts/month");
 		expect(offer.plans).toContain("$48 for the first month");
 		expect(offer.launchOffer).toContain("5 places left");
-		expect(offer.ownerConfirms).toContain("Payment method");
+		expect(offer.ownerConfirms).toContain("Minimum term");
 	});
 
 	it("recommends one plan from the frequency they want and records it", async () => {

@@ -127,6 +127,7 @@ export const createRuntime = (
 		notifier,
 		now: options.now,
 		offer,
+		payments,
 		reasoningEffort: config.AGENT_REASONING_EFFORT,
 		takeoverHours: config.HUMAN_TAKEOVER_HOURS,
 	});
@@ -151,6 +152,7 @@ export const createRuntime = (
 		notifier,
 		now: options.now,
 		offer,
+		paymentsEnabled: payments.enabled,
 		relevance,
 		transcriber,
 	});

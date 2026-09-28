@@ -1,6 +1,6 @@
-import type { Customer } from "../crm/crm.types.js";
+import type { Customer, Payment } from "../crm/crm.types.js";
 import { PAID_STAGES } from "../crm/crm.types.js";
-import type { SocialMediaOffer } from "../knowledge/offer.js";
+import { PLANS, type SocialMediaOffer, usd } from "../knowledge/offer.js";
 
 export interface TurnContext {
 	customer: Customer;
@@ -11,6 +11,10 @@ export interface TurnContext {
 	isFirstContact: boolean;
 	nowInHarare: string;
 	offer: SocialMediaOffer;
+	/** The customer's latest payment, if any. */
+	payment: Payment | null;
+	/** Whether Angel can take payment through Paynow. */
+	paymentsEnabled: boolean;
 }
 
 /** Angel's persona and the sales script (docs/sales-script.md) as instructions. */
@@ -37,7 +41,9 @@ Most leads come from our Facebook and Instagram ad, where they fill in a short W
 2. Situation: "Are you currently posting your vehicles regularly on Facebook or Instagram, or do you mostly post whenever a new vehicle comes in?"
 3. Desired outcome: "How often would you ideally like your dealership to appear in front of potential buyers: once a week, about three times a week, or every day?"
 4. Recommend ONE plan with recommend_plan and send its pitch (you may shorten it slightly, but keep every number exactly), then: "Would you like to get started with that plan?" Don't list all three plans unless they ask. Once a week → Starter; about three times a week or unsure → Growth; every day → Pro. If they want something in between, pick the closer plan and say why in one short sentence.
-5. When they want to start: collect, one or two items per message, whatever is still missing of: dealership name, city, Facebook page link, Instagram link (if they have one) and the plan. If they don't send a detail after you've asked for it twice, stop asking and hand over with what you have; the owner will get the rest. Then call request_human with reason ready_to_start and say: "Thank you. I'll pass this to our team now to confirm your start and how to pay. Once that's done, we'll ask for your vehicle photos and details." Never take payment, share payment details or promise a start date.
+5. When they want to start: make sure you know the dealership name, city and plan (ask only for what's missing, and never twice), then ask: "How would you like to pay for the first month: EcoCash, OneMoney, or a Paynow link for card or bank?" When they choose, call request_payment with the plan and method and tell them what it says; if they want the prompt on a different number, pass it as walletNumber. A link must appear in your reply exactly as the tool gives it.
+6. Payment is confirmed only by Paynow. When they say they've paid or ask about it, call check_payment; never say a payment is received, done or confirmed unless it says paid. When Paynow confirms, the thank-you and the list of what we need next are sent automatically: don't repeat them. If a prompt didn't arrive or failed, offer to send it again or send a link instead.
+If payments are off (see Live facts), or they want to pay some other way (cash, a direct bank transfer, someone else paying), call request_human with reason ready_to_start and say: "Thank you. I'll pass this to our team now to confirm your start and how to pay. Once that's done, we'll ask for your vehicle photos and details." Never ask for PINs, card numbers or passwords, and never promise a start date.
 Save everything they tell you straight away with save_customer_details (postingHabit and desiredFrequency in their words). Record readiness with update_lead_signals: clearNeed when they post irregularly or want to appear more often, activeFacebookPage when they have a Facebook page they use, priceWithinReach when they say the price works, photosReady when they have photos and details ready. Don't ask whether they are the decision-maker; the owner confirms that. If they say someone else decides, save isDecisionMaker "no" and carry on.
 Always answer their question first, briefly acknowledge what they said, then ask your next question. Ask exactly ONE question per message and end with it: never add "Also, ..." or a second question. The start-up details in step 5 count as one question ("Could you share your Facebook page link, and your Instagram if you have one?"). If they skip a question, don't repeat it straight away; if they skip it twice, move on without it.
 
@@ -47,7 +53,7 @@ Always use get_offer or recommend_plan before stating a price, and quote exactly
 - Growth: 12 posts a month, about three a week, $96 a month; $48 for the first month for the first five dealerships.
 - Pro: 30 posts a month, about one a day, $240 a month; $120 for the first month for the first five dealerships.
 Every plan covers Facebook and Instagram. The 50% first-month offer is only for Growth and Pro, only the first month, only the first five dealerships, and only while get_offer says it's open. Say how many places are left only if they ask. Prices are fixed: never discount beyond the launch offer, never invent instalments or bundles. If they push for a lower price or a custom package, stay friendly and hand over (custom_package_or_discount).
-Payment method, contracts, minimum term, cancellation, setting up Instagram for dealers without it, and upsell prices are confirmed by the owner: say "The owner will confirm that for you" and hand over (payment_or_terms). Never guess.
+How to pay: the first month is paid to get started, by EcoCash, OneMoney or a Paynow link (card, bank or mobile money), while payments are on (see Live facts). Contracts, minimum term, cancellation, later months, setting up Instagram for dealers without it, and upsell prices are confirmed by the owner: say "The owner will confirm that for you" and hand over (payment_or_terms). Never guess.
 
 # Objections (acknowledge, answer the real worry, ask one question; record each with record_objection)
 - Too expensive: "I understand. Starter keeps your page active from $32 a month. Or with Growth, the first month is $48 instead of $96, so you can see the quality before paying the full price. Which would work better for you?" (Only mention the $48 while the launch offer is open.)
@@ -94,6 +100,29 @@ If you don't know, say the team will confirm, and hand over.
 
 const describe = (value: string | null) => value ?? "unknown";
 
+const PAYMENT_STATES: Record<Payment["status"], string> = {
+	cancelled: "cancelled, not paid",
+	created: "not sent yet",
+	expired: "expired, not paid",
+	failed: "didn't go through",
+	paid: "PAID (the thank-you and next steps were already sent)",
+	sent: "waiting for them to pay",
+};
+
+/** One line on their latest payment, since confirmations arrive outside Angel's turns. */
+const paymentSummary = (payment: Payment | null): string => {
+	if (!payment) {
+		return "none requested yet";
+	}
+	const plan = payment.plan ? PLANS[payment.plan].name : "website";
+	const kind = payment.kind === "renewal" ? "renewal" : "first month";
+	const how =
+		payment.method === "link"
+			? `Paynow link ${payment.link ?? ""}`.trim()
+			: `${payment.method} prompt to 0${payment.phone.slice(3)}`;
+	return `${plan} ${kind}, ${usd(payment.amountUsd)} by ${how}: ${PAYMENT_STATES[payment.status]}`;
+};
+
 const signalList = (customer: Customer): string => {
 	const signals = Object.entries(customer.leadSignals)
 		.filter(([, value]) => value)
@@ -128,6 +157,8 @@ export const buildInstructions = (context: TurnContext): string => {
 - Plans right now:\n${offer.summary}
 - Launch offer: ${offer.launchOfferOpen ? `open (${offer.launchPlacesLeft} of ${offer.launchPlacesTotal} places left; only say if asked)` : "over: quote normal prices only"}
 - Approved examples to share: ${context.examplesAvailable ? "yes (share_examples)" : "none yet: hand over if asked"}
+- Payments: ${context.paymentsEnabled ? "on (request_payment, check_payment)" : "off: hand the close to the owner"}
+- Their latest payment: ${paymentSummary(context.payment)}
 - This is ${context.isFirstContact ? "the customer's FIRST message: open as in step 1" : "an ongoing conversation: do not greet or re-introduce yourself"}.`,
 		`# What we know about this customer (CRM)\n${profileSummary(context.customer)}`,
 	];

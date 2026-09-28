@@ -3,6 +3,7 @@ import { RequestContext } from "@mastra/core/request-context";
 
 import { TURN_CONTEXT_KEY } from "../agent/angel.js";
 import type { TurnContext } from "../agent/instructions.js";
+import { PAYMENT_LINK_KEY } from "../agent/payment-tools.js";
 import { CUSTOMER_ID_KEY, IGNORED_KEY } from "../agent/tools.js";
 import type { CrmRepository } from "../crm/crm.repository.js";
 import type {
@@ -141,6 +142,8 @@ export interface ConversationDeps {
 	notifier: OwnerNotifier;
 	now?: () => Date;
 	offer: () => SocialMediaOffer;
+	/** Whether Angel can take payment through Paynow. */
+	paymentsEnabled?: boolean;
 	/** Jev check that keeps Angel quiet for spam, personal messages and wrong numbers. */
 	relevance?: RelevanceGate;
 	/** Turns voice notes into text before anything else sees them. */
@@ -261,7 +264,7 @@ export class ConversationService {
 		}
 
 		try {
-			const { ignoredAs, text } = await this.generate(
+			const { ignoredAs, paymentLink, text } = await this.generate(
 				customer,
 				created,
 				content,
@@ -274,6 +277,10 @@ export class ConversationService {
 			const replies = splitIntoBubbles(text);
 			if (replies.length === 0) {
 				throw new Error("Angel returned an empty reply");
+			}
+			// A payment link must reach the customer exactly as Paynow issued it.
+			if (paymentLink && !text.includes(paymentLink)) {
+				replies.push(paymentLink);
 			}
 			return respond("replied", replies);
 		} catch (error) {
@@ -572,7 +579,11 @@ export class ConversationService {
 		isFirstContact: boolean,
 		content: ContentPart[],
 		trace: TurnTrace
-	): Promise<{ ignoredAs: SilenceCategory | null; text: string }> {
+	): Promise<{
+		ignoredAs: SilenceCategory | null;
+		paymentLink: string | null;
+		text: string;
+	}> {
 		const turn: TurnContext = {
 			customer,
 			examplesAvailable: this.deps.examplesUrl.length > 0,
@@ -580,6 +591,8 @@ export class ConversationService {
 			isFirstContact,
 			nowInHarare: harareTime(this.now()),
 			offer: this.deps.offer(),
+			payment: this.deps.crm.payments.forCustomer(customer.id)[0] ?? null,
+			paymentsEnabled: this.deps.paymentsEnabled ?? false,
 		};
 		const requestContext = new RequestContext();
 		requestContext.set(CUSTOMER_ID_KEY, customer.id);
@@ -619,6 +632,8 @@ export class ConversationService {
 				ignoredAs:
 					(requestContext.get(IGNORED_KEY) as SilenceCategory | undefined) ??
 					null,
+				paymentLink:
+					(requestContext.get(PAYMENT_LINK_KEY) as string | undefined) ?? null,
 				text: result.text ?? "",
 			};
 		};

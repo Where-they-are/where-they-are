@@ -76,7 +76,7 @@ export const createAngelMemory = (memoryUrl: string): Memory =>
 export const createAngel = (options: AngelOptions): Agent =>
 	new Agent({
 		description:
-			"Angel qualifies car-dealership website leads on WhatsApp for Where They Are.",
+			"Angel qualifies car-dealership social media leads on WhatsApp for Where They Are and takes the first month's payment.",
 		id: "angel",
 		// Earlier turns' tool calls are left out of each request: OpenRouter drops
 		// the Gemini thought signatures they need, which makes Gemini reject the

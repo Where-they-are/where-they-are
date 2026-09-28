@@ -14,6 +14,8 @@ import {
 	searchKnowledge,
 } from "../knowledge/knowledge.js";
 import type { OwnerNotifier } from "../notifications/owner-notifier.js";
+import type { PaymentService } from "../payments/payment.service.js";
+import { createPaymentTools } from "./payment-tools.js";
 import { createSalesTools, type SalesToolDeps } from "./sales-tools.js";
 
 /** Request-context key holding the digits-only customer id for the turn. */
@@ -88,6 +90,7 @@ export interface AngelToolDeps extends SalesToolDeps {
 	knowledge: KnowledgeEntry[];
 	notifier: OwnerNotifier;
 	now?: () => Date;
+	payments: PaymentService;
 	takeoverHours: number;
 }
 
@@ -383,6 +386,7 @@ export const createAngelTools = (deps: AngelToolDeps) => {
 
 	return {
 		...salesTools,
+		...createPaymentTools(deps.payments, customerIdFrom),
 		ignore_message: ignoreMessage,
 		log_commercial_signal: logCommercialSignal,
 		record_objection: recordObjection,

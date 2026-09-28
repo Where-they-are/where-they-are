@@ -21,6 +21,9 @@ export const firstMonthPaidMessage = (
 		`Payment received, thank you${firstName(customer)}! 🎉 Welcome to Where They Are. You're on the ${planName(payment)}.`,
 		"",
 		"To create your first posts, please send us:",
+		...(customer.facebookUrl
+			? []
+			: ["• your Facebook page link, and your Instagram if you have one"]),
 		"• photos and details of the vehicles you'd like to show (price, mileage, engine, gearbox and duty status where relevant)",
 		"• your logo, colours and the contact details to put on your posts",
 		"• any offers, events or dealership updates you'd like included",
