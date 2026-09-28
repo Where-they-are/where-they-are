@@ -1,6 +1,6 @@
 # Current Tasks
 
-_Last updated: 2026-09-27_
+_Last updated: 2026-09-28_
 
 This is the active task board for the dealership social media management MVP. Work in this order. Do not start a later task while the current one is unfinished, unchecked or unevaluated, unless it is independent and the owner agrees.
 
@@ -19,7 +19,7 @@ The website-build tasks from the 2026-09-24 experiment are retired. Websites are
 - [x] Starter: Page Alive, 4 posts/month, $32/month.
 - [x] Growth, 12 posts/month, $96/month; $48 for the first month for the first five dealerships.
 - [x] Pro, 30 posts/month, $240/month; $120 for the first month for the first five dealerships.
-- [ ] Owner answers the open questions in [`plan.md`](./plan.md) section 12: payment method and timing, minimum term and cancellation, how launch places are counted, missing photos, approval rhythm, Facebook-only clients, upsell prices.
+- [ ] Owner answers the open questions in [`plan.md`](./plan.md) section 12: minimum term and cancellation, how launch places are counted, missing photos, approval rhythm, Facebook-only clients, upsell prices.
 - [ ] Record the answers in `plan.md`, `plans/MVP-SCOPE.md` and `sales-script.md`.
 
 **Completion evidence:** every price and term the sales script quotes is confirmed by the owner and written down.
@@ -46,9 +46,13 @@ The website-build tasks from the 2026-09-24 experiment are retired. Websites are
 ### Task 4 - Set up the WhatsApp sales flow
 
 - [ ] Run the flow in [`sales-script.md`](./sales-script.md) on +263 77 510 1506.
-- [x] Angel (`apps/whatsapp-agent`) answers first, on the social media script: qualification, one plan recommendation, objections, escalation rules and Jev silence rules; no in-chat payment.
+- [x] Angel (`apps/whatsapp-agent`) answers first, on the social media script: qualification, one plan recommendation, objections, escalation rules and Jev silence rules.
+- [x] Angel takes the first month's payment through Paynow (EcoCash, OneMoney or a link) and confirms it only when Paynow says it's paid; `#bill` for renewals.
+- [x] Angel answers only leads who submitted the ad form; everyone else gets no reply.
+- [ ] Activate the Paynow integration for live payments and set `PUBLIC_BASE_URL` so Paynow can post results.
+- [ ] Submit the ad form from a second phone and confirm Angel replies (check the logs for the form message's format).
 - [ ] Run the full live eval suite (`pnpm --filter @where-they-are/whatsapp-agent eval`) once OpenRouter credit is topped up, and fix anything it finds.
-- [ ] Link Angel to +263 77 510 1506 and test one real hand-off to the owner.
+- [ ] Link Angel to +263 77 510 1506, then test one real hand-off to the owner and one real $1 Paynow payment.
 - [ ] Test the full conversation, including every objection and every escalation to the owner.
 
 **Completion evidence:** test transcripts for the common paths and a verified hand-off to the owner.
@@ -114,7 +118,7 @@ The website-build tasks from the 2026-09-24 experiment are retired. Websites are
 - Full dealership websites and catalogue sites (retained platform; upsell only).
 - AI customer assistants for clients.
 - A custom scheduling or publishing tool, client portal or full CRM.
-- Automated in-chat payment collection.
+- Automatic recurring billing, invoices and refunds.
 - Lodges, Airbnbs, guesthouses and restaurants.
 
 ## References

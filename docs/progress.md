@@ -1,6 +1,6 @@
 # Current Progress
 
-_Last updated: 2026-09-27_
+_Last updated: 2026-09-28_
 
 ## Current phase
 
@@ -42,12 +42,13 @@ Fictional mockups must be labelled.
 
 The steps:
 
+0. Only people who submit the ad's WhatsApp form get a reply.
 1. A short opening.
 2. The dealership name and city.
 3. How they post today.
 4. How often they want to appear in front of buyers.
 5. One recommended plan with the correct price.
-6. A hand-off to the owner, who confirms the start and collects payment.
+6. The first month paid in the chat through Paynow (EcoCash, OneMoney or a link), confirmed only by Paynow. Cash and other methods go to the owner.
 
 See [`sales-script.md`](./sales-script.md).
 
@@ -68,9 +69,11 @@ See [`sales-script.md`](./sales-script.md).
 ## What exists in the repository
 
 - **`apps/whatsapp-agent` ("Angel"):** moved to the social media sales script on 2026-09-27.
-  - Qualifies (dealership, city, how they post, how often they want to appear), recommends one plan with the correct price and launch offer, handles objections, and hands ready clients to the owner. No in-chat payment; the owner marks paying clients with `#client`.
+  - Answers only leads who submitted the ad form. Everyone else gets no reply; the owner sees them with `#ignored` and can `#allow` someone.
+  - Qualifies (dealership, city, how they post, how often they want to appear), recommends one plan with the correct price and launch offer, and handles objections.
+  - Takes the first month's payment with a Paynow EcoCash or OneMoney prompt or payment link. A lead becomes a paying client only when Paynow confirms. The owner bills later months with `#bill`. Verified against Paynow's live API in test mode: prompt sent, then "Paid".
   - Jev keeps her silent on spam and wrong numbers at first contact, and on a firm no, a firm "I'll get back to you", finished conversations and meaningless messages in ongoing chats.
-  - Live evals: 41 scenarios across sales flow, objections, silence, hand-offs and edge cases. The sales flow passed live; the rest could not finish because the OpenRouter account ran out of credit (see below).
+  - Live evals: 51 scenarios. Sales flow, silence, ad form, payments and screening pass live (2026-09-28). The rest of the objection and edge-case groups were last run before the payment changes.
 
 Built for the earlier website direction, now dormant:
 
@@ -79,10 +82,12 @@ Built for the earlier website direction, now dormant:
 
 ## What is not yet done
 
-- The open commercial terms in [`plan.md`](./plan.md) section 12 are unanswered: payment method and timing, minimum term, how launch places are counted, missing photos, approval rhythm, Facebook-only clients and upsell prices.
+- The open commercial terms in [`plan.md`](./plan.md) section 12 are unanswered: minimum term, how launch places are counted, missing photos, approval rhythm, Facebook-only clients and upsell prices.
 - **Nothing for delivery exists yet:** the organisation design system, Figma templates, client design-system template, intake form and quality checklist.
 - The three ad creatives do not exist yet.
-- Angel's full live eval suite still needs a run once OpenRouter credit is topped up, and Angel is not yet linked to +263 77 510 1506.
+- Angel's full live eval suite still needs one complete run, and Angel is not yet linked to +263 77 510 1506.
+- The exact format of a real ad-form submission in WhatsApp Web is unconfirmed. Angel also screens leads in on Meta's "Thanks. We will review your answers…" message, but test the form from a second phone before relying on it.
+- Paynow is in test mode until the integration is activated for live payments in the Paynow dashboard.
 - No campaign has run, no dealership has paid, and no renewal data exists yet.
 
 ## Evidence required
@@ -117,6 +122,7 @@ Do not judge the business on impressions, clicks, likes or conversation volume a
   - Built Angel: qualification, the Jev spam filter, transcription, the CRM, and 26/26 live sales scenarios and 31/31 relevance cases passing.
 - **2026-09-25:** added the Paynow $125 website deposit and balance in WhatsApp, and Meta Conversions API reporting.
 - **2026-09-27:** changed to a social media management agency for car dealerships. Websites became an upsell.
+- **2026-09-28:** Angel takes the first month's payment through Paynow, the owner bills renewals with `#bill`, and only leads who submit the ad form get a reply.
 
 ## References
 

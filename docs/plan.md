@@ -201,7 +201,7 @@ Do not decide on impressions, clicks, likes or conversation volume alone.
 
 These are not decided yet. The sales assistant must say the owner will confirm them rather than guess:
 
-1. How clients pay (EcoCash, bank transfer, cash) and when (monthly in advance?).
+1. ~~How clients pay~~ Decided 2026-09-28: the first month is paid up front through Paynow (EcoCash, OneMoney or a link); later months by `#bill`. Still open: whether later months are billed in advance on a fixed date.
 2. Minimum term, notice period and cancellation terms.
 3. How "first five dealerships" is counted for the launch offer, and how many places are left.
 4. What happens when a client cannot supply enough vehicle photos or details for their plan's post count.
