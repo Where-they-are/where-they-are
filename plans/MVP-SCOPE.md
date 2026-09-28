@@ -1,6 +1,6 @@
 # Where They Are MVP Scope Charter
 
-_Last updated: 2026-09-27_  
+_Last updated: 2026-09-28_  
 _Status: Authoritative scope-control document_
 
 > **Direction change — 2026-09-27 (owner approved):** Where They Are is now a **social media management agency for car dealerships**. The MVP is the service that creates and publishes consistent, professional Facebook and Instagram content for dealerships, plus the minimum acquisition, onboarding, production, quality and tracking needed to deliver it. Websites, AI customer assistants, paid advertising, photography, branding packages and other services are **upsells or future scope**, not the MVP. This replaces the 2026-09-24 website validation experiment and the 2026-09-25 in-chat Paynow website deposit. The former website-platform charter is kept in [Appendix A](#appendix-a-deferred-website-platform-charter) for the later website upsell.
@@ -43,7 +43,7 @@ Dealership-specific Meta ad (Leads, WhatsApp conversion location)
   -> WhatsApp conversation
   -> qualification: dealership, city, current posting, desired frequency
   -> one recommended plan (Starter, Growth or Pro) with the correct price
-  -> owner confirms and takes payment
+  -> Angel takes the first month's payment through Paynow (mobile money prompt or payment link) and confirms it only when Paynow reports it paid
   -> onboarding: page access, branding, vehicle photos and details
   -> client design system set up
   -> monthly content plan
@@ -90,8 +90,9 @@ The discounted first month is an introduction to the quality and consistency of 
 ### 4.3 Acquisition and sales
 
 - Meta Leads campaign with WhatsApp as the conversion location, dealership-specific creative, Mutare and Harare.
-- A WhatsApp sales flow that qualifies briefly, recommends one plan and hands ready or serious prospects to the owner (see [`docs/sales-script.md`](../docs/sales-script.md)).
-- An AI first-line sales assistant is allowed only for this qualification role, inside the sales script. It must not take payment, negotiate or invent facts.
+- A WhatsApp sales flow that qualifies briefly, recommends one plan, takes the first month's payment and hands anything unusual to the owner (see [`docs/sales-script.md`](../docs/sales-script.md)).
+- An AI first-line sales assistant (Angel) runs this flow inside the sales script. It may request payment through Paynow: an EcoCash or OneMoney prompt, or a Paynow payment link for card and bank payments. It confirms a payment only when Paynow reports it paid, and never negotiates, discounts, handles card or wallet details itself, or invents facts.
+- Monthly renewals: the owner sends a Paynow request for the next month from WhatsApp (`#bill`). Automatic recurring billing stays out of scope.
 
 ### 4.4 Delivery operations
 
@@ -132,7 +133,7 @@ Explicitly out of scope for the MVP:
 - Automated post generation without human review.
 - Advanced analytics dashboards, attribution or engagement-prediction tooling.
 - A full CRM, support-ticket system or operations console. A simple tracking record is enough.
-- In-chat automated payment collection. The owner confirms and collects payment for now.
+- Automatic recurring billing, invoices, refunds and credit systems. Renewals are requested by the owner.
 - Generated business claims, invented vehicle facts, fabricated engagement metrics, synthetic testimonials or unlabelled fictional mockups.
 
 ## 6. Truth and claims rules
@@ -182,7 +183,9 @@ An explicit user request does not silently change this charter. If the owner app
 | Track which clients got their promised posts this month | In scope | A simple delivery record per client |
 | Generate engagement numbers for a mockup | Prohibited unless labelled | Label it "Demo concept" or use no numbers |
 | Start a restaurant campaign | Future | Separate campaign and creative after the dealership offer is proven |
-| Update Angel (the WhatsApp agent) to qualify for social media plans | In scope | Follow the new sales script; no in-chat payment |
+| Update Angel (the WhatsApp agent) to qualify for social media plans | In scope | Follow the new sales script |
+| Angel takes the first month's payment in the chat | In scope | Paynow mobile prompt or payment link, confirmed only by Paynow |
+| Automatic monthly debit orders | Out of scope | The owner sends a renewal request with `#bill` |
 
 ## 10. MVP completion gate
 
@@ -207,6 +210,7 @@ Any approved scope change must be recorded here with the date, decision, reason,
 | 2026-09-23 | Initial MVP scope charter (automated website platform) | Prevent feature expansion before validating website delivery and hosting | Advanced product, operations, analytics and infrastructure work deferred | Project owner |
 | 2026-09-24 | Wizard-of-Oz car-dealership website validation experiment | Test demand from one audience before automating | Full automated platform became "ultimate MVP after validation" | Project owner |
 | 2026-09-25 | Paynow deposit and balance collection in WhatsApp (Angel), Meta Conversions API feedback | A paid deposit is the strongest demand signal | Hosting billing, renewals and refunds stayed manual | Project owner |
+| 2026-09-28 | Angel takes the first month's payment in WhatsApp through Paynow (mobile money prompt or payment link), verified by Paynow; the owner requests renewals with `#bill` | The owner wants the close handled end to end so a lead can pay the moment they decide | Recurring billing, invoices and refunds stay manual; Angel never handles card or wallet details | Project owner |
 | 2026-09-27 | Social media management agency for car dealerships becomes the MVP | The core offer is now consistent Facebook and Instagram content for dealerships; websites and other services become upsells | Website platform, dealership website offer, in-chat Paynow website deposit, AI customer assistants, paid ads, photography, branding, marketplace management and other verticals move to upsell or future scope | Project owner |
 
 ## References
