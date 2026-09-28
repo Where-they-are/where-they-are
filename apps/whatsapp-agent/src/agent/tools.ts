@@ -386,7 +386,15 @@ export const createAngelTools = (deps: AngelToolDeps) => {
 
 	return {
 		...salesTools,
-		...createPaymentTools(deps.payments, customerIdFrom),
+		...createPaymentTools(deps.payments, customerIdFrom, async (id) => {
+			const customer = deps.crm.get(id);
+			if (!customer || customer.leadSignals.priceWithinReach) {
+				return;
+			}
+			const signals = { ...customer.leadSignals, priceWithinReach: true };
+			deps.crm.setLeadSignals(id, signals, customer.leadScore);
+			await rescore(id);
+		}),
 		ignore_message: ignoreMessage,
 		log_commercial_signal: logCommercialSignal,
 		record_objection: recordObjection,

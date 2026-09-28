@@ -104,6 +104,8 @@ describe("payment tools", () => {
 			phone: ID,
 			status: "sent",
 		});
+		// Asking to pay means the price works for them.
+		expect(crm.get(ID)?.leadSignals.priceWithinReach).toBe(true);
 	});
 
 	it("creates a Paynow link and marks it for the reply", async () => {

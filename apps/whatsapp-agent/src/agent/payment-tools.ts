@@ -58,7 +58,9 @@ const WAITING_GUIDANCE: Record<Payment["method"], string> = {
  */
 export const createPaymentTools = (
 	payments: PaymentService,
-	customerIdFrom: CustomerIdFrom
+	customerIdFrom: CustomerIdFrom,
+	/** A lead who asks to pay has accepted the price: re-score them. */
+	onReadyToPay: (customerId: string) => Promise<void>
 ) => {
 	const requestPayment = createTool({
 		description:
@@ -85,6 +87,7 @@ export const createPaymentTools = (
 			if (!result.ok) {
 				return { guidance: failureGuidance(result), sent: false };
 			}
+			await onReadyToPay(id);
 			const amount = usd(result.amountUsd);
 			const plan = PLANS[result.plan].name;
 			if (result.link) {
