@@ -20,6 +20,7 @@ import {
 	PAID_STAGES,
 	PROGRESS_STAGES,
 	type ProfilePatch,
+	type ScreeningSource,
 	type TriState,
 	type TurnFinish,
 	type TurnRecord,
@@ -83,6 +84,11 @@ CREATE TABLE IF NOT EXISTS ignored_contacts (
 	allowed INTEGER NOT NULL DEFAULT 0,
 	first_at TEXT NOT NULL,
 	last_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS screened_contacts (
+	id TEXT PRIMARY KEY,
+	source TEXT NOT NULL,
+	screened_at TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS turns (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -704,6 +710,23 @@ export class CrmRepository {
 			.prepare("UPDATE ignored_contacts SET allowed = 1 WHERE id = ?")
 			.run(id);
 		return Number(result.changes) > 0;
+	}
+
+	/** Records that a contact passed screening; the first source is kept. */
+	markScreened(id: string, source: ScreeningSource): void {
+		this.db
+			.prepare(
+				"INSERT OR IGNORE INTO screened_contacts (id, source, screened_at) VALUES (?, ?, ?)"
+			)
+			.run(id, source, this.stamp());
+	}
+
+	/** How a contact passed screening, or null when they never did. */
+	screenedBy(id: string): ScreeningSource | null {
+		const row = this.db
+			.prepare("SELECT source FROM screened_contacts WHERE id = ?")
+			.get(id) as Row | undefined;
+		return row ? (row.source as ScreeningSource) : null;
 	}
 
 	/** Forgets an ignore decision once a contact turns out to be a real lead. */

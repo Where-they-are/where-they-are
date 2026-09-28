@@ -10,7 +10,7 @@ import whatsappWeb, { type Message } from "whatsapp-web.js";
 import { AGENT_CONFIG, type AgentConfig } from "../config.js";
 import type { IncomingMessage } from "../conversation/conversation.service.js";
 import { typingDelayMs } from "../conversation/reply-format.js";
-import type { AdSource } from "../crm/crm.types.js";
+import { type AdSource, NO_FORM } from "../crm/crm.types.js";
 import type { OwnerNotifier } from "../notifications/owner-notifier.js";
 import {
 	isOwnerCommand,
@@ -21,7 +21,11 @@ import { normalizePhone, phoneFromChatId } from "../owner/phone.js";
 import type { CustomerMessenger } from "../payments/payment.service.js";
 import type { AngelRuntime } from "../runtime.js";
 import { EchoTracker, MessageBatcher } from "./message-batcher.js";
-import { isAutomatedBusinessMessage } from "./meta-forms.js";
+import {
+	FORM_SUBMITTED_NOTE,
+	isAutomatedBusinessMessage,
+	isFormCompletion,
+} from "./meta-forms.js";
 import {
 	adSourceFrom,
 	isIgnoredChat,
@@ -48,6 +52,8 @@ interface QueuedMessage {
 }
 
 const HOUR_MS = 60 * 60 * 1000;
+/** Messages a lead typed this long before finishing the form are answered with it. */
+const FORM_REPLAY_MS = 30 * 60 * 1000;
 const RESTART_DELAY_MS = 15_000;
 const MAX_RESTART_DELAY_MS = 5 * 60 * 1000;
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -351,6 +357,9 @@ export class WhatsAppService
 			this.logger.log(
 				`Automated ${message.type} message in ${message.to}: Angel stays on`
 			);
+			if (isFormCompletion(message.body)) {
+				await this.onFormCompleted(message.to);
+			}
 			return;
 		}
 		const phone = await this.phoneFor(message.to);
@@ -366,6 +375,8 @@ export class WhatsAppService
 			});
 		}
 		crm.logMessage(phone, "owner", message.body || `(${message.type})`);
+		// Someone the team chose to talk to has passed screening.
+		crm.markScreened(phone, "team");
 		crm.setHumanTakeover(
 			phone,
 			new Date(Date.now() + this.config.HUMAN_TAKEOVER_HOURS * HOUR_MS),
@@ -374,6 +385,42 @@ export class WhatsAppService
 		this.logger.log(
 			`A person replied in ${phone}: Angel paused there for ${this.config.HUMAN_TAKEOVER_HOURS}h`
 		);
+	}
+
+	/**
+	 * Meta confirmed a lead submitted our ad form, which promised them a
+	 * message: they pass screening and Angel replies, together with anything
+	 * they typed before finishing the form. Skipped when their answers were
+	 * already read and screened them in.
+	 */
+	private async onFormCompleted(chatId: string): Promise<void> {
+		if (!this.runtime) {
+			return;
+		}
+		const phone = await this.phoneFor(chatId);
+		const { crm } = this.runtime;
+		if (crm.screenedBy(phone)) {
+			return;
+		}
+		crm.markScreened(phone, "form");
+		const since = Date.now() - FORM_REPLAY_MS;
+		const earlier = crm
+			.ignoredMessages(phone)
+			.filter(
+				(ignored) =>
+					ignored.category === NO_FORM && Date.parse(ignored.createdAt) >= since
+			)
+			.map((ignored) => ignored.body);
+		this.logger.log(`${phone} submitted the ad form: Angel will reply`);
+		this.batcher.add(chatId, {
+			adSource: null,
+			displayName: null,
+			message: {
+				fromForm: true,
+				text: [FORM_SUBMITTED_NOTE, ...earlier].join("\n"),
+			},
+			phone,
+		});
 	}
 
 	private async respond(chatId: string, items: QueuedMessage[]): Promise<void> {

@@ -137,9 +137,9 @@ describe("ignored contacts", () => {
 		expect(list).toContain("Call me when you can");
 		expect(runOwnerCommand("#allow 0779999999", deps)).toContain("Done");
 		expect(crm.getIgnored("263779999999")?.allowed).toBe(true);
-		expect(runOwnerCommand("#allow 263700000000", deps)).toContain(
-			"isn't on the ignored list"
-		);
+		expect(crm.screenedBy("263779999999")).toBe("owner");
+		expect(runOwnerCommand("#allow 263700000000", deps)).toContain("Done");
+		expect(crm.screenedBy("263700000000")).toBe("owner");
 		expect(runOwnerCommand("#stats", deps)).toContain("Ignored contacts: 0");
 	});
 });

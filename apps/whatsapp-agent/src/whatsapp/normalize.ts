@@ -41,23 +41,37 @@ const mediaKindFor = (type: string, mimeType: string): MediaKind => {
 	return "other";
 };
 
+/**
+ * Taps on buttons or list items, e.g. the ad's "fill out the form" button.
+ * They are not a submitted form, so they never pass screening.
+ */
+const TAP_TYPES = new Set([
+	"buttons_response",
+	"list_response",
+	"template_button_reply",
+]);
+
 /** Text-only messages that still carry meaning. */
-const describeNonMedia = (message: Message): string => {
+const describeNonMedia = (message: Message): IncomingMessage => {
 	if (message.type === "location" && message.location) {
 		const { description, latitude, longitude } = message.location;
-		return `(Shared a location${description ? `: ${description}` : ""} at ${latitude}, ${longitude})`;
+		return {
+			text: `(Shared a location${description ? `: ${description}` : ""} at ${latitude}, ${longitude})`,
+		};
 	}
 	if (message.type === "vcard" || message.type === "multi_vcard") {
-		return "(Shared a contact card)";
+		return { text: "(Shared a contact card)" };
 	}
-	if (message.type !== "chat") {
-		// Forms and interactive replies, e.g. the WhatsApp form from our ads.
-		const answers =
-			message.body.trim() ||
-			formAnswersFrom((message as unknown as { _data?: unknown })._data);
-		return answers ? `(Ad form answers)\n${answers}` : message.body;
+	if (message.type === "chat" || TAP_TYPES.has(message.type)) {
+		return { text: message.body };
 	}
-	return message.body;
+	// A submitted form, e.g. the WhatsApp form from our ads.
+	const answers =
+		message.body.trim() ||
+		formAnswersFrom((message as unknown as { _data?: unknown })._data);
+	return answers
+		? { fromForm: true, text: `(Ad form answers)\n${answers}` }
+		: { text: message.body };
 };
 
 /**
@@ -68,7 +82,7 @@ export const toIncomingMessage = async (
 	message: Message
 ): Promise<IncomingMessage> => {
 	if (!message.hasMedia) {
-		return { text: describeNonMedia(message) };
+		return describeNonMedia(message);
 	}
 	const caption = message.body;
 	if (message.type === "sticker") {

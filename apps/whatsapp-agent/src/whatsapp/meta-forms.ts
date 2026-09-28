@@ -6,11 +6,19 @@
  * owner replying by hand) and reads form answers defensively.
  */
 
+/** What Meta sends from our number once a lead submits the ad form. */
+export const FORM_COMPLETED_TEXT =
+	"Thanks. We will review your answers and message you on WhatsApp with the next steps.";
+
 /** The welcome and completion messages of the current dealership ad form. */
 export const DEFAULT_AUTOMATED_TEXTS = [
 	"Welcome! Please fill out the form below to sign up!",
-	"Thanks. We will review your answers and message you on WhatsApp with the next steps.",
+	FORM_COMPLETED_TEXT,
 ];
+
+/** What Angel sees when a lead submitted the form but its answers aren't readable. */
+export const FORM_SUBMITTED_NOTE =
+	"(Ad form submitted. Their answers didn't come through in this chat.)";
 
 /** Message types a person types or sends by hand in WhatsApp. */
 const HUMAN_TYPES = new Set([
@@ -51,6 +59,12 @@ export const isAutomatedBusinessMessage = (
 		const known = normalise(text);
 		return known.length > 0 && (body === known || body.startsWith(known));
 	});
+};
+
+/** True for Meta's "thanks, we'll message you" once a lead submits the ad form. */
+export const isFormCompletion = (body: string): boolean => {
+	const text = normalise(body);
+	return text.length > 0 && text.startsWith(normalise(FORM_COMPLETED_TEXT));
 };
 
 /** Fields in WhatsApp Web's raw message that may hold form or button text. */

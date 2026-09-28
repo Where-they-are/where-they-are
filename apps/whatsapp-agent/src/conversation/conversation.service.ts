@@ -6,12 +6,14 @@ import type { TurnContext } from "../agent/instructions.js";
 import { PAYMENT_LINK_KEY } from "../agent/payment-tools.js";
 import { CUSTOMER_ID_KEY, IGNORED_KEY } from "../agent/tools.js";
 import type { CrmRepository } from "../crm/crm.repository.js";
-import type {
-	Customer,
-	IgnoreCategory,
-	SilenceCategory,
-	TurnGate,
-	TurnUsage,
+import {
+	type Customer,
+	type IgnoreCategory,
+	NO_FORM,
+	PAID_STAGES,
+	type SilenceCategory,
+	type TurnGate,
+	type TurnUsage,
 } from "../crm/crm.types.js";
 import { QUALIFIED_SCORE } from "../crm/lead-score.js";
 import type { SocialMediaOffer } from "../knowledge/offer.js";
@@ -33,6 +35,8 @@ import { splitIntoBubbles } from "./reply-format.js";
 export type MediaKind = "image" | "audio" | "document" | "other";
 
 export interface IncomingMessage {
+	/** True for our ad form's answers or its completion: the lead passed screening. */
+	fromForm?: boolean;
 	media?: { base64: string; filename?: string; mimeType: string };
 	mediaKind?: MediaKind;
 	text: string;
@@ -222,6 +226,15 @@ export class ConversationService {
 			.map((message) => message.text)
 			.filter(Boolean)
 			.join("\n");
+		const screenedOut = this.checkScreening(
+			batch,
+			messages,
+			combinedText,
+			trace
+		);
+		if (screenedOut) {
+			return screenedOut;
+		}
 		const ignored = await this.checkRelevance(
 			batch,
 			messages,
@@ -435,6 +448,62 @@ export class ConversationService {
 				`💤 ${customer.name ?? customer.displayName ?? customer.id}${customer.businessName ? ` (${customer.businessName})` : ""} ${category === "not_interested" ? "said they're not interested" : "said they'll get back to us"}, so Angel stopped replying. Lead score ${customer.leadScore}/10. Follow up personally if you think it's worth it: https://wa.me/${customer.id}`
 			);
 		}
+	}
+
+	/**
+	 * Only people who filled in our ad form get a reply (or those the team
+	 * started a chat with or allowed with #allow). Everyone else is ignored in
+	 * silence, with their messages kept for the owner, and costs no model call.
+	 */
+	private checkScreening(
+		batch: IncomingBatch,
+		messages: IncomingMessage[],
+		combinedText: string,
+		trace: TurnTrace
+	): TurnResult | null {
+		const { crm } = this.deps;
+		const id = batch.customerId;
+		if (messages.some((message) => message.fromForm)) {
+			crm.markScreened(id, "form");
+		}
+		const existing = crm.get(id);
+		const previous = crm.getIgnored(id);
+		const passed =
+			crm.screenedBy(id) !== null ||
+			previous?.allowed === true ||
+			(existing !== undefined && PAID_STAGES.includes(existing.stage));
+		if (passed) {
+			// Earlier no-form messages don't count against them anywhere else.
+			if (previous?.category === NO_FORM) {
+				crm.clearIgnored(id);
+			}
+			return null;
+		}
+		trace.gate = {
+			category: NO_FORM,
+			confidence: 1,
+			replyProbability: 0,
+			source: "screening",
+		};
+		crm.recordIgnored({
+			category: NO_FORM,
+			chatId: batch.chatId,
+			confidence: 1,
+			displayName: batch.displayName ?? null,
+			id,
+			text: combinedText || "[media]",
+		});
+		for (const message of messages) {
+			crm.logIgnoredMessage({
+				body:
+					describeMediaForLog(message) || `[${message.mediaKind ?? "message"}]`,
+				category: NO_FORM,
+				contactId: id,
+				mediaKind: message.mediaKind ?? null,
+				turnId: trace.turnId,
+			});
+		}
+		return { outcome: "ignored", replies: [] };
 	}
 
 	/**

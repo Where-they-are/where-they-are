@@ -33,6 +33,8 @@ const decision = (category: TurnCategory): ConversationGateDecision => ({
 
 const setup = (categories: TurnCategory[]) => {
 	const crm = new CrmRepository(":memory:");
+	// These tests are about replies, so the contact filled in the ad form.
+	crm.markScreened(ID, "form");
 	opened.push(crm);
 	vi.spyOn(console, "info").mockImplementation(() => undefined);
 	const notifier = new ConsoleOwnerNotifier();

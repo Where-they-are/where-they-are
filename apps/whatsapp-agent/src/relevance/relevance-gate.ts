@@ -77,7 +77,9 @@ const QUESTIONS: Record<string, JevQuestion> = {
 	},
 };
 
-const isIgnorable = (category: RelevanceCategory): category is IgnoreCategory =>
+const isIgnorable = (
+	category: RelevanceCategory
+): category is (typeof IGNORE_CATEGORIES)[number] =>
 	(IGNORE_CATEGORIES as readonly string[]).includes(category);
 
 const isCategory = (value: string): value is RelevanceCategory =>

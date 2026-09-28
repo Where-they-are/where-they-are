@@ -235,10 +235,12 @@ const listIgnored: Handler = ({ deps }) => {
 
 const allow: Handler = ({ deps, target }) => {
 	const id = normalizePhone(target);
-	if (!(id && deps.crm.allowContact(id))) {
-		return `"${target}" isn't on the ignored list. Send #ignored to see it.`;
+	if (!id) {
+		return "Say whose number: #allow 263771234567";
 	}
-	return "Done. Angel will reply to them from their next message.";
+	deps.crm.allowContact(id);
+	deps.crm.markScreened(id, "owner");
+	return "Done. Angel will reply to them from their next message, even without the ad form.";
 };
 
 const signClient = withLead(async ({ args, customer, deps }) => {

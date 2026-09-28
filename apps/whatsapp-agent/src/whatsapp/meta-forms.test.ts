@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { formAnswersFrom, isAutomatedBusinessMessage } from "./meta-forms.js";
+import {
+	FORM_COMPLETED_TEXT,
+	formAnswersFrom,
+	isAutomatedBusinessMessage,
+	isFormCompletion,
+} from "./meta-forms.js";
 
 describe("isAutomatedBusinessMessage", () => {
 	it("recognises the ad form's welcome and completion messages", () => {
@@ -76,5 +81,20 @@ describe("formAnswersFrom", () => {
 		);
 		expect(formAnswersFrom({ id: 5 })).toBeNull();
 		expect(formAnswersFrom(undefined)).toBeNull();
+	});
+});
+
+describe("isFormCompletion", () => {
+	it("recognises Meta's message once the ad form is submitted", () => {
+		expect(isFormCompletion(FORM_COMPLETED_TEXT)).toBe(true);
+		expect(
+			isFormCompletion(
+				"Thanks! We will review your answers and message you on WhatsApp with the next steps"
+			)
+		).toBe(true);
+		expect(
+			isFormCompletion("Welcome! Please fill out the form below to sign up!")
+		).toBe(false);
+		expect(isFormCompletion("Thanks")).toBe(false);
 	});
 });

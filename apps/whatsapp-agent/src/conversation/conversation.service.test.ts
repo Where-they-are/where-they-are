@@ -31,6 +31,8 @@ const setup = (
 	maxRepliesPerHour = 30
 ) => {
 	crm = new CrmRepository(":memory:");
+	// These tests are about replies, so the contact filled in the ad form.
+	crm.markScreened(ID, "form");
 	opened.push(crm);
 	const notifier = new ConsoleOwnerNotifier();
 	vi.spyOn(console, "info").mockImplementation(() => undefined);

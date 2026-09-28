@@ -260,7 +260,19 @@ export const IGNORE_CATEGORIES = [
 	"wrong_number",
 	"vendor_or_job_pitch",
 ] as const;
-export type IgnoreCategory = (typeof IGNORE_CATEGORIES)[number];
+
+/** Someone who messaged without filling in our ad form: never answered. */
+export const NO_FORM = "no_form";
+export type IgnoreCategory =
+	| (typeof IGNORE_CATEGORIES)[number]
+	| typeof NO_FORM;
+
+/**
+ * How a contact passed screening: they filled in the ad form, the team
+ * started the chat, or the owner allowed them with #allow.
+ */
+export const SCREENING_SOURCES = ["form", "team", "owner"] as const;
+export type ScreeningSource = (typeof SCREENING_SOURCES)[number];
 
 /**
  * Why Angel stays silent in an ongoing conversation: the lead firmly said no
