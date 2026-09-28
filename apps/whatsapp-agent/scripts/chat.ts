@@ -17,6 +17,8 @@ const config = readConfig();
 const runtime = createRuntime(config, new ConsoleOwnerNotifier(), {
 	dataDir: `${config.AGENT_DATA_DIR}/cli`,
 });
+// You play a lead who filled in the ad form; everyone else gets silence.
+runtime.crm.markScreened(customerId, "form");
 
 const rl = createInterface({ input: process.stdin, output: process.stdout });
 console.info(`Chatting with Angel as ${customerId}. /profile /events /quit\n`);

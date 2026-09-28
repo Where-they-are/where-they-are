@@ -37,6 +37,8 @@ const runtime = createRuntime(config, new ConsoleOwnerNotifier(), {
 	dataDir: resolve(config.AGENT_DATA_DIR, "media-check", String(Date.now())),
 });
 const customerId = "263770009999";
+// A lead who filled in the ad form, so Angel answers.
+runtime.crm.markScreened(customerId, "form");
 const send = async (
 	label: string,
 	message: Parameters<typeof runtime.conversation.handle>[0]["messages"][number]

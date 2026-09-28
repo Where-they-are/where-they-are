@@ -47,6 +47,8 @@ const runCase = async (item: RelevanceCase, index: number): Promise<Result> => {
 		dataDir: resolve(root, item.id),
 	});
 	const customerId = `26378${String(10_000_000 + index).slice(1)}`;
+	// The Jev gate screens form leads; unscreened contacts never get this far.
+	runtime.crm.markScreened(customerId, "form");
 	const gate = await runtime.relevance.decide({
 		contact: {
 			displayName: null,
