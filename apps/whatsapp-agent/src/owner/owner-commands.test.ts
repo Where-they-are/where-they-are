@@ -69,6 +69,9 @@ describe("runOwnerCommand", () => {
 		expect(runOwnerCommand("#leads", deps)).toContain("Tatenda Motors");
 		const lead = runOwnerCommand("#lead 0771234567", deps);
 		expect(lead).toContain("Tatenda Motors");
+		expect(lead).toContain("Plan: none (recommended none)");
+		expect(lead).toContain("Last payment: none");
+		expect(lead).not.toContain("Website");
 		expect(lead).toContain("Angel: Hi! I'm Angel.");
 		expect(lead).toContain(`https://wa.me/${ID}`);
 	});

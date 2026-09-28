@@ -84,13 +84,18 @@ const profile = (crm: CrmRepository, customer: Customer): string => {
 			];
 			return `${label}: ${message.body.slice(0, 160)}`;
 		});
+	const [payment] = crm.payments.forCustomer(customer.id);
 	return [
 		`*${who(customer)}* (${customer.id})`,
 		`Business: ${customer.businessName ?? "?"} (${customer.businessType}${customer.otherBusinessType ? `: ${customer.otherBusinessType}` : ""})`,
-		`Vehicles: ${customer.vehicleTypes ?? "?"}`,
-		`Location: ${customer.location ?? "?"}`,
-		`Website: ${customer.hasWebsite}${customer.websiteUrl ? ` ${customer.websiteUrl}` : ""}`,
-		`Stage: ${customer.stage}${customer.demoSentAt ? " · demo sent" : ""}${customer.optedOut ? " · OPTED OUT" : ""}`,
+		`City: ${customer.location ?? "?"}`,
+		`Posts now: ${customer.postingHabit ?? "?"} · Wants: ${customer.desiredFrequency ?? "?"}`,
+		`Facebook: ${customer.facebookUrl ?? "?"} · Instagram: ${customer.instagramUrl ?? "?"}`,
+		`Plan: ${customer.plan ?? "none"} (recommended ${customer.recommendedPlan ?? "none"}) · Score ${customer.leadScore}/10`,
+		payment
+			? `Last payment: ${usd(payment.amountUsd)} ${payment.kind.replace("_", " ")} by ${payment.method}, ${payment.status} (${payment.reference})`
+			: "Last payment: none",
+		`Stage: ${customer.stage}${customer.optedOut ? " · OPTED OUT" : ""}`,
 		`Angel: ${customer.humanTakeoverUntil && new Date(customer.humanTakeoverUntil) > new Date() ? `paused until ${customer.humanTakeoverUntil.slice(0, 16)}` : "active"}`,
 		customer.notes ? `Notes: ${customer.notes}` : "",
 		"",
