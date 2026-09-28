@@ -5,6 +5,8 @@ import { z } from "zod";
 
 import type { ReasoningEffort } from "./agent/angel.js";
 
+const TRAILING_SLASH = /\/+$/;
+
 /** Where Linux installs Chromium; Docker uses the first one. */
 const CHROMIUM_PATHS = [
 	"/usr/bin/chromium",
@@ -31,6 +33,8 @@ const SETTINGS = {
 	META_WHATSAPP_BUSINESS_ACCOUNT_ID: "",
 	/** Receives hand-off alerts and sends #commands. */
 	OWNER_WHATSAPP_NUMBER: "263789859332",
+	/** Where a customer lands after paying on Paynow's page: back in our chat. */
+	PAYNOW_RETURN_URL: "https://wa.me/263775101506",
 	/** Several quick messages within this window get one answer. */
 	REPLY_DEBOUNCE_MS: 3500,
 	WHATSAPP_CLIENT_ID: "angel",
@@ -50,6 +54,17 @@ const environmentSchema = z.object({
 		.enum(["development", "production", "test"])
 		.default("development"),
 	OPENROUTER_API_KEY: z.string().min(1, "OPENROUTER_API_KEY is required"),
+	/** The Paynow login email; Paynow requires it on mobile money prompts. */
+	PAYNOW_AUTH_EMAIL: z.string().optional().default(""),
+	/** Empty ID or key turns payments off: Angel hands the close to the owner. */
+	PAYNOW_INTEGRATION_ID: z.string().optional().default(""),
+	PAYNOW_INTEGRATION_KEY: z.string().optional().default(""),
+	/** Angel's public address, for Paynow's result URL. Empty means polling only. */
+	PUBLIC_BASE_URL: z
+		.string()
+		.optional()
+		.default("")
+		.transform((value) => value.replace(TRAILING_SLASH, "")),
 });
 
 export type AgentConfig = z.infer<typeof environmentSchema> &

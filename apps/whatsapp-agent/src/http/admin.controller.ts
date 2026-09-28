@@ -88,6 +88,7 @@ export class AdminController {
 			},
 			offer: this.runtime.offer(),
 			payments,
+			paynowEnabled: this.runtime.payments.enabled,
 			turns,
 		};
 	}

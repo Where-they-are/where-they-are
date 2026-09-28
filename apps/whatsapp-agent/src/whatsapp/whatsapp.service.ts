@@ -18,6 +18,7 @@ import {
 	runOwnerCommand,
 } from "../owner/owner-commands.js";
 import { normalizePhone, phoneFromChatId } from "../owner/phone.js";
+import type { CustomerMessenger } from "../payments/payment.service.js";
 import type { AngelRuntime } from "../runtime.js";
 import { EchoTracker, MessageBatcher } from "./message-batcher.js";
 import { isAutomatedBusinessMessage } from "./meta-forms.js";
@@ -58,7 +59,7 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
  */
 @Injectable()
 export class WhatsAppService
-	implements OnModuleInit, OnModuleDestroy, OwnerNotifier
+	implements OnModuleInit, OnModuleDestroy, OwnerNotifier, CustomerMessenger
 {
 	private readonly logger = new Logger("WhatsApp");
 	private readonly config: AgentConfig;
@@ -91,6 +92,15 @@ export class WhatsAppService
 
 	attach(runtime: AngelRuntime): void {
 		this.runtime = runtime;
+		runtime.payments.attachMessenger(this);
+	}
+
+	/** Messages a customer outside a reply turn, e.g. a payment confirmation. */
+	async sendToCustomer(chatId: string, text: string): Promise<void> {
+		if (!this.client || this.state !== "ready") {
+			throw new Error("WhatsApp is not connected");
+		}
+		await this.send(chatId, [text], false);
 	}
 
 	onModuleInit(): void {
