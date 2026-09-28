@@ -10,6 +10,7 @@
     "dev": "node --import tsx --import varlock/auto-load --watch src/main.ts",
     "eval": "node --import tsx --import varlock/auto-load scripts/eval.ts",
     "media-check": "node --import tsx --import varlock/auto-load scripts/media-check.ts",
+    "paynow-check": "node --import tsx --env-file=.env scripts/paynow-check.ts",
     "relevance-eval": "node --import tsx --import varlock/auto-load scripts/relevance-eval.ts",
     "start": "node --import tsx --import varlock/auto-load dist/main.js",
     "test": "vitest run"
@@ -22,6 +23,7 @@
     "@nestjs/core": "^11.1.6",
     "@nestjs/platform-express": "^11.1.6",
     "@where-they-are/jev-router": "workspace:*",
+    "@where-they-are/paynow": "workspace:*",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
     "tsx": "^4.20.6",
