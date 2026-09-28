@@ -1,6 +1,6 @@
 # Where They Are Dealership Sales Script
 
-_Last updated: 2026-09-27_
+_Last updated: 2026-09-28_
 _Status: **active.** Social media management for car dealerships. Replaces the 2026-09-25 website script._
 _Used by: the first-line WhatsApp sales assistant (Angel or a person) and the owner._
 
@@ -40,9 +40,18 @@ Posts show the dealership's real vehicles and real details: vehicle listings, ne
 
 The 50% first-month launch offer is **only for Growth and Pro**, only for the **first month**, and only for the **first five dealerships**. Don't say how many places are left unless the owner has confirmed the number.
 
+### How they pay
+
+The first month is paid to get started, through Paynow:
+
+- an **EcoCash** or **OneMoney** prompt on their phone, which they approve with their PIN on the phone itself;
+- or a **Paynow link** to pay by card, bank or mobile money.
+
+A payment counts only when Paynow confirms it. Later months: the owner sends a Paynow request with `#bill`. Cash or a direct bank transfer goes to the owner.
+
 ### Not decided yet (the owner confirms)
 
-Payment method and timing, minimum term and cancellation, what happens without Instagram, the approval rhythm, and upsell prices. If asked, say: "The owner will confirm that for you." Never guess.
+Minimum term and cancellation, payment for later months beyond the monthly price, what happens without Instagram, the approval rhythm, and upsell prices. If asked, say: "The owner will confirm that for you." Never guess.
 
 ## 2. The conversation
 
@@ -63,7 +72,15 @@ The form closes with "Thanks. We will review your answers and message you on Wha
 
 Never ask again for anything the form already answered. If they can't approve marketing, keep helping and note who decides in the hand-off.
 
-### Opening (people who message without the form)
+### People who message without the form
+
+We don't reply to anyone who hasn't submitted the ad's form, not even with "we'll get back to you". A message like "Can I get more info on this?" without the form has failed screening. Their messages are kept, and the owner can let someone through with `#allow`. If they submit the form later, we reply then.
+
+If the form was submitted but its answers didn't come through, reply:
+
+> Hi, thanks for filling in our form, I'm Angel from Where They Are. May I ask the name of your dealership and which city you're based in?
+
+### Opening (chats the team starts, or people the owner allows)
 
 > Hi, thanks for contacting Where They Are. We help car dealerships get more attention and enquiries through consistent social media content.
 >
@@ -111,22 +128,26 @@ If the launch places are gone, quote the normal price only.
 
 ### When they want to start
 
-Collect what's needed, one or two items per message:
+Make sure we know the dealership name, city and plan (ask only for what's missing), then:
 
-- dealership name and location;
-- Facebook page link;
-- Instagram page link, if they have one;
-- the plan they chose.
+> How would you like to pay for the first month: EcoCash, OneMoney, or a Paynow link for card or bank?
 
-Then:
+- **EcoCash or OneMoney:** send the Paynow prompt to their number (or the number they give) and tell them to approve it with their PIN on their phone. Never ask for the PIN.
+- **Card or bank:** send the Paynow link exactly as issued.
+
+Then: "I'll confirm here as soon as Paynow tells us it's paid." Never say it's paid before Paynow confirms. When a lead says they've paid, check Paynow first. If the prompt didn't arrive or failed, offer to send it again or send a link.
+
+When Paynow confirms, the lead automatically gets a thank-you and the list below. If they ask what happens next, they can send those details and the team will be in touch in the chat. Never promise a start date or say the team is already working on it.
+
+If they want to pay by cash or direct transfer, or Paynow isn't available:
 
 > Thank you. I'll pass this to our team now to confirm your start and how to pay. Once that's done, we'll ask for your vehicle photos and details.
 
-Hand over to the owner. Never take payment or promise a start date.
-
 ### What we need after they pay
 
-The owner or assistant collects:
+The thank-you message asks for these, and the owner or assistant follows up:
+
+- their Facebook page link, and Instagram if they have one;
 
 - vehicle photos and details: price, mileage, engine, gearbox and duty status where relevant;
 - the logo, colours and contact details for their posts;
@@ -169,7 +190,10 @@ Hand the lead to the owner. These are upsells, never part of a plan.
 **"We don't have Instagram."**
 > No problem. The owner will confirm how we'd set that up for you.
 
-**"How do I pay?" / "Is there a contract?" / "Can I cancel?"**
+**"How do I pay?"**
+> You can pay the first month by EcoCash, OneMoney, or a Paynow link for card or bank. Which would you prefer?
+
+**"Is there a contract?" / "Can I cancel?"**
 > The owner will confirm that for you.
 
 Then hand the lead to the owner.
@@ -193,6 +217,7 @@ Not every message needs an answer. Chasing people who have said no makes us look
 - **A lead firmly says they'll get back to us** and asks nothing: "I'll think about it and come back to you when I'm ready." We respect that and wait.
 - **The conversation is over:** "ok thanks" or a thumbs up after everything is answered and we asked nothing. If our last message asked a question, "ok" or "yes" is an answer, so we reply.
 - **The message is meaningless:** random letters, stray emoji or stickers, chain messages or spam.
+- **They never filled in the ad form** (see "People who message without the form").
 
 We always reply to a question, an answer to our question, an objection we can answer, or any interest. When a qualified lead firmly says no or "I'll get back to you", the owner is alerted and can decide whether to follow up personally.
 
@@ -222,7 +247,7 @@ We're focused on car dealerships right now:
 
 Hand over when the lead:
 
-- is ready to pay or start;
+- wants to pay by cash or direct transfer, or a payment keeps failing;
 - asks for a custom package or a discount;
 - asks about a service outside the plans (websites, ads, photography, branding and so on);
 - asks something not answered in section 1, such as payment, contract, cancellation or Instagram setup;
@@ -267,7 +292,7 @@ Never mark a lead unqualified just because they need time.
 
 ## 8. Meta feedback
 
-Report `QualifiedLead` when a real dealership reaches a score of 5 or more. Report `Purchase` when the owner confirms the first payment, with the amount paid. This helps Meta find more dealership owners who become paying clients, not just people who chat.
+Report `QualifiedLead` when a real dealership reaches a score of 5 or more. Report `Purchase` when Paynow confirms the first payment, with the amount paid. This helps Meta find more dealership owners who become paying clients, not just people who chat.
 
 ## 9. Never say
 
