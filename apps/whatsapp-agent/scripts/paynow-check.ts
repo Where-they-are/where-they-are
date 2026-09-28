@@ -20,6 +20,8 @@ const paynow = new PaynowClient({
 	returnUrl: "https://wa.me/263775101506",
 });
 const stamp = Date.now();
+const POLL_EVERY_MS = 4000;
+const MAX_POLLS = 10;
 
 const link = await paynow.requestPaymentLink({
 	amountUsd: 1,
@@ -45,8 +47,15 @@ if (phone) {
 	});
 	process.stdout.write(`Mobile prompt: ${JSON.stringify(mobile)}\n`);
 	if (mobile.ok) {
-		process.stdout.write(
-			`Poll: ${JSON.stringify(await paynow.poll(mobile.pollUrl))}\n`
-		);
+		// Waits for the prompt to be approved; Paynow's test numbers settle in seconds.
+		for (let attempt = 0; attempt < MAX_POLLS; attempt += 1) {
+			// biome-ignore lint/performance/noAwaitInLoops: polls one after another
+			await new Promise((resolve) => setTimeout(resolve, POLL_EVERY_MS));
+			const status = await paynow.poll(mobile.pollUrl);
+			process.stdout.write(`Poll: ${JSON.stringify(status)}\n`);
+			if (status && status.outcome !== "pending") {
+				break;
+			}
+		}
 	}
 }
