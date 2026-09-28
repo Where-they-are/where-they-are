@@ -10,8 +10,8 @@
 #
 # whatsapp-web.js drives a real Chromium through Puppeteer. The Puppeteer
 # download is skipped before install so the apt Chromium below is the only
-# browser in the image; CHROME_EXECUTABLE_PATH (read by Angel) and
-# PUPPETEER_EXECUTABLE_PATH both point at it.
+# browser in the image. Angel finds it at /usr/bin/chromium by itself, and
+# PUPPETEER_EXECUTABLE_PATH points Puppeteer at it too.
 #
 # The session, conversation memory and CRM all live in /data: mount a
 # persistent volume there or every deploy logs WhatsApp out and loses leads.
@@ -74,10 +74,7 @@ ENV NODE_ENV=production \
     PUPPETEER_SKIP_DOWNLOAD=true \
     PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium \
-    CHROME_EXECUTABLE_PATH=/usr/bin/chromium \
-    AGENT_DATA_DIR=/data \
-    WHATSAPP_AUTH_PATH=/data/wwebjs_auth \
-    AGENT_PORT=3104
+    AGENT_DATA_DIR=/data
 
 WORKDIR /app
 

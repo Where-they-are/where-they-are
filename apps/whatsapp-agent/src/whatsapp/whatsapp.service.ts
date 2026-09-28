@@ -20,10 +20,7 @@ import {
 import { normalizePhone, phoneFromChatId } from "../owner/phone.js";
 import type { AngelRuntime } from "../runtime.js";
 import { EchoTracker, MessageBatcher } from "./message-batcher.js";
-import {
-	DEFAULT_AUTOMATED_TEXTS,
-	isAutomatedBusinessMessage,
-} from "./meta-forms.js";
+import { isAutomatedBusinessMessage } from "./meta-forms.js";
 import {
 	adSourceFrom,
 	isIgnoredChat,
@@ -66,7 +63,6 @@ export class WhatsAppService
 	private readonly logger = new Logger("WhatsApp");
 	private readonly config: AgentConfig;
 	private readonly echoes = new EchoTracker();
-	private readonly automatedTexts: string[];
 	private readonly batcher: MessageBatcher<QueuedMessage>;
 	private client: InstanceType<typeof Client> | undefined;
 	private runtime: AngelRuntime | undefined;
@@ -83,10 +79,6 @@ export class WhatsAppService
 
 	constructor(@Inject(AGENT_CONFIG) config: AgentConfig) {
 		this.config = config;
-		this.automatedTexts = [
-			...DEFAULT_AUTOMATED_TEXTS,
-			...config.AUTOMATED_MESSAGE_TEXTS,
-		];
 		this.batcher = new MessageBatcher(
 			config.REPLY_DEBOUNCE_MS,
 			(chatId, items) => {
@@ -343,7 +335,7 @@ export class WhatsAppService
 		if (this.echoes.consume(message.to, message.body)) {
 			return;
 		}
-		if (isAutomatedBusinessMessage(message, this.automatedTexts)) {
+		if (isAutomatedBusinessMessage(message)) {
 			// Meta's ad form welcome and completion messages come from our own
 			// number; they are not the owner replying by hand.
 			this.logger.log(
