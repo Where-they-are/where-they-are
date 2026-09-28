@@ -9,10 +9,11 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 import { readConfig } from "../src/config.js";
-import type { CrmEvent, Customer } from "../src/crm/crm.types.js";
+import type { CrmEvent, Customer, Payment } from "../src/crm/crm.types.js";
 import { ConsoleOwnerNotifier } from "../src/notifications/owner-notifier.js";
+import type { PaymentGateway } from "../src/payments/payment.service.js";
 import { createRuntime } from "../src/runtime.js";
-import { type Scenario, scenarios } from "./scenarios.js";
+import { EVAL_PAYMENT_LINK, type Scenario, scenarios } from "./scenarios.js";
 
 const MAX_WORDS = 120;
 const CONCURRENCY = 3;
@@ -25,10 +26,34 @@ const GLOBAL_FORBIDDEN = [
 	// No invented track record.
 	/\bwe (often|usually|regularly) (work|help|build)|\bmany (dealers|dealerships|clients|businesses) (use|have|choose)|\bour (clients|customers) (include|love|say)|dealers we('ve| have) worked with/i,
 	// The retired website offer.
-	/\$250|\$125|\bdeposit\b|Paynow|Ridgeline|website demo/i,
+	/\$250|\$125|\bdeposit\b|Ridgeline|website demo/i,
+	// Angel never asks for secrets; approving a prompt happens on their phone.
+	/(?<!never |not |don't |do not )\b(send|share|give|tell) (me|us)\b[^.?!]{0,20}\b(PIN|password|card number)\b/i,
+	// Angel's payment tool names.
+	/request_payment|check_payment/i,
 	// Mechanism talk the ads and script avoid.
 	/software company|we create vehicle content|get your dealership online/i,
 ];
+
+/** Paynow stand-in: every request is accepted and stays pending until the scenario says otherwise. */
+const fakePaynow: PaymentGateway = {
+	poll: () => Promise.resolve(null),
+	requestMobilePayment: () =>
+		Promise.resolve({
+			instructions: "Approve the prompt on your phone",
+			ok: true,
+			paynowReference: "eval",
+			pollUrl: "https://paynow.invalid/poll",
+		}),
+	requestPaymentLink: () =>
+		Promise.resolve({
+			link: EVAL_PAYMENT_LINK,
+			ok: true,
+			pollUrl: "https://paynow.invalid/poll",
+		}),
+};
+
+const FORM_TEXT = /^\(Ad form/;
 
 const config = readConfig();
 const runId = new Date().toISOString().replace(/[:.]/g, "-");
@@ -134,6 +159,30 @@ const checkTurns = (
 	return failures;
 };
 
+/** Checks the first-month payment Angel requested, if any. */
+const checkPayment = (
+	expected: Scenario["expect"]["payment"],
+	payment: Payment | undefined
+): string[] => {
+	if (expected === undefined) {
+		return [];
+	}
+	if (expected === null) {
+		return payment
+			? [`payment requested (${payment.method}) but none expected`]
+			: [];
+	}
+	if (!payment) {
+		return ["no payment requested"];
+	}
+	return Object.entries(expected)
+		.filter(([key, value]) => payment[key as keyof Payment] !== value)
+		.map(
+			([key, value]) =>
+				`payment ${key} ${String(payment[key as keyof Payment])}, expected ${String(value)}`
+		);
+};
+
 /** Compares the CRM after a conversation with what the scenario expects. */
 const checkCrm = (
 	expect: Scenario["expect"],
@@ -205,23 +254,57 @@ const runScenario = async (
 	const notifier = new ConsoleOwnerNotifier();
 	const runtime = createRuntime(config, notifier, {
 		dataDir: resolve(root, scenario.id),
+		gateway: fakePaynow,
 	});
 	const customerId = `26377${String(10_000_000 + index).slice(1)}`;
 	const transcript: string[] = [];
 	const turns: TurnRecord[] = [];
 	const ms: number[] = [];
+	const setupFailures: string[] = [];
+	if (!scenario.unscreened) {
+		// The contact filled in the ad form, like every lead Angel talks to.
+		runtime.crm.markScreened(customerId, "form");
+	}
+	runtime.payments.attachMessenger({
+		sendToCustomer: (_chatId, text) => {
+			transcript.push(`**Angel (automatic, after Paynow):** ${text}`);
+			return Promise.resolve();
+		},
+	});
+	const simulatePaynow = async (status: "Paid" | "Cancelled") => {
+		const payment = runtime.crm.payments.latest(customerId, "first_month");
+		if (!payment) {
+			setupFailures.push(`no payment request to mark ${status}`);
+			return;
+		}
+		transcript.push(`_(Paynow reports ${status} for ${payment.reference})_`);
+		await runtime.payments.handleStatusUpdate({
+			amount: payment.amountUsd,
+			outcome: status === "Paid" ? "paid" : "cancelled",
+			paynowReference: "eval",
+			pollUrl: payment.pollUrl,
+			providerStatus: status,
+			reference: payment.reference,
+		});
+	};
 
-	for (const step of scenario.turns) {
+	for (const [turnIndex, step] of scenario.turns.entries()) {
+		if (scenario.paynow?.beforeTurn === turnIndex) {
+			// biome-ignore lint/performance/noAwaitInLoops: a conversation is sequential
+			await simulatePaynow(scenario.paynow.status);
+		}
 		const batch = Array.isArray(step) ? step : [step];
 		const text = batch.join(" / ");
 		transcript.push(`**Customer:** ${text}`);
 		const started = Date.now();
-		// biome-ignore lint/performance/noAwaitInLoops: a conversation is sequential
 		const result = await runtime.conversation.handle({
 			chatId: `${customerId}@c.us`,
 			customerId,
 			displayName: "Eval",
-			messages: batch.map((message) => ({ text: message })),
+			messages: batch.map((message) => ({
+				fromForm: FORM_TEXT.test(message),
+				text: message,
+			})),
 		});
 		ms.push(Date.now() - started);
 		if (result.replies.length === 0) {
@@ -236,6 +319,11 @@ const runScenario = async (
 	const customer = runtime.crm.get(customerId);
 	const events = runtime.crm.events(customerId, 100);
 	const failures = [
+		...setupFailures,
+		...checkPayment(
+			scenario.expect.payment,
+			runtime.crm.payments.latest(customerId, "first_month")
+		),
 		...checkReplies(
 			scenario.expect,
 			turns.flatMap((turn) => turn.replies)
@@ -271,6 +359,7 @@ const runScenario = async (
 		`owner alerts: ${notifier.sent.length}`,
 		"```"
 	);
+	runtime.payments.stop();
 	runtime.crm.close();
 	return { failures, ms, scenario, transcript };
 };

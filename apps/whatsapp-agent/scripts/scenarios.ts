@@ -1,5 +1,5 @@
 import type { HandoffReason } from "../src/agent/tools.js";
-import type { LeadStage } from "../src/crm/crm.types.js";
+import type { LeadStage, Payment } from "../src/crm/crm.types.js";
 import type { PlanId } from "../src/knowledge/offer.js";
 
 export type ScenarioGroup =
@@ -7,7 +7,9 @@ export type ScenarioGroup =
 	| "objections"
 	| "silence"
 	| "hand_offs"
-	| "edge_cases";
+	| "edge_cases"
+	| "payments"
+	| "screening";
 
 export interface Scenario {
 	description: string;
@@ -27,6 +29,10 @@ export interface Scenario {
 		/** No reply may match any of these. */
 		neverMentions?: RegExp[];
 		optedOut?: boolean;
+		/** The first-month payment Angel requested; null means none. */
+		payment?: Partial<
+			Pick<Payment, "amountUsd" | "method" | "plan" | "status">
+		> | null;
 		/** The plan Angel recommended. */
 		recommendedPlan?: PlanId;
 		/** Turns (0-based) that must get a reply. */
@@ -37,9 +43,21 @@ export interface Scenario {
 	};
 	group: ScenarioGroup;
 	id: string;
+	/** Paynow reports this status just before the given turn (0-based). */
+	paynow?: { beforeTurn: number; status: "Paid" | "Cancelled" };
 	/** Each turn is one message, or several sent in quick succession. */
 	turns: (string | string[])[];
+	/** The contact never filled in the ad form. */
+	unscreened?: boolean;
 }
+
+/** The link the eval's fake Paynow issues. */
+export const EVAL_PAYMENT_LINK =
+	"https://www.paynow.co.zw/Payment/ConfirmPayment/eval";
+
+/** Angel must never claim money arrived before Paynow says so. */
+const CLAIMS_PAID =
+	/\bpayment (has been |was )?received\b|\b(payment|it) (has been|was) (received|confirmed)\b|\b(received|got) your payment\b|\byou're all (set|paid)\b|\bwelcome (to where they are|aboard)\b/i;
 
 /** Only the plans' own amounts may appear. */
 const OTHER_AMOUNTS = /\$(?!32\b|48\b|96\b|120\b|240\b)\d/;
@@ -57,14 +75,19 @@ export const scenarios: Scenario[] = [
 	// Sales flow
 	{
 		description:
-			"Dealer from the ad: dealership, posting habit, frequency, Growth, ready to start",
+			"Dealer from the ad: dealership, posting habit, frequency, Growth, then pays the first month by EcoCash",
 		expect: {
 			businessType: "car_dealership",
-			handoffReason: "ready_to_start",
 			leadScoreAtLeast: 5,
 			location: /Mutare/i,
-			mentions: [/\$96/, /\$48/, /Facebook/i],
-			neverMentions: [OTHER_AMOUNTS],
+			mentions: [/\$96/, /\$48/, /EcoCash/i, /PIN/i],
+			neverMentions: [OTHER_AMOUNTS, CLAIMS_PAID],
+			payment: {
+				amountUsd: 48,
+				method: "ecocash",
+				plan: "growth",
+				status: "sent",
+			},
 			recommendedPlan: "growth",
 			stages: ["ready_to_start"],
 		},
@@ -76,7 +99,7 @@ export const scenarios: Scenario[] = [
 			"We only post when new stock comes in, maybe once or twice a month",
 			"About three times a week would be good",
 			"Sounds good, let's start",
-			"facebook.com/tinomotors, we don't have Instagram. Growth plan",
+			"EcoCash on this number",
 		],
 	},
 	{
@@ -233,7 +256,6 @@ export const scenarios: Scenario[] = [
 	{
 		description: "'Yes' answers her question and gets a reply, not silence",
 		expect: {
-			handoffReason: "ready_to_start",
 			repliedTurns: [3, 4],
 		},
 		group: "sales_flow",
@@ -243,8 +265,120 @@ export const scenarios: Scenario[] = [
 			"ok",
 			"sounds fair",
 			"yes",
-			"facebook.com/kudacars, instagram @kudacars",
+			"link",
 		],
+	},
+
+	// Payments
+	{
+		description:
+			"Pays by card: gets the exact Paynow link and no claim that it's paid",
+		expect: {
+			mentions: [new RegExp(EVAL_PAYMENT_LINK.replaceAll(".", "\\.")), /\$48/],
+			neverMentions: [CLAIMS_PAID, OTHER_AMOUNTS],
+			payment: { amountUsd: 48, method: "link", plan: "growth" },
+		},
+		group: "payments",
+		id: "pay_by_link",
+		turns: [
+			"Hi, Rudo from Rudo Autos in Harare. We post once in a while and want about three times a week",
+			"Yes let's do Growth",
+			"Can I pay with my bank card?",
+		],
+	},
+	{
+		description:
+			"OneMoney on a different number: the prompt goes to that number",
+		expect: {
+			mentions: [/0712345678/],
+			neverMentions: [CLAIMS_PAID],
+			payment: { method: "onemoney", plan: "starter" },
+		},
+		group: "payments",
+		id: "onemoney_other_number",
+		turns: [
+			"Hi, Blessing from B Motors in Mutare. We rarely post, once a week is enough for us",
+			"Yes, Starter please",
+			"OneMoney, use 0712345678",
+		],
+	},
+	{
+		description:
+			"Says they've paid but Paynow hasn't confirmed: Angel checks and doesn't confirm",
+		expect: {
+			neverMentions: [CLAIMS_PAID],
+			payment: { method: "ecocash", status: "sent" },
+			repliedTurns: [3],
+			stages: ["ready_to_start"],
+		},
+		group: "payments",
+		id: "claims_paid_pending",
+		turns: [
+			"Hi, Tafadzwa from TK Cars in Harare. We post when stock comes in and want three times a week",
+			"Ok let's start with Growth",
+			"EcoCash",
+			"Done, I've paid",
+		],
+	},
+	{
+		description:
+			"Paynow confirms: the client is signed and Angel doesn't repeat the checklist",
+		expect: {
+			neverMentions: [/photos and details of the vehicles/i],
+			payment: { status: "paid" },
+			repliedTurns: [3],
+			stages: ["paying_client"],
+		},
+		group: "payments",
+		id: "paid_confirmed",
+		paynow: { beforeTurn: 3, status: "Paid" },
+		turns: [
+			"Hi, Nyasha from Nyasha Motors in Mutare. We hardly post and want every day",
+			"Pro sounds good, let's go",
+			"EcoCash please",
+			"I've approved it, what happens now?",
+		],
+	},
+	{
+		description:
+			"Wants to pay cash at the office: handed to the owner, no prompt sent",
+		expect: {
+			handoff: true,
+			payment: null,
+		},
+		group: "payments",
+		id: "pay_cash",
+		turns: [
+			"Hi, Farai from Farai Car Sales in Harare. We post once a week and want three times a week",
+			"Yes let's start",
+			"Can I pay cash at your office instead?",
+		],
+	},
+
+	// Screening
+	{
+		description: "Taps the ad but never fills in the form: complete silence",
+		expect: { silentTurns: [0, 1, 2] },
+		group: "screening",
+		id: "no_form_more_info",
+		turns: ["Can I get more info on this?", "Hello??", "How much?"],
+		unscreened: true,
+	},
+	{
+		description:
+			"Asks first, then submits the form: Angel replies once the form is in",
+		expect: {
+			mentions: [/thanks for filling in our form/i],
+			repliedTurns: [1],
+			silentTurns: [0],
+		},
+		group: "screening",
+		id: "form_after_question",
+		turns: [
+			"Can I get more info on this?",
+			"(Ad form submitted. Their answers didn't come through in this chat.)\nCan I get more info on this?",
+		],
+		unscreened: true,
 	},
 
 	// Objections
@@ -368,15 +502,18 @@ export const scenarios: Scenario[] = [
 	},
 	{
 		description:
-			"Conversation over after the hand-off: 'ok thanks' gets no reply",
-		expect: { handoffReason: "ready_to_start", silentTurns: [4] },
+			"Conversation over after the payment link: 'ok thanks' gets no reply",
+		expect: {
+			payment: { method: "link", plan: "pro" },
+			silentTurns: [4],
+		},
 		group: "silence",
 		id: "conversation_over",
 		turns: [
 			"Hi, Grace from Grace Motors in Harare. We post rarely and want to appear every day",
 			"Yes, I'd like to start with Pro",
-			"facebook.com/gracemotorszw, no Instagram",
-			"Great",
+			"Send me a link, I'll pay by card",
+			"Great, I'll pay it tonight",
 			"ok thanks 👍",
 		],
 	},
