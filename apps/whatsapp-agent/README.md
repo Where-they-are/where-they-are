@@ -49,22 +49,26 @@ Qualified -> plan recommended (recommend_plan)
   -> paying client: a launch place is used for Growth or Pro, Meta gets a Purchase
 ```
 
-Angel never takes payment or shares payment details. The launch offer (50% off the first month of Growth or Pro) is for the first five dealerships. Places are counted from clients marked with `#client` plus `LAUNCH_PLACES_USED_OFFSET`.
+Angel never takes payment or shares payment details. The launch offer (50% off the first month of Growth or Pro) is for the first five dealerships. Places are counted from clients marked with `#client` (plus `LAUNCH_PLACES_USED_OFFSET` in `src/config.ts` for any sold outside Angel).
 
 ## Running it
 
 The following steps start Angel locally:
 
-1. Copy `.env.schema` values into `apps/whatsapp-agent/.env` and set `OPENROUTER_API_KEY`. The key is sensitive, so never commit it.
-2. `pnpm dev:angel` from the repository root. It serves on `AGENT_PORT` (3104).
-3. Link the WhatsApp number in one of two ways:
-   - Set `WHATSAPP_PAIRING_NUMBER` (digits only, e.g. `263775101506`). The 8-character pairing code appears in the logs and at `GET /api/admin/whatsapp`. Enter it on the phone under *Linked devices → Link with phone number*.
-   - Leave `WHATSAPP_PAIRING_NUMBER` empty and scan the QR code from the logs.
-4. The session is saved under `WHATSAPP_AUTH_PATH`, so you only link once.
-5. Optional settings:
-   - `EXAMPLES_URL`: an approved page or album of example posts that Angel may share. Without it, Angel hands "can I see examples?" to the owner.
-   - `LAUNCH_OFFER_PLACES` (default 5) and `LAUNCH_PLACES_USED_OFFSET` (launch places sold outside Angel).
-   - Meta: `META_DATASET_ID` and `META_CAPI_TOKEN`, plus `META_TEST_EVENT_CODE` while testing in Events Manager.
+1. Copy `.env.example` to `apps/whatsapp-agent/.env` and set `OPENROUTER_API_KEY`. The key is sensitive, so never commit it. `ADMIN_TOKEN` enables the admin API; the two `META_*` values turn on Meta reporting.
+2. `pnpm dev:angel` from the repository root. It serves on port 3104.
+3. Angel links the business number (263775101506) with a pairing code. The 8-character code appears in the logs and at `GET /api/admin/whatsapp`. Enter it on the business phone under *Linked devices → Link with phone number*.
+4. The session is saved under `data/wwebjs_auth` (`/data/wwebjs_auth` in Docker), so you only link once.
+
+Everything else is fixed in `src/config.ts`:
+
+- the model and reasoning effort;
+- the owner number (263789859332) and the pairing number;
+- reply pacing, takeover hours and the hourly reply cap;
+- the launch places;
+- the approved-examples link (`EXAMPLES_URL`, empty until examples exist).
+
+Chromium is found automatically at `/usr/bin/chromium` in Docker; locally Puppeteer uses its own Chrome.
 
 For Docker, run `pnpm docker:angel`. It uses the `whatsapp-agent` service in the root `docker-compose.yml`, which has Chromium and 512 MB of shared memory. The session, memory and CRM all live in the `angel-data` volume, so back that volume up.
 

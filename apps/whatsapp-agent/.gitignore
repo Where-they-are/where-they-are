@@ -5,4 +5,5 @@
 .wwebjs_cache
 .env*
 !.env.schema
+!.env.example
 *.log
