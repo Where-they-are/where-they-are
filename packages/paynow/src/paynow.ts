@@ -1,14 +1,17 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 
 /**
- * Paynow (Zimbabwe) mobile checkout: the customer gets a USSD/PIN prompt on
- * their EcoCash or OneMoney wallet, and Paynow reports the result to our
- * result URL and through a poll URL. No card or wallet details pass through
+ * Paynow (Zimbabwe) checkout: a USSD/PIN prompt on the customer's
+ * EcoCash or OneMoney wallet, or a payment link for card and bank payments.
+ * Paynow reports the result to our result URL and through a poll URL. No
+ * card or wallet details pass through
  * our servers. Protocol: https://developers.paynow.co.zw
  */
 
 export const PAYNOW_REMOTE_TRANSACTION_URL =
 	"https://www.paynow.co.zw/interface/remotetransaction";
+export const PAYNOW_INITIATE_TRANSACTION_URL =
+	"https://www.paynow.co.zw/interface/initiatetransaction";
 
 export const PAYNOW_MOBILE_METHODS = ["ecocash", "onemoney"] as const;
 export type PaynowMobileMethod = (typeof PAYNOW_MOBILE_METHODS)[number];
@@ -50,6 +53,18 @@ export type MobilePaymentResult =
 			paynowReference: string | null;
 			pollUrl: string;
 	  }
+	| { error: string; ok: false };
+
+export interface PaymentLinkRequest {
+	amountUsd: number;
+	description: string;
+	/** Pre-fills the payer's email on Paynow's page when known. */
+	email?: string;
+	reference: string;
+}
+
+export type PaymentLinkResult =
+	| { link: string; ok: true; pollUrl: string }
 	| { error: string; ok: false };
 
 export interface PaynowStatus {
@@ -165,6 +180,53 @@ export class PaynowClient {
 	async requestMobilePayment(
 		request: MobilePaymentRequest
 	): Promise<MobilePaymentResult> {
+		const result = await this.initiate(PAYNOW_REMOTE_TRANSACTION_URL, request, [
+			["authemail", this.config.authEmail],
+			["phone", toLocalWalletNumber(request.phone)],
+			["method", request.method],
+		]);
+		if (!result.ok) {
+			return result;
+		}
+		return {
+			instructions: field(result.response, "instructions"),
+			ok: true,
+			paynowReference: field(result.response, "paynowreference"),
+			pollUrl: result.pollUrl,
+		};
+	}
+
+	/**
+	 * Creates a Paynow checkout link the customer opens to pay by card, bank
+	 * or any wallet Paynow supports. They return to returnUrl afterwards.
+	 */
+	async requestPaymentLink(
+		request: PaymentLinkRequest
+	): Promise<PaymentLinkResult> {
+		const result = await this.initiate(
+			PAYNOW_INITIATE_TRANSACTION_URL,
+			request,
+			request.email ? [["authemail", request.email]] : []
+		);
+		if (!result.ok) {
+			return result;
+		}
+		const link = field(result.response, "browserurl");
+		if (!link) {
+			return { error: "Paynow did not return a payment link", ok: false };
+		}
+		return { link, ok: true, pollUrl: result.pollUrl };
+	}
+
+	/** Signs and sends a transaction, then checks Paynow's signed reply. */
+	private async initiate(
+		url: string,
+		request: { amountUsd: number; description: string; reference: string },
+		extra: [string, string][]
+	): Promise<
+		| { ok: true; pollUrl: string; response: [string, string][] }
+		| { error: string; ok: false }
+	> {
 		const fields: [string, string][] = [
 			["resulturl", this.config.resultUrl],
 			["returnurl", this.config.returnUrl],
@@ -172,9 +234,7 @@ export class PaynowClient {
 			["amount", request.amountUsd.toFixed(2)],
 			["id", this.config.integrationId],
 			["additionalinfo", request.description],
-			["authemail", this.config.authEmail],
-			["phone", toLocalWalletNumber(request.phone)],
-			["method", request.method],
+			...extra,
 			["status", "Message"],
 		];
 		fields.push([
@@ -186,10 +246,7 @@ export class PaynowClient {
 		]);
 		let text: string;
 		try {
-			text = await this.post(
-				PAYNOW_REMOTE_TRANSACTION_URL,
-				new URLSearchParams(fields)
-			);
+			text = await this.post(url, new URLSearchParams(fields));
 		} catch (error) {
 			return { error: `Could not reach Paynow: ${String(error)}`, ok: false };
 		}
@@ -207,12 +264,7 @@ export class PaynowClient {
 		if (!pollUrl) {
 			return { error: "Paynow did not return a poll URL", ok: false };
 		}
-		return {
-			instructions: field(response, "instructions"),
-			ok: true,
-			paynowReference: field(response, "paynowreference"),
-			pollUrl,
-		};
+		return { ok: true, pollUrl, response };
 	}
 
 	/** Asks Paynow for the latest status. Null when unreachable or unverifiable. */

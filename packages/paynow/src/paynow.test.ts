@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import {
+	PAYNOW_INITIATE_TRANSACTION_URL,
 	PAYNOW_REMOTE_TRANSACTION_URL,
 	PaynowClient,
 	parsePaynowStatus,
@@ -170,6 +171,53 @@ describe("PaynowClient", () => {
 			paynowReference: "987",
 			reference: "WTA-1-DEP-1",
 		});
+	});
+});
+
+describe("payment links", () => {
+	it("creates a signed checkout link without wallet fields", async () => {
+		const { client: paynow, fetch } = client(() =>
+			signed([
+				["status", "Ok"],
+				["browserurl", "https://www.paynow.co.zw/Payment/ConfirmPayment/1"],
+				["pollurl", "https://www.paynow.co.zw/interface/poll?guid=link"],
+			]).toString()
+		);
+		expect(
+			await paynow.requestPaymentLink({
+				amountUsd: 48,
+				description: "Growth Plan, first month",
+				reference: "WTA-263771111111-FM-1",
+			})
+		).toEqual({
+			link: "https://www.paynow.co.zw/Payment/ConfirmPayment/1",
+			ok: true,
+			pollUrl: "https://www.paynow.co.zw/interface/poll?guid=link",
+		});
+		const [url, init] = fetch.mock.calls[0] as [
+			string,
+			{ body: URLSearchParams },
+		];
+		expect(url).toBe(PAYNOW_INITIATE_TRANSACTION_URL);
+		expect(init.body.get("amount")).toBe("48.00");
+		expect(init.body.has("phone")).toBe(false);
+		expect(verifyPaynowHash([...init.body.entries()], KEY)).toBe(true);
+	});
+
+	it("fails when Paynow returns no link", async () => {
+		const { client: paynow } = client(() =>
+			signed([
+				["status", "Ok"],
+				["pollurl", "https://www.paynow.co.zw/interface/poll?guid=link"],
+			]).toString()
+		);
+		expect(
+			await paynow.requestPaymentLink({
+				amountUsd: 48,
+				description: "Growth Plan",
+				reference: "WTA-1-FM-1",
+			})
+		).toMatchObject({ ok: false });
 	});
 });
 
