@@ -28,8 +28,9 @@ Websites, Brand Perfection, paid advertising, photography, WhatsApp enquiry hand
 
 ```text
 Dealership-specific Meta ad (Leads, WhatsApp conversion location)
+  -> the ad's WhatsApp form (Angel answers only people who submit it)
   -> WhatsApp qualification and one recommended plan
-  -> owner confirms and takes payment
+  -> Angel takes the first month's payment through Paynow (mobile money prompt or payment link), confirmed only by Paynow
   -> onboarding: page access, branding, vehicle photos and details
   -> client design system
   -> monthly content plan
@@ -289,7 +290,7 @@ The authoritative MVP scope and feature pushback protocol is [`plans/MVP-SCOPE.m
 - File artifacts are still local filesystem artifacts rather than object-storage artifacts.
 - Coolify deployment is currently a typed adapter around deployment triggering; the new deployment record provides a server-owned lifecycle state, while external reconciliation remains pending. Coolify credentials are optional and the Coolify smoke test is skipped unless `COOLIFY_CHECKS_ENABLED=true`; calling deployment without configured Coolify still returns an unavailable-provider error rather than preventing server startup.
 - Paynow hosted-payment creation/callback verification is not yet wired in `apps/server`; payment records and status transitions are ready for that provider adapter.
-- `apps/whatsapp-agent` (Angel) runs the social media sales script in `docs/sales-script.md`. It qualifies dealers, recommends one plan, hands ready clients to the owner (no in-chat payment), uses Jev to stay silent on spam, firm no's and finished chats, keeps its own SQLite CRM, and reports qualified leads and paying clients to Meta's Conversions API. The Paynow website deposit flow was removed; `packages/paynow` remains for later. See `apps/whatsapp-agent/README.md`.
+- `apps/whatsapp-agent` (Angel) runs the social media sales script in `docs/sales-script.md`. It answers only leads who submitted the ad's WhatsApp form (others get no reply), qualifies dealers, recommends one plan, takes the first month's payment with a Paynow EcoCash/OneMoney prompt or payment link (`packages/paynow`) and confirms it only when Paynow reports it paid, uses Jev to stay silent on spam, firm no's and finished chats, keeps its own SQLite CRM, and reports qualified leads and paying clients to Meta's Conversions API. The owner bills later months with `#bill`. See `apps/whatsapp-agent/README.md`.
 - Advanced analytics, support queues, operator consoles, audit systems, teams, invitations, and permission-management UX are intentionally out of scope for this phase.
 - Jev policy decisions are currently synchronous and in-process. Decision audit persistence, route-specific support workflows, and human escalation queues remain out of scope.
 - Public contact submissions currently have validation, idempotency, retention, starring, reading, and archiving primitives; rate limiting and scheduled expiry execution still need to be connected to the runtime.

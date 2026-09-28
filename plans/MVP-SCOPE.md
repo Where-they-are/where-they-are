@@ -40,6 +40,7 @@ All advertising, outreach and sales conversations are dealership-specific ("Car 
 
 ```text
 Dealership-specific Meta ad (Leads, WhatsApp conversion location)
+  -> the ad's WhatsApp form (only people who submit it get a reply)
   -> WhatsApp conversation
   -> qualification: dealership, city, current posting, desired frequency
   -> one recommended plan (Starter, Growth or Pro) with the correct price
@@ -93,6 +94,7 @@ The discounted first month is an introduction to the quality and consistency of 
 - A WhatsApp sales flow that qualifies briefly, recommends one plan, takes the first month's payment and hands anything unusual to the owner (see [`docs/sales-script.md`](../docs/sales-script.md)).
 - An AI first-line sales assistant (Angel) runs this flow inside the sales script. It may request payment through Paynow: an EcoCash or OneMoney prompt, or a Paynow payment link for card and bank payments. It confirms a payment only when Paynow reports it paid, and never negotiates, discounts, handles card or wallet details itself, or invents facts.
 - Monthly renewals: the owner sends a Paynow request for the next month from WhatsApp (`#bill`). Automatic recurring billing stays out of scope.
+- Screening: Angel answers only people who submitted the ad's WhatsApp form, plus chats the team started and contacts the owner allows (`#allow`). Everyone else, including "can I get more info?" messages without the form, gets no reply at all; their messages are kept for the owner (`#ignored`).
 
 ### 4.4 Delivery operations
 
@@ -186,6 +188,7 @@ An explicit user request does not silently change this charter. If the owner app
 | Update Angel (the WhatsApp agent) to qualify for social media plans | In scope | Follow the new sales script |
 | Angel takes the first month's payment in the chat | In scope | Paynow mobile prompt or payment link, confirmed only by Paynow |
 | Automatic monthly debit orders | Out of scope | The owner sends a renewal request with `#bill` |
+| Reply to people who message without filling in the ad form | Out of scope | Stay silent; the owner can `#allow` someone worth talking to |
 
 ## 10. MVP completion gate
 
@@ -211,6 +214,7 @@ Any approved scope change must be recorded here with the date, decision, reason,
 | 2026-09-24 | Wizard-of-Oz car-dealership website validation experiment | Test demand from one audience before automating | Full automated platform became "ultimate MVP after validation" | Project owner |
 | 2026-09-25 | Paynow deposit and balance collection in WhatsApp (Angel), Meta Conversions API feedback | A paid deposit is the strongest demand signal | Hosting billing, renewals and refunds stayed manual | Project owner |
 | 2026-09-28 | Angel takes the first month's payment in WhatsApp through Paynow (mobile money prompt or payment link), verified by Paynow; the owner requests renewals with `#bill` | The owner wants the close handled end to end so a lead can pay the moment they decide | Recurring billing, invoices and refunds stay manual; Angel never handles card or wallet details | Project owner |
+| 2026-09-28 | Angel answers only leads who submitted the ad form (or whom the team started or allowed); no reply of any kind to anyone else | Leads who skip the form have failed screening and were costing replies on low-quality "more info" messages | Someone who skips the form but is a real dealer is missed unless the owner spots them in `#ignored` and uses `#allow` | Project owner |
 | 2026-09-27 | Social media management agency for car dealerships becomes the MVP | The core offer is now consistent Facebook and Instagram content for dealerships; websites and other services become upsells | Website platform, dealership website offer, in-chat Paynow website deposit, AI customer assistants, paid ads, photography, branding, marketplace management and other verticals move to upsell or future scope | Project owner |
 
 ## References
